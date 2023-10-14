@@ -1,0 +1,13 @@
+.img{
+	&--w{
+		width: 100%;
+		height: auto;
+	}
+	&--h{
+		height: 100%;
+		width: auto;
+	}
+	&--link{
+		line-height: 0;
+	}
+}
