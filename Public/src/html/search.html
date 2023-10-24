@@ -1,0 +1,379 @@
+<%- include('inc/header.html') %>
+<div class="relative">
+	<div class="absolute z-[-1] w-full h-full ibg bg-cover">
+		<img src="../assets/images/banner.jpg" alt="" >
+	</div>
+	<div class="py-5 w-full">
+		<div class="container">
+			<div class="flex flex-col">
+				<div class="flex justify-center mb-14">
+					<div class="basis-1/2 md:basis-full">
+						<div class="text-white text-center font-normal text-8xl sm:text-6xl xsm:text-4xl font-playfair">Holiday in Mediterraneo</div>
+					</div>
+				</div>
+				<div class="w-full flex justify-center ">
+					<div class="flex justify-between items-center bg-white text-blue font-raleway font-bold text-base gap-5 pl-5 rounded-r-xl md:flex-wrap md:justify-center md:rounded md:p-3 md:gap-3 md:mx-2">
+						<div class="flex gap-1 items-center">
+							<i class="fa-regular fa-calendar"></i>
+							<span>Check-in - check-out</span>
+						</div>
+						<div class="flex gap-1 items-center md:flex-wrap md:justify-center">
+							<i class="fa-solid fa-user-group"></i>
+							<span>Who’s going?</span>
+							<select name="" id="" class="py-1 px-2 border border-blue rounded cursor-pointer">
+								<option value="1">1 adult</option>
+								<option value="2">2 adults</option>
+								<option value="3">3 adults</option>
+							</select>
+							<select name="" id="" class="py-1 px-2 border border-blue rounded cursor-pointer">
+								<option value="0">0 children</option>
+								<option value="1">1 children</option>
+								<option value="2">2 children</option>
+							</select>
+							
+						</div>
+						<button class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] transition hover:brightness-95">Search</button>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<section class="bg-beige-dark pt-12">
+	<div class="container">
+		<div class="flex justify-between gap-14">
+			<div class="basis-[400px] p-5 shadow-2xl text-brown font-raleway flex flex-col gap-5">
+				<div class="text-3xl font-playfair">
+					Filter by:
+				</div>
+				<div class="">
+					<div class="text-base font-bold mb-2">
+						Number of bedrooms
+					</div>
+					<div class="flex justify-between text-sm">
+						<span>Bedrooms</span>
+						<span class="bg-white border border-gray-300 rounded flex group/number-sel focus-within:border-brown text-gray-400">
+							<span class="border-r h-full border-gray-300 w-8 text-center text-2xl leading-none cursor-pointer group-focus-within/number-sel:border-brown" tabindex="-1">-</span>
+							<input class="bg-transparent w-11 px-2 py-0.5 text-center focus:outline-0 cursor-auto" readonly type="text" value="1">
+							<span class="border-l h-full border-gray-300 w-8 text-center text-2xl leading-none cursor-pointer group-focus-within/number-sel:border-brown" tabindex="-1">+</span>
+						</span>
+					</div>
+
+				</div>
+				<div class="pb-5 border-b-2 border-[#623E2A80]">
+					<div class="text-base font-bold mb-2">
+						Number of bathrooms
+					</div>
+					<div class="flex justify-between text-sm">
+						<span>Bathrooms</span>
+						<span class="bg-white border border-gray-300 rounded flex group/number-sel focus-within:border-brown text-gray-400">
+							<span class="border-r h-full border-gray-300 w-8 text-center text-2xl leading-none cursor-pointer group-focus-within/number-sel:border-brown" tabindex="-1">-</span>
+							<input class="bg-transparent w-11 px-2 py-0.5 text-center focus:outline-0 cursor-auto" readonly type="text" value="1">
+							<span class="border-l h-full border-gray-300 w-8 text-center text-2xl leading-none cursor-pointer group-focus-within/number-sel:border-brown" tabindex="-1">+</span>
+						</span>
+					</div>
+					
+				</div>
+				<div class="pb-5 border-b-2 border-[#623E2A80] flex flex-col gap-2.5">
+					<div class="text-base font-bold mb-2">
+						Location
+					</div>
+					<div class="flex items-center">
+						<input type="checkbox" class="accent-blue w-5 h-5 cursor-pointer" checked>
+						<span class="ml-2">First line of the beach</span>
+					</div>
+					<div class="group/dropdown" data-click-class-toggle>
+						<div class="flex items-center group-[:not(.active)]/dropdown:hidden text-blue font-raleway text-sm cursor-pointer" data-click-class-toggler="active">
+							<i class="fa-solid fa-angle-down w-3 mr-1.5"></i>
+							less
+						</div>
+						<div class="flex items-center group-[.active]/dropdown:hidden text-blue font-raleway text-sm cursor-pointer" data-click-class-toggler="active">
+							<i class="fa-solid fa-angle-right w-3 mr-1.5"></i>
+							more
+						</div>
+						<div class="flex flex-col gap-2.5 pl-2.5 pt-2.5 group-[:not(.active)]/dropdown:hidden">
+							<div class="flex items-center">
+								<input type="checkbox" class="accent-blue w-5 h-5 cursor-pointer">
+								<span class="ml-2">First line of the beach</span>
+							</div>
+							<div class="flex items-center">
+								<input type="checkbox" class="accent-blue w-5 h-5 cursor-pointer">
+								<span class="ml-2">First line of the beach</span>
+							</div>
+							<div class="flex items-center">
+								<input type="checkbox" class="accent-blue w-5 h-5 cursor-pointer" checked>
+								<span class="ml-2">First line of the beach</span>
+							</div>
+						</div>
+						
+					</div>
+					
+				</div>
+			</div>
+			<div class="grow">
+				<div class="flex flex-col gap-5">
+					<div class="flex flex-wrap gap-2.5 items-start">
+						<div class="group/dropdown relative w-[300px] rounded p-1 flex items-center justify-between bg-white px-2 py-1.5 border-gray-400 border cursor-pointer font-raleway text-sm text-brown" tabindex="-1">
+							Order By
+							<div class="absolute z-10 top-[calc(100%+12px)] left-0 right-0 opacity-0 translate-y-10 pointer-events-none transition group-focus/dropdown:opacity-100 group-focus/dropdown:translate-y-0 group-focus/dropdown:pointer-events-auto rounded  p-1 bg-white" data-click-selectables="active">
+								<div class="group/dropdownElement font-raleway text-sm text-gray-400 p-2 transition hover:text-black cursor-pointer flex items-center justify-between" data-click-selectable>
+									<span>Price: Low to High</span>
+									<i class="fa-solid fa-check group-[:not(.active)]/dropdownElement:hidden"></i>
+								</div>
+								<div class="group/dropdownElement font-raleway text-sm text-gray-400 p-2 transition hover:text-black cursor-pointer flex items-center justify-between" data-click-selectable>
+									<span>Price: Low to High</span>
+									<i class="fa-solid fa-check group-[:not(.active)]/dropdownElement:hidden"></i>
+								</div>
+								<div class="group/dropdownElement font-raleway text-sm text-gray-400 p-2 transition hover:text-black cursor-pointer flex items-center justify-between" data-click-selectable>
+									<span>Price: Low to High</span>
+									<i class="fa-solid fa-check group-[:not(.active)]/dropdownElement:hidden"></i>
+								</div>
+							</div>
+							<i class="fa-solid fa-angle-down"></i>
+						</div>
+						<div class="flex items-center rounded-3xl text-white gap-1 bg-orange px-3 py-1 cursor-pointer text-sm font-raleway">
+							<i class="fa-regular fa-circle-xmark"></i>
+							First line of the beach
+						</div>
+						<div class="flex items-center rounded-3xl text-white gap-1 bg-orange px-3 py-1 cursor-pointer text-sm font-raleway">
+							<i class="fa-regular fa-circle-xmark"></i>
+							First line of the beach
+						</div>
+					</div>
+					<div class="shadow-xl rounded-md p-3 bg-white text-raleway text-sm flex items-center justify-between">
+						<span class="grow flex gap-4 items-center">
+							<i class="fa-regular fa-calendar-check text-xl"></i>
+							<span>
+								Alert message text goes here. Let’s add a second line for longer messages.
+							</span>
+							
+						</span>
+						<span class="text-[#269AFF] flex flex-wrap justify-around items-center gap-3">
+							<span class="cursor-pointer">
+								Action One
+							</span>
+							<span class="cursor-pointer">
+								Action Two
+							</span>
+						</span>
+					</div>
+					
+				</div>
+
+				<div class="flex flex-col gap-5 my-6">
+					<div class="border border-brown flex flex-wrap">
+						<div class="basis-[300px] relative xl:basis-full xl:aspect-video">
+							<div class="absolute inset-0 ibg bg-center bg-cover">
+								<img src="../assets/images/banner.jpg" alt="">
+							</div>
+						</div>
+						<div class="basis-1/2 grow p-4 text-brown font-raleway text-sm">
+							<div class="flex">
+								<div class="basis-5/12 flex flex-col gap-2.5">
+									<div class="font-playfair text-xl">De Luxe Sea View</div>
+									<div class="">
+										<i class="fa-regular fa-sun"></i>
+										1a linea de la playa
+									</div>
+									<div class="text-base font-bold">
+										Apartment:
+									</div>
+									<div class="">
+										1xApartment, 2 bedrooms, 1 living room, 1 bathroom, 1 kitchen
+									</div>
+									<div class="font-pt text-base">
+										6 pers (1 matrimonio, 2 camas individuales, 1 sofa-cama)
+									</div>
+								</div>
+								<div class="grow flex flex-col text-right items-end text-brown">
+									<div class="text-orange flex text-xl gap-1 mb-auto">
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star-half-stroke"></i>
+										<i class="fa-regular fa-star"></i>
+									</div>
+									<div class="flex flex-col items-end gap-1 text-brown">
+										<div class="text-xl font-pt">3 nights, 2 persons</div>
+										<div class="flex gap-1 items-end">
+											<span class="text-[#DD3510] line-through font-playfair text-sm">18 000 €</span>
+											<span class="text-blue line-through font-playfair text-2xl font-bold">17 340 €</span>
+										</div>
+										<div class="text-sm font-pt opacity-50 ">Including all taxes and fees</div>
+										<a class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] transition hover:brightness-95">More details</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="border border-brown flex flex-wrap">
+						<div class="basis-[300px] relative xl:basis-full xl:aspect-video">
+							<div class="absolute inset-0 ibg bg-center bg-cover">
+								<img src="../assets/images/banner.jpg" alt="">
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 left-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-left"></i>
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 right-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-right"></i>
+							</div>
+						</div>
+						<div class="basis-1/2 grow p-4 text-brown font-raleway text-sm">
+							<div class="flex">
+								<div class="basis-5/12 flex flex-col gap-2.5">
+									<div class="font-playfair text-xl">De Luxe Sea View</div>
+									<div class="">
+										<i class="fa-regular fa-sun"></i>
+										1a linea de la playa
+									</div>
+									<div class="text-base font-bold">
+										Apartment:
+									</div>
+									<div class="">
+										1xApartment, 2 bedrooms, 1 living room, 1 bathroom, 1 kitchen
+									</div>
+									<div class="font-pt text-base">
+										6 pers (1 matrimonio, 2 camas individuales, 1 sofa-cama)
+									</div>
+								</div>
+								<div class="grow flex flex-col text-right items-end text-brown">
+									<div class="text-orange flex text-xl gap-1 mb-auto">
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star-half-stroke"></i>
+										<i class="fa-regular fa-star"></i>
+									</div>
+									<div class="flex flex-col items-end gap-1 text-brown">
+										<div class="text-xl font-pt">3 nights, 2 persons</div>
+										<div class="flex gap-1 items-end">
+											<span class="text-[#DD3510] line-through font-playfair text-sm">18 000 €</span>
+											<span class="text-blue line-through font-playfair text-2xl font-bold">17 340 €</span>
+										</div>
+										<div class="text-sm font-pt opacity-50 ">Including all taxes and fees</div>
+										<a class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] transition hover:brightness-95">More details</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="border border-brown flex flex-wrap">
+						<div class="basis-[300px] relative xl:basis-full xl:aspect-video">
+							<div class="absolute inset-0 ibg bg-center bg-cover">
+								<img src="../assets/images/banner.jpg" alt="">
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 left-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-left"></i>
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 right-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-right"></i>
+							</div>
+						</div>
+						<div class="basis-1/2 grow p-4 text-brown font-raleway text-sm">
+							<div class="flex">
+								<div class="basis-5/12 flex flex-col gap-2.5">
+									<div class="font-playfair text-xl">De Luxe Sea View</div>
+									<div class="">
+										<i class="fa-regular fa-sun"></i>
+										1a linea de la playa
+									</div>
+									<div class="text-base font-bold">
+										Apartment:
+									</div>
+									<div class="">
+										1xApartment, 2 bedrooms, 1 living room, 1 bathroom, 1 kitchen
+									</div>
+									<div class="font-pt text-base">
+										6 pers (1 matrimonio, 2 camas individuales, 1 sofa-cama)
+									</div>
+								</div>
+								<div class="grow flex flex-col text-right items-end text-brown">
+									<div class="text-orange flex text-xl gap-1 mb-auto">
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star-half-stroke"></i>
+										<i class="fa-regular fa-star"></i>
+									</div>
+									<div class="flex flex-col items-end gap-1 text-brown">
+										<div class="text-xl font-pt">3 nights, 2 persons</div>
+										<div class="flex gap-1 items-end">
+											<span class="text-[#DD3510] line-through font-playfair text-sm">18 000 €</span>
+											<span class="text-blue line-through font-playfair text-2xl font-bold">17 340 €</span>
+										</div>
+										<div class="text-sm font-pt opacity-50 ">Including all taxes and fees</div>
+										<a class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] transition hover:brightness-95">More details</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="border border-brown flex flex-wrap">
+						<div class="basis-[300px] relative xl:basis-full xl:aspect-video">
+							<div class="absolute inset-0 ibg bg-center bg-cover">
+								<img src="../assets/images/banner.jpg" alt="">
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 left-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-left"></i>
+							</div>
+							<div class="absolute text-4xl text-white top-0
+							bottom-0 right-1 z-10 flex justify-center items-center cursor-pointer opacity-75 transition hover:opacity-100">
+								<i class="fa-solid fa-angle-right"></i>
+							</div>
+						</div>
+						<div class="basis-1/2 grow p-4 text-brown font-raleway text-sm">
+							<div class="flex">
+								<div class="basis-5/12 flex flex-col gap-2.5">
+									<div class="font-playfair text-xl">De Luxe Sea View</div>
+									<div class="">
+										<i class="fa-regular fa-sun"></i>
+										1a linea de la playa
+									</div>
+									<div class="text-base font-bold">
+										Apartment:
+									</div>
+									<div class="">
+										1xApartment, 2 bedrooms, 1 living room, 1 bathroom, 1 kitchen
+									</div>
+									<div class="font-pt text-base">
+										6 pers (1 matrimonio, 2 camas individuales, 1 sofa-cama)
+									</div>
+								</div>
+								<div class="grow flex flex-col text-right items-end text-brown">
+									<div class="text-orange flex text-xl gap-1 mb-auto">
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star"></i>
+										<i class="fa-solid fa-star-half-stroke"></i>
+										<i class="fa-regular fa-star"></i>
+									</div>
+									<div class="flex flex-col items-end gap-1 text-brown">
+										<div class="text-xl font-pt">3 nights, 2 persons</div>
+										<div class="flex gap-1 items-end">
+											<span class="text-[#DD3510] line-through font-playfair text-sm">18 000 €</span>
+											<span class="text-blue line-through font-playfair text-2xl font-bold">17 340 €</span>
+										</div>
+										<div class="text-sm font-pt opacity-50 ">Including all taxes and fees</div>
+										<a class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] transition hover:brightness-95">More details</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</section>
+
+<%- include('inc/footer.html') %>
+</body>
+
+</html>
