@@ -6,8 +6,8 @@ $(document).ready(function(){
 })
 
 //MODAL  // Also include in SCSS
-// import './libs/modal.js';
-// import {CloseModal, OpenModal} from './libs/modal.js';
+import './libs/modal.js';
+import {CloseModal, OpenModal} from './libs/modal.js';
 
 $(document).on("click","[data-click-class-toggler]", function(){
 	let group = $(this).closest("[data-click-class-toggle]");
