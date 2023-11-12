@@ -1,85 +1,90 @@
+<script>
+	import {useAPIAccess} from './stores/APIAccess.js'
+	export default {
+		data: () => ({
+			sidebarOpen:false,
+			navLinks: [
+				{
+					text:"Home",
+					address:"/",
+					subLinks:[
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+					]
+				},
+				{
+					text:"Home",
+					address:"/",
+					subLinks:[
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+						{
+							text:"sublink",
+							address:"/xd",
+						},
+					]
+				},
+				{
+					text:"Home",
+				},
+				{
+					text:"Home",
+					address:"/"
+				},
+			]
+		}),
+		created(){
+		},
+		methods: {
+		}
+	}; 
+</script>
+
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+	import HeaderNavbar from './components/HeaderNavbar.vue'
+	import NavDropdown from './components/NavDropdown.vue'
+	import NavElement from './components/NavElement.vue'
+	import { RouterLink, RouterView } from 'vue-router'
+	const APIAccess = useAPIAccess();
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+	<div class="drawer">
+		<input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
+		<div class="drawer-content">
+			<HeaderNavbar ></HeaderNavbar>
+			<RouterView />
+		</div> 
+		<div class="drawer-side">
+			<label for="navbar-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+			<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+				<div class="join join-vertical w-full">
+					<div v-for="navLink in navLinks" :key="navLink.id"  class="join-item border border-base-300">
+						<NavDropdown v-if="navLink.subLinks" :selfLink="navLink.address" :subLinks="navLink.subLinks">{{navLink.text}}</NavDropdown>
+						<NavElement v-else :selfLink="navLink.address">{{navLink.text}}</NavElement>
+					</div>
+				</div>
+				
+			</ul>
+		</div>
+	</div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
 </style>
