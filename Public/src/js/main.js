@@ -1,6 +1,7 @@
 var $ = require( "jquery" );
 //IBG  // Also include in SCSS
 import ibg from './libs/ibg.js'
+import 'slick-carousel'
 $(document).ready(function(){
 	ibg();
 })
@@ -22,3 +23,18 @@ $(document).on("click","[data-click-selectable]", function(){
 	}
 	$(this).addClass(cssClass);
 });
+
+
+$(document).ready(function(){
+	$(".apartment-image-slider").each(function(){
+		let prev = $(this).siblings("[slider-left-arrow]");
+		let next = $(this).siblings("[slider-right-arrow]");
+		console.log(prev)
+		$(this).slick({
+			prevArrow: prev,
+			nextArrow: next,
+		});
+	});
+
+
+})

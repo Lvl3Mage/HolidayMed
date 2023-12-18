@@ -2,17 +2,17 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import {useAPIAccess} from './APIAccess.js';
 
-let aprtData = {
-	id: "HM034",
-	name: "apName",
+let exampleObjectData = {
+	name: "OBJECT_NAME",
 	// .. more fields go here
-}
+};
+let exampleObjectToken = "OBJECT_TOKEN";
 const useObjectManager = defineStore({
 	id: 'ObjectManager',
 	state: () => {
-		let types = ["apartment"];
+		let types = ["apartment", "group", "reservation", "house"];
 		let managedObjects = {};
-		for(type of types){
+		for(let type of types){
 			managedObjects[type] = {};
 		}
 		return {
@@ -38,12 +38,27 @@ const useObjectManager = defineStore({
 		},
 
 
-		ReserveObject(objectType, objectID){
+		async ReserveObject(objectType, objectID){
+			await sleep(400);
+			let obj = this.GetObject(objectType,objectID);
+			if(obj == null){
+				console.error(`Object ${objectID} of type ${objectType} not found!`);
+				return;
+			}
+			obj.token = exampleObjectToken;
 			// request token
 				//on sucess set token and reserve apartment again with a delay
 				//of failiure show error in notifs and call close object 
 		},
-		RequestObjectData(objectType, objectID){
+		async RequestObjectData(objectType, objectID){
+			await sleep(400);
+			let obj = this.GetObject(objectType,objectID);
+			if(obj == null){
+				console.error(`Object ${objectID} of type ${objectType} not found!`);
+				return;
+			}
+			obj.data = {...exampleObjectData};
+
 			//request apartment data
 				//on sucess set apartment data
 				//of failiure show error in notifs and call close object 
@@ -98,4 +113,8 @@ const useObjectManager = defineStore({
 
 	}
 });
-export {useApartments};
+export {useObjectManager};
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

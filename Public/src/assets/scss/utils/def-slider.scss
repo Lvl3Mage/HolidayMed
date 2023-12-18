@@ -15,9 +15,14 @@
 	.slick-list {
 		flex: 100% 0 0;
 		order: 0;
+		height: 100%;
 	}
 	/* Лента слайдов */
 	.slick-track{
+		height: 100%;
+		div{
+			height: 100%;
+		}
 	}
 	/* Слайд */
 	.slick-slide{
