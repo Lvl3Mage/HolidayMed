@@ -1,81 +1,72 @@
-<script >
+
+<script setup>
+
 	import {useObjectManager} from '@/stores/ObjectManager.js'	
 	import {useUIState} from '@/stores/UIState.js'
+	const ObjectManager = useObjectManager();
+	const UIState = useUIState();
 
-	export default{
-		props: {
-			objectType: {
-				type: String,
-				required: true,
-			}, 
-			objectId: {
-				type: String,
-				required: true,
-			},
-		},
-		emits: ["modal-closed"],
-		data() {
 
-			return {
-				modalOpen: true,
-			}
-		},
-		setup(){
-			const ObjectManager = useObjectManager();
-			const UIState = useUIState();
-			return {ObjectManager, UIState};
-		},
-		created(){
-			if(!this.ObjectManager.ObjectOpen(this.objectType,this.objectId)){
-				this.ObjectManager.OpenObject(this.objectType, this.objectId);
-			}
-		},
-		mounted(){
-		},
-		watch:{
-			// modelValue:function(val){
-			// 	this.selectedDate = val;
-			// },
-		},
-		methods: {
-			async CloseModalAsync(){
-				this.modalOpen = false;
-				await sleep(100);
-				this.UnloadModal();
-			},
-			UnloadModal(){
-				if(this.UIState.OpenObjectModalCount(this.objectType, this.objectId) == 1){
-					//last open modal for object
-					this.ObjectManager.CloseObject(this.objectType, this.objectId);
-				}
-				this.$emit("modal-closed");
+	import { ref, computed, onMounted } from 'vue'
+	import ApartmentTitleRenderer from "@/components/ModalRenderers/ApartmentTitleRenderer.vue"
+	import ApartmentContentRenderer from "@/components/ModalRenderers/ApartmentContentRenderer.vue"
+	const titleRendererLookup = {
+		"apartment" : ApartmentTitleRenderer,
+	};
 
-			}
+	const contentRendererLookup = {
+		"apartment" : ApartmentContentRenderer,
+	};
 
+	const props = defineProps({
+		objectType: {
+			type: String,
+			required: true,
+		}, 
+		objectId: {
+			type: String,
+			required: true,
 		},
-		computed: {
-			selfObject: function(){
-				return this.ObjectManager.ReadObject(this.objectType, this.objectId);
-			},
-			objectLoaded: function(){
-				return this.ObjectManager.ObjectLoaded(this.objectType, this.objectId);
-			}
+	});
+	const emit = defineEmits(['modal-closed']);
+	onMounted(()=>{
+		if(!ObjectManager.ObjectOpen(props.objectType,props.objectId)){
+			ObjectManager.OpenObject(props.objectType, props.objectId);
 		}
-	}
+	});
+	const selfObject = computed(() => {
+		return ObjectManager.ReadObject(props.objectType, props.objectId);
+	});
+	const objectLoaded = computed(() =>{
+		return ObjectManager.ObjectLoaded(props.objectType, props.objectId);
+	});
+
+	const modalOpen = ref(true);
 
 	function sleep(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
+	    return new Promise(resolve => setTimeout(resolve, ms));
 	}
+	async function CloseModalAsync(){
+		modalOpen.value = false;
+		await sleep(100);
+		UnloadModal();
+	};
+	function UnloadModal(){
+		if(UIState.OpenObjectModalCount(props.objectType, props.objectId) == 1){
+			//last open modal for object
+			ObjectManager.CloseObject(props.objectType, props.objectId);
+		}
+		emit("modal-closed");
+	};
 </script>
-
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
 		<div class="modal-box w-11/12 max-w-5xl">
 			<div v-if="objectLoaded">
 				<h3 class="font-bold text-lg">
-					<slot name="title-renderer">Modal Title</slot>
+					<component :is="titleRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component> 
 				</h3>
-				<slot name="content-renderer">Modal content</slot>    		
+				<component :is="contentRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component>   		
 			    
 				<div class="modal-action">
 					<button class="btn btn-error" @click="CloseModalAsync()">Close</button>

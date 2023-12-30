@@ -1,61 +1,41 @@
-<script >
+<script setup>
 	import {useObjectManager} from '@/stores/ObjectManager.js'	
-	import {useUIState} from '@/stores/UIState.js'
+	const ObjectManager = useObjectManager();
 
-	export default{
-		props: {
-			objectType: {
-				type: String,
-				required: true,
-			}, 
-			objectId: {
-				type: String,
-				required: true,
-			},
-		},
-		data() {
+	import {ref, computed} from "vue";
+	import TextInput from "@/components/FormElements/TextInput.vue"
 
-			return {
-			}
+	const props = defineProps({
+		objectType: {
+			type: String,
+			required: true,
+		}, 
+		objectId: {
+			type: String,
+			required: true,
 		},
-		setup(){
-			const ObjectManager = useObjectManager();
-			return {ObjectManager};
-		},
-		created(){
-		},
-		mounted(){
-		},
-		watch:{
-			// modelValue:function(val){
-			// 	this.selectedDate = val;
-			// },
-		},
-		methods: {
+	});
+	function ReadObject(){
+		return ObjectManager.ReadObject(props.objectType, props.objectId);
+	};
+	function getData(){
+		return ReadObject().data;
+	};
+	function getAcf(){
+		return ReadObject().data.acf;
+	};
+	const invalidInputs = ref({
+		"aprtIdentifier": false,
+	});
 
-		},
-		computed: {
-			selfObject: function(){
-				return this.ObjectManager.ReadObject(this.objectType, this.objectId);
-			},
-		}
+	function validateEmpty(inputName, value){
+		invalidInputs.value[inputName] = value == '';
 	}
-
 </script>
 <template>
-	<label class="form-control w-full max-w-xs">
-	  <div class="label">
-	    <span class="label-text">Apartment identifier</span>
-	  </div>
-	  <input v-model="selfObject.data.acf.inner_id" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" />
-	</label>
-	
-	<label class="form-control w-full max-w-xs">
-	  <div class="label">
-	    <span class="label-text">Apartment identifier</span>
-	  </div>
-	  <input v-model="selfObject.data.acf.inner_id" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" />
-	</label>
+	<TextInput v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :invalid="invalidInputs['aprtIdentifier']" @change="validateEmpty('aprtIdentifier', getAcf().inner_id)">
+		<template v-slot:label>Apartment identifier</template>
+	</TextInput>
 </template>
 <style scoped lang="scss">
 </style>
