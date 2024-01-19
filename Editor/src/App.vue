@@ -1,5 +1,4 @@
 <script>
-	import {useAPIAccess} from './stores/APIAccess.js'
 	export default {
 		data: () => ({
 			sidebarOpen:false,
@@ -49,27 +48,37 @@
 				},
 			]
 		}),
-		created(){
+		mounted(){
 		},
 		methods: {
+			Method(){
+				console.log(this.ObjectManager);
+			},
 		}
 	}; 
 </script>
 
 <script setup>
-	import HeaderNavbar from './components/HeaderNavbar.vue'
-	import NavDropdown from './components/NavDropdown.vue'
-	import NavElement from './components/NavElement.vue'
+
+	import {useObjectListManager} from '@/stores/ObjectListManager.js'
+	const ObjectListManager = useObjectListManager();
+
+	import HeaderNavbar from '@/components/HeaderNavbar.vue'
+	import NavDropdown from '@/components/NavDropdown.vue'
+	import NavElement from '@/components/NavElement.vue'
+	import ObjectModalManager from '@/components/ObjectModalManager.vue'
 	import { RouterLink, RouterView } from 'vue-router'
-	const APIAccess = useAPIAccess();
+	ObjectListManager.ReloadObjectsOfType("apartment");
 </script>
 
 <template>
 	<div class="drawer">
 		<input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
 		<div class="drawer-content">
+
+			<ObjectModalManager></ObjectModalManager>
 			<HeaderNavbar ></HeaderNavbar>
-			<RouterView />
+			<RouterView></RouterView>
 		</div> 
 		<div class="drawer-side">
 			<label for="navbar-drawer" aria-label="close sidebar" class="drawer-overlay"></label>

@@ -10,31 +10,36 @@ let exampleObjectToken = "OBJECT_TOKEN";
 const useObjectManager = defineStore({
 	id: 'ObjectManager',
 	state: () => {
-		let types = ["apartment", "group", "reservation", "house"];
+		let types = ["apartment", "group", "reservation", "house"];//MOVE TO GENERAL CONFIG
 		let managedObjects = {};
 		for(let type of types){
 			managedObjects[type] = {};
 		}
 		return {
-			apiAcess: useAPIAccess(),
-			types: types,
+			APIAccess: useAPIAccess(),
+			types: types,//MOVE TO GENERAL CONFIG
 			managedObjects: managedObjects,
 		};
 	},
 	getters: {
+		// OpenObjects(){
+		// 	for(let objectType of managedObjects.keys()){
+
+		// 	}
+		// }
 	},
 	actions: {
 		GetObject(objectType, objectID){
 			if(!(objectType in this.managedObjects)){
 				return null;
 			}
-			if((objectID in this.managedObjects[objectType])){
+			if(!(objectID in this.managedObjects[objectType])){
 				return null;
 			}
 			return this.managedObjects[objectType][objectID];
 		},
 		CreateEmptyObject(objectType, objectID, editMode){
-			this.managedObjects[objectType][objectID] = {id:objectID, type:objectType, editMode: editMode, loaded: false};
+			this.managedObjects[objectType][objectID] = {id:objectID, type:objectType, editMode: editMode, dataLoaded: false, reserved: false};
 		},
 
 
@@ -46,23 +51,32 @@ const useObjectManager = defineStore({
 				return;
 			}
 			obj.token = exampleObjectToken;
+			obj.reserved = true;
 			// request token
 				//on sucess set token and reserve apartment again with a delay
 				//of failiure show error in notifs and call close object 
 		},
-		async RequestObjectData(objectType, objectID){
-			await sleep(400);
-			let obj = this.GetObject(objectType,objectID);
-			if(obj == null){
-				console.error(`Object ${objectID} of type ${objectType} not found!`);
-				return;
-			}
-			obj.data = {...exampleObjectData};
+		RequestObjectData(objectType, objectID){
+			this.APIAccess.RequestREST("/apartments/" + objectID)
+			.then(function(responce){
+				let obj = this.GetObject(objectType,objectID);
+				if(obj == null){
+					console.error(`Object ${objectID} of type ${objectType} not found!`);
+					return;
+				}
+				obj.data = responce.data;
+				obj.dataLoaded = true;
 
+			}.bind(this))
+			.catch(function(error){
+				console.log(error);
+			}.bind(this));
 			//request apartment data
 				//on sucess set apartment data
 				//of failiure show error in notifs and call close object 
 		},
+
+
 		//public methods
 		CloseObject(objectType, objectID){
 			delete this.managedObjects[objectType][objectID];
@@ -70,7 +84,7 @@ const useObjectManager = defineStore({
 		StoreObject(objectType, objectID, callback){
 			let object = this.GetObject(objectType,objectID);
 			if(object == null){
-				console.error(`Object of type ${object} and id ${objectID} is not open!`);
+				console.error(`Object of type ${objectType} and id ${objectID} is not open!`);
 				return; 
 			}
 			if(!object.editMode){
@@ -82,13 +96,13 @@ const useObjectManager = defineStore({
 		},
 		OpenObject(objectType, objectID, editMode = false){
 			if(this.GetObject(objectType,objectID) != null){
-				console.warn(`Object of type ${object} and id ${objectID} is already open!`)
+				console.warn(`Object of type ${objectType} and id ${objectID} is already open!`)
 				return;
 			}
 
-			this.CreateEmptyObject(objectType,objectID);
+			this.CreateEmptyObject(objectType,objectID, editMode);
 
-			RequestObjectData(objectType, objectID);
+			this.RequestObjectData(objectType, objectID);
 
 			if(editMode){
 				ReserveObject(objectType, objectID);
@@ -97,19 +111,20 @@ const useObjectManager = defineStore({
 		},
 		ObjectOpen(objectType, objectID){
 			let object = this.GetObject(objectType,objectID);
-			return object == null;
+			return object != null;
 		},
 		ObjectLoaded(objectType, objectID){
 			let object = this.GetObject(objectType,objectID);
 			if(object == null){
-				console.warn(`Object of type ${object} and id ${objectID} has not been requested and thus will not be loaded!`);
+				console.warn(`Object of type ${objectType} and id ${objectID} has not been requested and thus will not be loaded!`);
 				return false; 
 			}
-			return object.loaded;
+			return object.dataLoaded && (object.reserved || !object.editMode);
 		},
 		ReadObject(objectType, objectID){
 			return this.GetObject(objectType, objectID);
-		}
+		},
+
 
 	}
 });
