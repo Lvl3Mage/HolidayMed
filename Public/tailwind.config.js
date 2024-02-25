@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/html/*.html","./src/html/**/*.html"],
+  content: ["./src/html/*.html","./src/html/**/*.html","./src/js/**/*.js"],
   theme: {
     fontFamily: {
       'raleway': ['Raleway'],
@@ -28,6 +28,9 @@ module.exports = {
         'cyan':'#2380BB',
         'blue':'#034EA2',
         'orange': "#FF914D",
+      },
+      transitionTimingFunction: {
+        'out-wobble': 'cubic-bezier(.65,1.77,.73,.86)',
       },
     },
     screens: {
