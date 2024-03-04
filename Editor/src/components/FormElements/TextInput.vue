@@ -8,8 +8,7 @@
 			placeholder: {
 				type: String,
 			},
-			invalid: {
-				type: Boolean,
+			validate: {
 			},
 		},
 		data() {
@@ -27,6 +26,12 @@
 					this.$emit('change');
 				}
 			}
+		},
+		methods: {
+			isValid(){
+				return this.validate(this.value);
+			}
+		
 		}
 	}
 
@@ -39,9 +44,9 @@
 			</span>
 		</div>
 		<!-- @blur="$emit('submit', value)" @keyup.enter="$emit('submit', value)" -->
-		<input  v-model="value" type="text" :placeholder="placeholder" :class="{'input-error' : invalid}" class="input input-bordered w-full max-w-xs" />
-		<div class="label" v-if="$slots.invalid">
-			<span class="label-text-alt " :class="{'text-error': invalid}">
+		<input  v-model="value" type="text" :placeholder="placeholder" :class="{'input-error' : !validate(value)}" class="input input-bordered w-full max-w-xs" />
+		<div class="label" v-if="!validate(value)">
+			<span class="label-text-alt text-error">
 				<slot name="invalid"></slot>
 			</span>
 		</div>

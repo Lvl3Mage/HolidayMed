@@ -8,18 +8,19 @@
 			<div class="flex flex-col">
 				<div class="flex justify-center mb-14">
 					<div class="basis-1/2 md:basis-full">
-						<div class="text-white text-center font-normal text-8xl sm:text-6xl xsm:text-4xl font-playfair">Holiday in Mediterraneo</div>
+						<div class="text-white text-center font-normal text-8xl sm:text-6xl xsm:text-4xl font-playfair">
+							Holiday in Mediterraneo
+						</div>
 					</div>
 				</div>
-				
 			</div>
 		</div>
 	</div>
 </div>
 <section class="bg-beige-dark py-12">
 	<div class="container">
-		<div class="flex gap-10 lg:gap-6">
-			<div class="sticky top-1/4 h-[50vh] z-30 basis-[400px] lg:basis-0">
+		<div class="flex gap-10 lg:gap-3">
+			<div class="sticky top-1/4 h-[40vh] z-30 basis-[400px] lg:basis-0">
 				<div class="group/sidebar absolute top-0 bottom-0 right-0 left-0 lg:left-auto lg:[&.active]:translate-x-[100%] transition ease-in-out duration-500 lg:w-[min(400px,80vw)] rounded shadow-2xl text-brown font-raleway flex flex-col gap-5 z-30 bg-beige-dark p-1" data-sidebar>
 
 					<div class="hidden lg:flex absolute top-0 bottom-0 left-[calc(100%_-_1.25rem)] m-auto h-10 w-10 rounded-full bg-beige-dark border-brown border text-2xl  justify-center items-center z-40 cursor-pointer group/sidebar-arrow group-[.active]/sidebar:rotate-180" data-sidebar-arrow>
@@ -125,14 +126,13 @@
 				</div>
 			</div>
 			<div class="grow">
-				<div class="flex items-center justify-between">
+				<div class="flex items-center justify-between md:flex-col md:items-start">
 					<div class="text-3xl font-playfair">De Luxe Sea View</div>
-					<div class="flex items-center ">
+					<div class="flex items-center md:mb-2">
 						<i class="fa-regular fa-sun mr-2"></i>
 						1a linea de la playa
 					</div>
-					<i class="fa-solid fa-heart-circle-plus text-cyan text-2xl"></i>
-					<div class="text-orange flex text-xl gap-1 items-center">
+					<div class="text-orange flex text-xl gap-1 items-center md:mb-2">
 						<i class="fa-solid fa-star"></i>
 						<i class="fa-solid fa-star"></i>
 						<i class="fa-solid fa-star"></i>
@@ -233,7 +233,7 @@
 			Location
 		</h2>
 		<div class="rounded border-2 border-gray-300">
-			<div class="flex rounded border-2 border-white bg-beige-dark md:flex-col p-4">
+			<div class="flex rounded border-2 border-white bg-beige-dark md:flex-col-reverse p-4">
 				<div class="basis-4/12 text-xl font-pt flex flex-col gap-1.5">
 					<div class="">
 						<span class="font-bold">Park Jardines de Marina d'Or</span> <span> - 350 m</span>
@@ -423,8 +423,8 @@
 						</div>
 						<div class="flex flex-col">
 							
-							<button disabled class="font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-gray-300 via-gray-400 to-gray-300">Proceed to reservation</button>
-							<div class="text-orange text-xs mt-1.5">You have 7 more people left to accommodate. Please add more apartments.</div>
+							<button disabled class="peer font-pt text-xl text-white py-2 px-7 rounded-xl bg-gradient-to-b font-normal from-[#76b0d5] via-cyan to-[#76b0d5] disabled:from-gray-300 disabled:via-gray-400 disabled:to-gray-300">Proceed to reservation</button>
+							<div class="text-green-600 peer-disabled:text-orange text-xs mt-1.5">You have 7 more people left to accommodate. Please add more apartments.</div>
 						</div>
 					</div>
 				</div>
@@ -831,23 +831,26 @@
 	<div class="def-modal__outer-container container">
 		<div class="def-modal__inner-container def-modal__inner-container--100">
 			<div class="def-modal__wrapper modal-window border-2 border-gray-500 py-2.5">
-				<div class="def-modal__top mb-2.5">
-					<div class="def-modal__title">
-						<span class="modal-title text-3xl font-playfair font-bold">De Luxe Sea View</span>
-					</div>
-					<div class="text-orange flex text-xl gap-1 items-center">
-						<i class="fa-solid fa-star"></i>
-						<i class="fa-solid fa-star"></i>
-						<i class="fa-solid fa-star"></i>
-						<i class="fa-solid fa-star-half-stroke"></i>
-						<i class="fa-regular fa-star"></i>
+				<div class="def-modal__top mb-2.5 px-6">
+					<div class="flex-col">
+						<div class="def-modal__title">
+							<span class="modal-title text-3xl font-playfair font-bold">De Luxe Sea View</span>
+						</div>
+						<div class="text-orange flex text-xl gap-1 items-center">
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star-half-stroke"></i>
+							<i class="fa-regular fa-star"></i>
+						</div>
+						
 					</div>
 					<div class="def-modal__cross modal-cross text-2xl">
 						<i class="fa-regular fa-circle-xmark"></i>
 					</div>
 				</div>
-				<div class="def-modal__content-wrapper def-modal-class-name modal-content-wrapper">
-					<div class="flex gap-5 mb-12">
+				<div class="def-modal__content-wrapper def-modal-class-name modal-content-wrapper p-6">
+					<div class="flex gap-5 mb-12 md:flex-col">
 						<div class="basis-4/12 shrink-0 grow-0 flex flex-col gap-2.5">
 							<div class="">
 								<div class="">
@@ -860,108 +863,163 @@
 							<div class="text-xs">
 								Air-conditioned apartment with double beds, a sofa bed, a living room with a dining area, a fully equipped kitchen with a dishwasher, a bathroom and a balcony. It features a washing machine and a flat-screen TV.
 							</div>
-							<div class="flex  gap-2">
-								<div class="basis-1/2">
-									<div class="flex flex-col gap-2.5 mb-7">
-										<div class="flex items-center">
-											<div class="text-3xl">
-												<i class="fa-solid fa-square-parking"></i>
-											</div>
-											<span class="ml-2.5 font-playfair text-xl">Parking</span>
+							<div class="columns-2">
+								<div class="flex flex-col gap-2.5 mb-7">
+									<div class="flex items-center">
+										<div class="text-3xl">
+											<i class="fa-solid fa-square-parking"></i>
 										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Parking
-											</div>
+										<span class="ml-2.5 font-playfair text-xl">Parking</span>
+									</div>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
+										</div>
+										<div class="">
+											Parking
 										</div>
 									</div>
-									<div class="flex flex-col gap-2.5 mb-7">
-										<div class="flex items-center">
-											<div class="text-3xl">
-												<i class="fa-solid fa-wifi"></i>
-											</div>
-											<span class="ml-2.5 font-playfair text-xl">Internet</span>
-										</div>
-										<div class="font-raleway text-sm text-gray-500">
-											No internet access available
-										</div>
-									</div>
-									<div class="flex flex-col gap-2.5 mb-7">
-										<div class="flex items-center">
-											<div class="text-3xl">
-												<i class="fa-solid fa-fire-burner"></i>
-											</div>
-											<span class="ml-2.5 font-playfair text-xl">Kitchen</span>
-										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Dining table
-											</div>
-										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Stovetop
-											</div>
-										</div>
-									</div>
-									
 								</div>
-								<div class="basis-1/2">
-									<div class="flex flex-col gap-2.5 mb-7">
-										<div class="flex items-center">
-											<div class="text-3xl">
-												<i class="fa-solid fa-square-parking"></i>
-											</div>
-											<span class="ml-2.5 font-playfair text-xl">Parking</span>
+								<div class="flex flex-col gap-2.5 mb-7">
+									<div class="flex items-center">
+										<div class="text-3xl">
+											<i class="fa-solid fa-wifi"></i>
 										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Parking
-											</div>
+										<span class="ml-2.5 font-playfair text-xl">Internet</span>
+									</div>
+									<div class="font-raleway text-sm text-gray-500">
+										No internet access available
+									</div>
+								</div>
+								<div class="flex flex-col gap-2.5 mb-7">
+									<div class="flex items-center">
+										<div class="text-3xl">
+											<i class="fa-solid fa-fire-burner"></i>
+										</div>
+										<span class="ml-2.5 font-playfair text-xl">Kitchen</span>
+									</div>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
+										</div>
+										<div class="">
+											Dining table
 										</div>
 									</div>
-									<div class="flex flex-col gap-2.5 mb-7">
-										<div class="flex items-center">
-											<div class="text-3xl">
-												<i class="fa-solid fa-fire-burner"></i>
-											</div>
-											<span class="ml-2.5 font-playfair text-xl">Kitchen</span>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
 										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Dining table
-											</div>
-										</div>
-										<div class="pl-5 flex items-center font-raleway text-sm">
-											<div class="text-2xl mr-2.5">
-												<i class="fa-solid fa-check"></i>
-											</div>
-											<div class="">
-												Stovetop
-											</div>
+										<div class="">
+											Stovetop
 										</div>
 									</div>
-									
+								</div>
+								<div class="flex flex-col gap-2.5 mb-7">
+									<div class="flex items-center">
+										<div class="text-3xl">
+											<i class="fa-solid fa-square-parking"></i>
+										</div>
+										<span class="ml-2.5 font-playfair text-xl">Parking</span>
+									</div>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
+										</div>
+										<div class="">
+											Parking
+										</div>
+									</div>
+								</div>
+								<div class="flex flex-col gap-2.5 mb-7">
+									<div class="flex items-center">
+										<div class="text-3xl">
+											<i class="fa-solid fa-fire-burner"></i>
+										</div>
+										<span class="ml-2.5 font-playfair text-xl">Kitchen</span>
+									</div>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
+										</div>
+										<div class="">
+											Dining table
+										</div>
+									</div>
+									<div class="pl-5 flex items-center font-raleway text-sm">
+										<div class="text-2xl mr-2.5">
+											<i class="fa-solid fa-check"></i>
+										</div>
+										<div class="">
+											Stovetop
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="grow">
-							<div class="aspect-video w-full ibg bg-center bg-cover">
+						<div class="grow min-w-0">
+							<div class="image-preview-slider">
+								<div class="image-preview-slider-main def-slider">
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+								</div>
+								<div class="image-preview-slider-nav def-slider sm:hidden">
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+
+									<div class="px-2">
+										<img src="../assets/images/placeholder.png" alt="" class="w-full">
+									</div>
+								</div>
+							</div>
+							
+							<!-- <div class="aspect-video w-full ibg bg-center bg-cover">
 								<img src="../assets/images/placeholder.png" alt="">
 							</div>
 							<div class="flex gap-2.5 flex-wrap my-2.5">
@@ -1007,7 +1065,7 @@
 								<div class="aspect-video min-w-[90px] grow ibg bg-center bg-cover">
 									<img src="../assets/images/placeholder.png" alt="">
 								</div>
-							</div>
+							</div> -->
 							<div class="flex flex-wrap gap-2.5 mt-5 justify-center">
 								<div class="rounded border border-gray-500 text-gray-500 font-playfair p-1"><i class="fa-solid fa-users mr-2"></i>Up to 6 people</div>
 								<div class="rounded border border-gray-500 text-gray-500 font-playfair p-1"><i class="fa-solid fa-users mr-2"></i>50 meters from the beach</div>
@@ -1017,72 +1075,88 @@
 						</div>
 					</div>
 					<div class="flex flex-wrap gap-5 justify-around">
-						<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm basis-[300px] grow">
-							<div class="flex">
-								<div class="basis-[40px] mr-3">
-									<img src="../assets/images/avatar.png" alt="" class="w-full">
-								</div>
-								<div class="font-bold text-black flex flex-col justify-between">
-									<div class="">Filip</div>
-									<div class="flex items-center">
-										<span class="w-3.5 mr-1.5">
-											<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
-										</span>
-										<span class="text-black text-xs">UK</span>
+						<div class="review-slider def-slider">
+							<div class="">
+								<div class="flex justify-center items-center px-12">
+									<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm ">
+										<div class="flex">
+											<div class="basis-[40px] mr-3">
+												<img src="../assets/images/avatar.png" alt="" class="w-full">
+											</div>
+											<div class="font-bold text-black flex flex-col justify-between">
+												<div class="">Filip</div>
+												<div class="flex items-center">
+													<span class="w-3.5 mr-1.5">
+														<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
+													</span>
+													<span class="text-black text-xs">UK</span>
+												</div>
+											</div>
+										</div>
+										<div class="text-xs text-black">
+											“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
+										</div>
+										<div class="text-xs text-blue underline">
+											Read more
+										</div>
 									</div>
 								</div>
 							</div>
-							<div class="text-xs text-black">
-								“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
-							</div>
-							<div class="text-xs text-blue underline">
-								Read more
-							</div>
-						</div>
-						<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm basis-[300px] grow">
-							<div class="flex">
-								<div class="basis-[40px] mr-3">
-									<img src="../assets/images/avatar.png" alt="" class="w-full">
-								</div>
-								<div class="font-bold text-black flex flex-col justify-between">
-									<div class="">Filip</div>
-									<div class="flex items-center">
-										<span class="w-3.5 mr-1.5">
-											<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
-										</span>
-										<span class="text-black text-xs">UK</span>
+							
+							<div class="">
+								<div class="flex justify-center items-center px-12">
+									<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm ">
+										<div class="flex">
+											<div class="basis-[40px] mr-3">
+												<img src="../assets/images/avatar.png" alt="" class="w-full">
+											</div>
+											<div class="font-bold text-black flex flex-col justify-between">
+												<div class="">Filip</div>
+												<div class="flex items-center">
+													<span class="w-3.5 mr-1.5">
+														<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
+													</span>
+													<span class="text-black text-xs">UK</span>
+												</div>
+											</div>
+										</div>
+										<div class="text-xs text-black">
+											“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
+										</div>
+										<div class="text-xs text-blue underline">
+											Read more
+										</div>
 									</div>
 								</div>
 							</div>
-							<div class="text-xs text-black">
-								“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
-							</div>
-							<div class="text-xs text-blue underline">
-								Read more
-							</div>
-						</div>
-						<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm basis-[300px] grow">
-							<div class="flex">
-								<div class="basis-[40px] mr-3">
-									<img src="../assets/images/avatar.png" alt="" class="w-full">
-								</div>
-								<div class="font-bold text-black flex flex-col justify-between">
-									<div class="">Filip</div>
-									<div class="flex items-center">
-										<span class="w-3.5 mr-1.5">
-											<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
-										</span>
-										<span class="text-black text-xs">UK</span>
+							<div class="">
+								<div class="flex justify-center items-center px-12">
+									<div class="border border-gray-200 p-1.5 flex flex-col gap-1.5 max-w-sm ">
+										<div class="flex">
+											<div class="basis-[40px] mr-3">
+												<img src="../assets/images/avatar.png" alt="" class="w-full">
+											</div>
+											<div class="font-bold text-black flex flex-col justify-between">
+												<div class="">Filip</div>
+												<div class="flex items-center">
+													<span class="w-3.5 mr-1.5">
+														<img src="../assets/images/uk-icon.svg" alt="" class="w-full">
+													</span>
+													<span class="text-black text-xs">UK</span>
+												</div>
+											</div>
+										</div>
+										<div class="text-xs text-black">
+											“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
+										</div>
+										<div class="text-xs text-blue underline">
+											Read more
+										</div>
 									</div>
 								</div>
 							</div>
-							<div class="text-xs text-black">
-								“We were veryyy surprised becouse they had brought necessary things for a baby (toddler): bed, potty, feeder, toys, crib... 💯 TV, Iron ,kitchen, fridge, coffemachine, bath 👍”
-							</div>
-							<div class="text-xs text-blue underline">
-								Read more
-							</div>
 						</div>
+						
 					</div>
 				</div>
 			</div>

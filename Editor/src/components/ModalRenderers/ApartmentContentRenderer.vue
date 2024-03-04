@@ -24,16 +24,25 @@
 	function getAcf(){
 		return ReadObject().data.acf;
 	};
-	const invalidInputs = ref({
-		"aprtIdentifier": false,
-	});
-
-	function validateEmpty(inputName, value){
-		invalidInputs.value[inputName] = value == '';
+	const validation = {
+		"notEmpty": function(value){
+			return value != ""
+		},
 	}
+	function validateEmpty(value){
+		return value == '';
+	}
+
+	const validatableInputs = ref([]);
+	function isValid(){
+		return validatableInputs.value.every(input => input.isValid());
+	}
+	defineExpose({
+		isValid,
+	});
 </script>
 <template>
-	<TextInput v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :invalid="invalidInputs['aprtIdentifier']" @change="validateEmpty('aprtIdentifier', getAcf().inner_id)">
+	<TextInput :ref="el => validatableInputs.push(el)" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="validation.notEmpty">
 		<template v-slot:label>Apartment identifier</template>
 	</TextInput>
 </template>

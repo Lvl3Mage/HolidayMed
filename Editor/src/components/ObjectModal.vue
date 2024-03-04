@@ -6,8 +6,7 @@
 	const ObjectManager = useObjectManager();
 	const UIState = useUIState();
 
-
-	import { ref, computed, onMounted } from 'vue'
+	import { ref, computed, onMounted, nextTick } from 'vue'
 	import ApartmentTitleRenderer from "@/components/ModalRenderers/ApartmentTitleRenderer.vue"
 	import ApartmentContentRenderer from "@/components/ModalRenderers/ApartmentContentRenderer.vue"
 	const titleRendererLookup = {
@@ -58,19 +57,28 @@
 		}
 		emit("modal-closed");
 	};
+
+	
+
+	const modalContent = ref(null);
+	function isValid(){
+		if(!modalContent){return false;}
+		if(!modalContent.value){return false;}
+		return modalContent.value.isValid();
+	}
 </script>
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
-		<div class="modal-box w-11/12 max-w-5xl">
+		<div class="modal-box w-11/12 max-w-5xl"  >
 			<div v-if="objectLoaded">
 				<h3 class="font-bold text-lg">
 					<component :is="titleRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component> 
 				</h3>
-				<component :is="contentRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component>   		
+				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component>   		
 			    
 				<div class="modal-action">
 					<button class="btn btn-error" @click="CloseModalAsync()">Close</button>
-					<button class="btn btn-success">Save and close</button>
+					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}">Save and close</button>
 				</div>
 				
 			</div>

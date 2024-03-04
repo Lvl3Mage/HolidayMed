@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import {useAPIAccess} from './APIAccess.js';
+import { useAPIAccess } from './APIAccess.js';
 
 const useUIState = defineStore({
 	id: 'UIState',
@@ -30,7 +30,6 @@ const useUIState = defineStore({
 			}
 			return count;
 		}
-
 	}
 });
 export {useUIState};
