@@ -63,6 +63,10 @@
 	import {useObjectListManager} from '@/stores/ObjectListManager.js'
 	const ObjectListManager = useObjectListManager();
 
+	import {useLoginState} from '@/stores/LoginState.js'
+	const LoginState = useLoginState();
+
+
 	import HeaderNavbar from '@/components/HeaderNavbar.vue'
 	import NavDropdown from '@/components/NavDropdown.vue'
 	import NavElement from '@/components/NavElement.vue'
@@ -77,10 +81,10 @@
 		<div class="drawer-content">
 
 			<ObjectModalManager></ObjectModalManager>
-			<HeaderNavbar ></HeaderNavbar>
+			<HeaderNavbar v-if="LoginState.isAuthenticated()"></HeaderNavbar>
 			<RouterView></RouterView>
 		</div> 
-		<div class="drawer-side">
+		<div v-if="LoginState.isAuthenticated()" class="drawer-side">
 			<label for="navbar-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 			<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
 				<div class="join join-vertical w-full">

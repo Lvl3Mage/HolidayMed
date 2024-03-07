@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./src/**/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
     fontFamily: {
@@ -34,6 +35,9 @@ export default {
       xsm: { max: "480px" },
       // => @media (max-width: 480px) { ... }
     },
+  },
+  daisyui: {
+    themes: true, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
   },
   plugins: [require("daisyui")],
 }

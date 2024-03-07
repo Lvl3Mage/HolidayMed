@@ -1,31 +1,18 @@
-<script >
-	export default{
-		props: [],
-		data() {
-			return {
-				sidebarOpen: false,
-			}
-		},
-		created(){
-		},
-		mounted(){
-		},
-		watch:{
-			// modelValue:function(val){
-			// 	this.selectedDate = val;
-			// },
-		},
-		// emits: ['update:modelValue'],
-		methods: {
-		},
-		computed: {
-		}
+<script setup>
+	import { ref } from 'vue'
+	import { useLoginState } from '@/stores/LoginState.js'
+	import { RouterLink, useRouter} from 'vue-router'
+	const LoginState = useLoginState();
+	const router = useRouter();
+
+	
+	const sidebarOpen = ref(false);
+	function Logout(){
+		LoginState.ClearLoginData();
+		router.push('/login');
 	}
 </script>
 
-<script setup>	
-	import { RouterLink } from 'vue-router'
-</script>
 <template>
 	<div class="navbar bg-base-100 relative">
 		<div class="navbar-start">
@@ -47,7 +34,7 @@
 			<button class="btn btn-ghost btn-circle text-xl">
 				<i class="fa-solid fa-bell"></i>
 			</button>
-			<button class="btn btn-ghost btn-circle text-xl">
+			<button class="btn btn-ghost btn-circle text-xl" @click="Logout()">
 				<i class="fa-solid fa-arrow-right-from-bracket"></i>
 			</button>
 		</div>

@@ -57,7 +57,7 @@ const useObjectManager = defineStore({
 				//of failiure show error in notifs and call close object 
 		},
 		RequestObjectData(objectType, objectID){
-			this.APIAccess.RequestREST("/apartments/" + objectID)
+			this.APIAccess.GetREST("/apartments/" + objectID)
 			.then(function(responce){
 				let obj = this.GetObject(objectType,objectID);
 				if(obj == null){

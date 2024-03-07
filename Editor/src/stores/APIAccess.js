@@ -8,18 +8,18 @@ const useAPIAccess = defineStore({
 	state: () => ({
 		
 	}),
-	getters: {
+	computed: {
 	},
 	actions: {
-		Request(path){
+		Get(path){
 			return axios.get(apiBaseURL + path);
 		},
-		RequestREST(path){
+		GetREST(path){
 			return axios.get(apiBaseURL + "/wp-json/wp/v2" + path)
 		},
 		Post(path, data){
-			return axios.post(apiBaseURL + path,data);
-		}
+			return axios.post(apiBaseURL + path, data);
+		},
 	}
 });
 export {useAPIAccess, axios};

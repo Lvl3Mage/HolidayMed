@@ -9,7 +9,16 @@
 				type: String,
 			},
 			validate: {
+				type: Function,
 			},
+			displayValidation: {
+				type: Boolean,
+				default: true,
+			},
+			type: {
+				type: String,
+				default: "text",
+			}
 		},
 		data() {
 			return {
@@ -29,23 +38,35 @@
 		},
 		methods: {
 			isValid(){
-				return this.validate(this.value);
+				if(this.validate != undefined){
+					return this.validate(this.value);
+				}
+				return true;
+			},
+			classesSet(){
+				this.class != null;
 			}
 		
-		}
+		},
 	}
 
 </script>
 <template>
-	<label class="form-control w-full max-w-xs">
+	<label class="form-control" :class="{'w-full max-w-xs': !$attrs.class}">
 		<div class="label" v-if="$slots.label">
 			<span class="label-text">
 				<slot name="label"></slot>
 			</span>
 		</div>
+
+
+		<label class="input input-bordered flex items-center gap-2" :class="{'input-error' : !isValid() && displayValidation}">
+			<slot name="before"></slot>
+			<input v-model="value" :type="type" :placeholder="placeholder"  class="grow" />
+			<slot name="after"></slot>
+		</label>
 		<!-- @blur="$emit('submit', value)" @keyup.enter="$emit('submit', value)" -->
-		<input  v-model="value" type="text" :placeholder="placeholder" :class="{'input-error' : !validate(value)}" class="input input-bordered w-full max-w-xs" />
-		<div class="label" v-if="!validate(value)">
+		<div class="label" v-if="$slots.invalid && !isValid() && displayValidation">
 			<span class="label-text-alt text-error">
 				<slot name="invalid"></slot>
 			</span>

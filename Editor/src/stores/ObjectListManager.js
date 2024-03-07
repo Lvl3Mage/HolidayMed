@@ -27,7 +27,7 @@ const useObjectListManager = defineStore({
 	actions: {
 		ReloadObjectsOfType(objectType){
 			let requestPath = this.typeRequestLookup[objectType];
-			this.APIAccess.RequestREST(requestPath)
+			this.APIAccess.GetREST(requestPath)
 			.then(function (response) {
 				// handle success
 				this.ProcessObjectData(objectType, response.data);
