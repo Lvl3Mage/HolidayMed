@@ -9,7 +9,7 @@
 	<div class="">
 	</div>
 	<div v-for="(modal,index) in UIState.objectModals" :key="modal.objectId" class="">
-		<ObjectModal :objectType="modal.objectType" :objectId="modal.objectId" @modal-closed="UIState.CloseObjectModal(index)">
+		<ObjectModal :objectType="modal.objectType" :objectId="modal.objectId" :modalIndex="index">
 		</ObjectModal>
 	</div>
 </template>

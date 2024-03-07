@@ -13,23 +13,43 @@ const useUIState = defineStore({
 	},
 	actions: {
 		OpenObjectModal(objectType, objectId){
+			let modalResolve;
+			let modalReject;
+			let modalIndex = this.objectModals.length;
+			let modalPromise = new Promise((resolve, reject) => {
+				modalResolve = function(code='', data=null){
+					if(modalIndex+1 != this.objectModals.length){
+						console.warn("Cannot resolve modal since it's not the last one opened.");
+						return;
+					}
+					this.objectModals.pop();
+					resolve({
+						code: code,
+						data: data
+					});
+				}.bind(this);
+				modalReject = function(code='', data=null){
+					if(modalIndex+1 != this.objectModals.length){
+						console.warn("Cannot reject modal since it's not the last one opened.");
+						return;
+					}
+					this.objectModals.pop();
+					reject({
+						code: code,
+						data: data
+					});
+				}.bind(this);
+			});
+
+
 			this.objectModals.push({
 				objectType: objectType,
 				objectId: objectId,
+				resolve: modalResolve,
+				reject: modalReject,
 			});
+			return modalPromise;
 		},
-		CloseObjectModal(modalIndex){
-			this.objectModals.splice(modalIndex,1);
-		},
-		OpenObjectModalCount(objectType, objectId){
-			let count = 0;
-			for(let modal of this.objectModals){
-				if(modal.objectType == objectType && modal.objectId == objectId){
-					count++;
-				}
-			}
-			return count;
-		}
 	}
 });
 export {useUIState};

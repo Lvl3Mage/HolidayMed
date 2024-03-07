@@ -26,39 +26,42 @@
 			type: String,
 			required: true,
 		},
+		modalIndex: {
+			type: Number,
+			required: true,
+		},
 	});
-	const emit = defineEmits(['modal-closed']);
-	onMounted(()=>{
-		if(!ObjectManager.ObjectOpen(props.objectType,props.objectId)){
-			ObjectManager.OpenObject(props.objectType, props.objectId);
-		}
-	});
-	const selfObject = computed(() => {
-		return ObjectManager.ReadObject(props.objectType, props.objectId);
-	});
-	const objectLoaded = computed(() =>{
-		return ObjectManager.ObjectLoaded(props.objectType, props.objectId);
-	});
+	const modalOpen = ref(true);//TODO figure out the animations for modals up and down and make the close and save async functions run the reject and resolve when the animations are done
+	const objectData = ref(null);
+	//TODO
+	// if modal already open
+		//UIState.objectModals[props.modalIndex].reject("userError", {message:"Modal already open"});
+	// else continue
+	ObjectManager.GetObject(props.objectType, props.objectId).then(result => {
+		objectData.value = result;
+	}).catch(error => {
+		console.error(error);
 
-	const modalOpen = ref(true);
+		//TODO show error poppup when catching error later
+		UIState.objectModals[props.modalIndex].reject("systemError", error);
+	})
 
-	function sleep(ms) {
-	    return new Promise(resolve => setTimeout(resolve, ms));
+	function DiscardModal(){
+		UIState.objectModals[props.modalIndex].resolve("canceled");
 	}
-	async function CloseModalAsync(){
-		modalOpen.value = false;
-		await sleep(100);
-		UnloadModal();
-	};
-	function UnloadModal(){
-		if(UIState.OpenObjectModalCount(props.objectType, props.objectId) == 1){
-			//last open modal for object
-			ObjectManager.CloseObject(props.objectType, props.objectId);
-		}
-		emit("modal-closed");
-	};
+	function SaveModal(){
+		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value).then(result => {
+			modalOpen.value = false;
+			setTimeout(() => {
+				UIState.objectModals[props.modalIndex].resolve("saved", result);
+			}, 200);
+		}).catch(error => {
+			console.error(error);
+			//Show error poppup
+		})
 
-	
+	}
+
 
 	const modalContent = ref(null);
 	function isValid(){
@@ -70,15 +73,15 @@
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
 		<div class="modal-box w-11/12 max-w-5xl"  >
-			<div v-if="objectLoaded">
+			<div v-if="objectData">
 				<h3 class="font-bold text-lg">
-					<component :is="titleRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component> 
+					<component :is="titleRendererLookup[props.objectType]" :objectData="objectData"></component> 
 				</h3>
-				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectType="props.objectType" :objectId="props.objectId"></component>   		
+				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
 			    
 				<div class="modal-action">
-					<button class="btn btn-error" @click="CloseModalAsync()">Close</button>
-					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}">Save and close</button>
+					<button class="btn btn-error" @click="DiscardModal()">Close</button>
+					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}" @click="SaveModal()">Save and close</button>
 				</div>
 				
 			</div>

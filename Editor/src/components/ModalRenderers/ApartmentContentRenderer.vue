@@ -1,42 +1,32 @@
 <script setup>
-	import {useObjectManager} from '@/stores/ObjectManager.js'	
-	const ObjectManager = useObjectManager();
 
 	import {ref, computed} from "vue";
 	import TextInput from "@/components/FormElements/TextInput.vue"
 
 	const props = defineProps({
-		objectType: {
-			type: String,
-			required: true,
-		}, 
-		objectId: {
-			type: String,
+		objectData: {
+			type: Object,
 			required: true,
 		},
 	});
-	function ReadObject(){
-		return ObjectManager.ReadObject(props.objectType, props.objectId);
-	};
-	function getData(){
-		return ReadObject().data;
-	};
 	function getAcf(){
-		return ReadObject().data.acf;
+		return props.objectData.acf;
 	};
+
+
 	const validation = {
 		"notEmpty": function(value){
 			return value != ""
 		},
 	}
-	function validateEmpty(value){
-		return value == '';
-	}
 
 	const validatableInputs = ref([]);
+
+
 	function isValid(){
 		return validatableInputs.value.every(input => input.isValid());
 	}
+
 	defineExpose({
 		isValid,
 	});
