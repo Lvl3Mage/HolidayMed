@@ -2,11 +2,11 @@
 <script setup>
 
 	import {useObjectManager} from '@/stores/ObjectManager.js'	
-	import {useUIState} from '@/stores/UIState.js'
+	import {useUIManagment} from '@/stores/UIManagment.js'
 	const ObjectManager = useObjectManager();
-	const UIState = useUIState();
+	const UIManagment = useUIManagment();
 
-	import { ref, computed, onMounted, nextTick } from 'vue'
+	import { ref, computed} from 'vue'
 	import ApartmentTitleRenderer from "@/components/ModalRenderers/ApartmentTitleRenderer.vue"
 	import ApartmentContentRenderer from "@/components/ModalRenderers/ApartmentContentRenderer.vue"
 	const titleRendererLookup = {
@@ -31,37 +31,63 @@
 			required: true,
 		},
 	});
-	const modalOpen = ref(true);//TODO figure out the animations for modals up and down and make the close and save async functions run the reject and resolve when the animations are done
-	const objectData = ref(null);
-	//TODO
-	// if modal already open
-		//UIState.objectModals[props.modalIndex].reject("userError", {message:"Modal already open"});
-	// else continue
-	ObjectManager.GetObject(props.objectType, props.objectId).then(result => {
-		objectData.value = result;
-	}).catch(error => {
-		console.error(error);
-
-		//TODO show error poppup when catching error later
-		UIState.objectModals[props.modalIndex].reject("systemError", error);
-	})
-
-	function DiscardModal(){
-		UIState.objectModals[props.modalIndex].resolve("canceled");
+	const loadingOverlay = ref(false);
+	function SetLoadingOverlay(value){
+		loadingOverlay.value = value;
 	}
-	function SaveModal(){
-		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value).then(result => {
+
+
+	const modalOpen = ref(true);
+	const objectData = ref(null);
+
+	//TODO Catch modal if type and id already open (call reject)
+	ObjectManager.GetObject(props.objectType, props.objectId)
+	.then(result => {
+		objectData.value = result;
+	})
+	.catch(error => {
+		console.error(error);
+		UIManagment.OpenToast({appearance: "error", text: `Unable to open ${props.objectType}!`, lifetime:2000, closeOnClick: true});
+		UIManagment.objectModals[props.modalIndex].reject("systemError", error);
+	});
+
+	
+	function CloseModal(){
+		return new Promise((resolve, reject) => {
 			modalOpen.value = false;
 			setTimeout(() => {
-				UIState.objectModals[props.modalIndex].resolve("saved", result);
+				resolve();
 			}, 200);
-		}).catch(error => {
-			console.error(error);
-			//Show error poppup
-		})
-
+		});
 	}
 
+	function DiscardModal(){
+		CloseModal().then(() => {
+			UIManagment.objectModals[props.modalIndex].resolve("canceled");
+		});
+	}
+	function SaveModal(){
+		SetLoadingOverlay(true);
+		const toast = UIManagment.OpenToast({appearance:"loading",text: "Saving changes"});
+
+		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value)
+			.then(result => {
+				UIManagment.OpenToast({appearance: "success", text: "Changes saved!", lifetime:2000, closeOnClick: true});
+				CloseModal().then(() => {
+					UIManagment.objectModals[props.modalIndex].resolve("data-saved", result);
+				});
+			})
+			.catch(error => {
+				UIManagment.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
+				console.error(error);
+				//Show error poppup
+			})
+			.finally(() => {
+				SetLoadingOverlay(false);
+				toast.CloseToast();
+			});
+
+	}
 
 	const modalContent = ref(null);
 	function isValid(){
@@ -73,6 +99,9 @@
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
 		<div class="modal-box w-11/12 max-w-5xl"  >
+			<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': loadingOverlay}">
+				<span class="loading loading-dots loading-lg"></span>	
+			</div>
 			<div v-if="objectData">
 				<h3 class="font-bold text-lg">
 					<component :is="titleRendererLookup[props.objectType]" :objectData="objectData"></component> 

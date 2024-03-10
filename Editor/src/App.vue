@@ -60,19 +60,22 @@
 
 <script setup>
 
-	import {useObjectListManager} from '@/stores/ObjectListManager.js'
-	const ObjectListManager = useObjectListManager();
-
 	import {useLoginState} from '@/stores/LoginState.js'
 	const LoginState = useLoginState();
 
+	import {useObjectManager} from '@/stores/ObjectManager.js'
+	const ObjectManager = useObjectManager();
+	ObjectManager.UpdateSchemas();
+	
+	import {useObjectCache} from '@/stores/ObjectCache.js'
+	const ObjectCache = useObjectCache();
+	ObjectCache.PopulateCache();
 
 	import HeaderNavbar from '@/components/HeaderNavbar.vue'
 	import NavDropdown from '@/components/NavDropdown.vue'
 	import NavElement from '@/components/NavElement.vue'
-	import ObjectModalManager from '@/components/ObjectModalManager.vue'
+	import GenericUIRenderer from '@/components/GenericUIRenderer.vue'
 	import { RouterLink, RouterView } from 'vue-router'
-	ObjectListManager.ReloadObjectsOfType("apartment");
 </script>
 
 <template>
@@ -80,7 +83,7 @@
 		<input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
 		<div class="drawer-content">
 
-			<ObjectModalManager></ObjectModalManager>
+			<GenericUIRenderer></GenericUIRenderer>
 			<HeaderNavbar v-if="LoginState.isAuthenticated()"></HeaderNavbar>
 			<RouterView></RouterView>
 		</div> 
@@ -93,11 +96,7 @@
 						<NavElement v-else :selfLink="navLink.address">{{navLink.text}}</NavElement>
 					</div>
 				</div>
-				
 			</ul>
 		</div>
 	</div>
 </template>
-
-<style scoped>
-</style>

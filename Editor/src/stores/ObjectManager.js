@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 import {useAPIAccess} from './APIAccess.js';
+import {useObjectCache} from './ObjectCache.js';
 
 import defaults from 'json-schema-defaults';
 
@@ -13,100 +13,86 @@ const typeRequestLookup = {
 	"apartment": "/apartments",
 	"group": "/groups",
 	"reservation": "/reservations",
-	"house": "/houses"
+	"building": "/buildings",
+	"media": "/media"
 };
 let exampleObjectToken = "OBJECT_TOKEN";
 const useObjectManager = defineStore({
 	id: 'ObjectManager',
 	state: () => {
-		let types = ["apartment", "group", "reservation", "house"];//MOVE TO GENERAL CONFIG
 		let APIAccess = useAPIAccess();
 		let schemas = {};
-		// let defaultValues = {};
+		let types = Object.keys(typeRequestLookup);
 		for (let type of types) {
-			APIAccess.OptionsREST(typeRequestLookup[type]).then((responce) => {
-
-				let schema = responce.data.schema;
-				schemas[type] = schema;
-				// defaultValues[type] = ;
-				// console.log(defaults(schema));
-				// console.log(schema);
-			}).catch((error) => {
-				console.log(error);
-			});
+			let cachedSchema = localStorage.getItem(type + "_schema");
+			if(cachedSchema != undefined){
+				schemas[type] = JSON.parse(cachedSchema);
+			}
 		}
-
 		return {
 			APIAccess: APIAccess,
-			types: types,//MOVE TO GENERAL CONFIG
+			ObjectCache: useObjectCache(),
 			schemas: schemas,
-			// defaultValues: defaultValues,
 		};
 	},
 	getters: {
+		types(){
+			return Object.keys(typeRequestLookup);
+		}
 	},
 	actions: {
 		GetObject(objectType, objectID){
 			return new Promise((resolve, reject) => {
 				this.APIAccess.GetREST(typeRequestLookup[objectType] + "/" + objectID)
 				.then(function(responce){
+					SetDefaultAsInvalid(this.schemas[objectType], responce.data);
 					resolve(responce.data);
-				})
+				}.bind(this))
 				.catch(function(error){
 					console.log(error);
 					reject(error.responce);
-				});
+				}.bind(this));
 			});
 		},
-		ConvertEmptyToNull(object){
-			for (let key in object) {
-				if (object[key] === "") {
-					object[key] = null;
-				}
-				if(typeof object[key] === 'object' && object[key] !== null){
-					this.ConvertEmptyToNull(object[key]);
-				}
-				if(key == "rooms"){
-					object[key] = [];
-				}
-			}
-			return object;
-		},
 		WriteObject(objectType, objectID, objectData){
-			DefaultInvalid(this.schemas[objectType], objectData);
+			SetDefaultAsInvalid(this.schemas[objectType], objectData);
 			return new Promise((resolve, reject) => {
 				this.APIAccess.PostREST(typeRequestLookup[objectType] + "/" + objectID, objectData)
 				.then(function(responce){
+					this.ObjectCache.ReloadSegment(objectType);
 					resolve(responce.data);
-				})
+				}.bind(this))
 				.catch(function(error){
 					console.log(error);
 					reject(error.responce);
-				});
+				}.bind(this));
 			});
 		},
 		CreateObject(objectType, objectData){
 			return new Promise((resolve, reject) => {
 				this.APIAccess.PostREST(typeRequestLookup[objectType], objectData)
 				.then(function(responce){
+					this.ObjectCache.ReloadSegment(objectType);
+					SetDefaultAsInvalid(this.schemas[objectType], responce.data);
 					resolve(responce.data);
-				})
+				}.bind(this))
 				.catch(function(error){
 					console.log(error);
 					reject(error.responce);
-				});
+				}.bind(this));
 			});
 		},
 		DeleteObject(objectType, objectID){
 			return new Promise((resolve, reject) => {
 				this.APIAccess.DeleteREST(typeRequestLookup[objectType] + "/" + objectID)
 				.then(function(responce){
+					this.ObjectCache.ReloadSegment(objectType);
 					resolve(responce.data);
-				})
+				}.bind(this))
 				.catch(function(error){
 					console.log(error);
 					reject(error.responce);
-				});
+				}.bind(this));
 			});
 		},
 		GetObjects(objectType, filters = ''){
@@ -114,31 +100,73 @@ const useObjectManager = defineStore({
 				this.APIAccess.GetREST(typeRequestLookup[objectType] + '?' + filters)
 				.then(function(responce){
 					resolve(responce.data);
-				})
+				}.bind(this))
 				.catch(function(error){
 					console.log(error);
 					reject(error.responce);
-				});
+				}.bind(this));
 			});
 		},
+		UploadFile(objectType, file){
+			return new Promise((resolve, reject) => {
+				this.APIAccess.PostREST(typeRequestLookup[objectType], file, {
+					headers: {
+						'Content-Disposition':`attachment; filename=${file.name}`,
+						'content-type': file.type, 
+					},
+				})
+				.then(function(responce){
+					this.ObjectCache.ReloadSegment(objectType);
+					resolve(responce.data);
+				}.bind(this))
+				.catch(function(error){
+					console.log(error);
+					reject(error.responce);
+				}.bind(this));
+			});
+		},
+		UpdateSchemas(){
+
+			let types = Object.keys(typeRequestLookup);
+			for (let type of types) {
+				if(this.schemas[type] == undefined){
+					this.UpdateSchema(type);//immediate request
+				}
+				else{
+					setTimeout(this.UpdateSchema.bind(this), 10*1000, type);//delayed request since schema is already cached
+				}
+			}
+		},
+		UpdateSchema(objectType){
+			return new Promise((resolve, reject) => {
+				this.APIAccess.OptionsREST(typeRequestLookup[objectType])
+				.then(function(responce){
+					let schema = responce.data.schema;
+					this.schemas[objectType] = schema;
+					localStorage.setItem(objectType + "_schema", JSON.stringify(schema));
+					resolve(schema);
+				}.bind(this))
+				.catch(function(error){
+					console.log(error);
+					reject(error.responce);
+				}.bind(this));
+			});
+		}
 	}
 });
 export {useObjectManager};
 
-function FillMissing(schema, data){
-
-}
-function DefaultInvalid(schema, data){
+function SetDefaultAsInvalid(schema, data){
 	PatchSchemaNullTypes(schema);
-	console.log("SCHEMA: ", schema);
+	console.log("PATCHED SCHEMA: ", schema);
 	const errors = tv4.validateMultiple(data, schema).errors;
 	for (let error of errors) {
-		console.log(error);
+		console.log("INVALID: ", error);
 		let path = error.dataPath.slice(1).split('/');
 		console.log("PATH: ", path);
 		let types = error.params.expected.split('/');
 		console.log("TYPES: ", types);
-		console.log("Default: ", GetDefault(types[0]));
+		console.log("DEFAULT: ", GetDefault(types[0]));
 		AssignAtPath(data, path, GetDefault(types[0]));
 	}
 }
