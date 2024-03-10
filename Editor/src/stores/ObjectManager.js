@@ -25,8 +25,11 @@ const useObjectManager = defineStore({
 		let types = Object.keys(typeRequestLookup);
 		for (let type of types) {
 			let cachedSchema = localStorage.getItem(type + "_schema");
-			if(cachedSchema != undefined){
-				schemas[type] = JSON.parse(cachedSchema);
+			if(cachedSchema){
+				if(cachedSchema != "undefined"){
+					schemas[type] = JSON.parse(cachedSchema);
+
+				}
 			}
 		}
 		return {
