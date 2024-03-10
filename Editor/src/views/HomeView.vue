@@ -41,7 +41,7 @@
 			UIManagment.OpenToast({appearance: 'success', text: 'Image removed!', closeOnClick:true, lifetime:2000});
 		}).catch(error => {
 			console.error(error);
-			UIManagment.OpenToast({appearance: 'error', text: `Image couldn't be removed!`, closeOnClick:true, lifetime:2000});
+			UIManagment.OpenToast({appearance: 'error', text: `Image could not be removed!`, closeOnClick:true, lifetime:2000});
 		})
 		.finally(() => {
 			toast.CloseToast();
@@ -56,12 +56,14 @@
 			{
 				displayName: 'ID',
 				render: (object) => object.id,
-				renderAsHtml: true,
+				getSortValue: (object) => object.id,
 
 			},
 			{
 				displayName: 'Title',
 				render: (object) => object.title.rendered,
+				getSortValue: (object) => object.title.rendered,
+				getSearchValue: (object) => object.title.rendered,
 			},
 			{
 				displayName: 'Group',
@@ -69,6 +71,7 @@
 					ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : 'Group not found'
 				}</span>`,
 				onClick: (object) => ViewObj('group', object.acf.group),
+				getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
 			},
 		]"
 		:actions="[
