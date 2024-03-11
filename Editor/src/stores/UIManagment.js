@@ -17,7 +17,7 @@ const useUIManagment = defineStore({
 		}
 	},
 	actions: {
-		OpenObjectModal(objectType, objectId){ // TODO rename to OpenEditObjectModal and add a new OpenCreateObjectModal method
+		CreateModalPromise(){
 			let modalResolve;
 			let modalReject;
 			let modalIndex = this.objectModals.length;
@@ -45,16 +45,37 @@ const useUIManagment = defineStore({
 					});
 				}.bind(this);
 			});
-
-
+			return {modalPromise, modalResolve, modalReject};
+		},
+		OpenEditObjectModal(objectType, objectId){
+			let promiseData = this.CreateModalPromise();
 			this.objectModals.push({
-				objectType: objectType,
-				objectId: objectId,
-				resolve: modalResolve,
-				reject: modalReject,
+				modalType: "Edit",
+				modalProps: {
+					objectType: objectType,
+					objectId: objectId,
+				},
+				resolve: promiseData.modalResolve,
+				reject: promiseData.modalReject,
 				uniqueId: this.uniqueElementIndex,
 			});
-			return modalPromise;
+			return promiseData.modalPromise;
+		},
+		OpenCreateObjectModal(objectType){
+			let promiseData = this.CreateModalPromise();
+			this.objectModals.push({
+				modalType: "Create",
+				modalProps: {
+					objectType: objectType,
+				},
+				resolve: promiseData.modalResolve,
+				reject: promiseData.modalReject,
+				uniqueId: this.uniqueElementIndex,
+			});
+			return promiseData.modalPromise;
+		},
+		GetModalByUniqueId(uniqueId){
+			return this.objectModals.find((modal) => modal.uniqueId == uniqueId);
 		},
 		OpenToast(attrs = {}){
 			const RemoveToastWithUniqueID = function (uniqueId){
@@ -85,6 +106,7 @@ const useUIManagment = defineStore({
 			this.toasts.push(toast);
 			return toast;
 		},
+
 		
 	}
 });

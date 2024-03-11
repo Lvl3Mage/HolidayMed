@@ -84,7 +84,7 @@
 
 	function PaginationIndexVisible(index, checkNeightbours = true){
 		if(props.rowsPerPage){
-			if(index < 2 || index >= PageAmount()-2 || Math.abs(index - pageIndex.value) < 2){
+			if(index < 2 || index >= GetPageCount()-2 || Math.abs(index - pageIndex.value) < 2){
 				return true;
 			}
 			if(!checkNeightbours){
@@ -94,7 +94,12 @@
 		}
 		return true;
 	}
-
+	function GetPageCount(){
+		if(!props.rowsPerPage || processedRows.value.length == 0){
+			return 1;
+		}
+		return Math.ceil(processedRows.value.length/props.rowsPerPage);
+	}
 
 	const sortFieldIndex = ref(-1);
 	const invertSort = ref(false);
@@ -141,12 +146,6 @@
 			return processedRows.value.slice(pageIndex.value*props.rowsPerPage, (pageIndex.value+1)*props.rowsPerPage);
 		}
 		return processedRows.value;
-	});
-	const pageCount = computed(() => {
-		if(!props.rowsPerPage || processedRows.value.length == 0){
-			return 1;
-		}
-		return Math.ceil(processedRows.value.length/props.rowsPerPage);
 	});
 	const pageOffsetIndex = computed(() => {
 		if(props.rowsPerPage){
@@ -216,9 +215,9 @@
 	</table>
 	<div v-if="currentPageRows.length == 0" class="text-center mt-2"><div>No results</div></div>
 
-	<div class="flex justify-center pt-4" v-if="props.rowsPerPage && pageCount > 1">
+	<div class="flex justify-center pt-4" v-if="props.rowsPerPage && GetPageCount() > 1">
 		<div class="join">
-			<template v-for="i in pageCount" :key="i">
+			<template v-for="i in GetPageCount()" :key="i">
 				<button class="join-item btn-xs btn" @click="pageIndex = i-1" :class="{'btn-active': i-1 == pageIndex}" v-if="PaginationIndexVisible(i-1)">{{i}}</button>
 				<button class="join-item btn-xs btn btn-disabled"  v-else-if="PaginationIndexVisible(i-2)">...</button>
 

@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import {useObjectManager} from './ObjectManager.js';
+import {useObjectManager} from '@/stores/ObjectManager.js';
+import {AssignAtPath, ReadAtPath, CreateAtPath} from '@/Utils.js';
 
 const typeCacheFields = {
-	"apartment": ["id", "title", "acf.group"],
+	"apartment": ["id", "title", "acf.group", "acf.inner_id"],
 	"group": ["id", "title", "acf.building"],
 	"reservation": ["id", "title"],
 	"building": ["id", "title"],
@@ -16,6 +17,7 @@ const useObjectCache = defineStore({
 		return {
 			ObjectManager: ObjectManager,
 			cacheSegments: {},
+			listenersSetup: false,
 		};
 	},
 	getters: {
@@ -27,11 +29,19 @@ const useObjectCache = defineStore({
 			return filter;
 		},
 		PopulateCache(){
+			if(!this.listenersSetup){
+				this.listenersSetup = true;
+				this.ObjectManager.on(this.ObjectManager.events.succesfulWrite, this.UpdateSegmentWithData.bind(this));
+				this.ObjectManager.on(this.ObjectManager.events.succesfulCreate, this.ReloadSegment.bind(this));
+			}
+
+
 			return new Promise((resolve, reject) => {
 				let promises = [];
 				for (let type in typeCacheFields) {
 					this.cacheSegments[type] = {
 						mappedData: {},
+						hash: "",
 						loading: false,
 					};
 					promises.push(this.ReloadSegment(type));
@@ -44,25 +54,88 @@ const useObjectCache = defineStore({
 			});
 		},
 		ReloadSegment(type){
-			this.cacheSegments[type].loading = false;
+			this.cacheSegments[type].loading = true;
+			// return new Promise(async (resolve, reject) => {
+			// 	let npage = 1;
+			// 	let endRequest = false;
+			// 	let currentTask;
+			// 	while(true){
+			// 		currentTask = this.RequestPage(type, npage, 30).then((result) => {
+			// 			console.log(result)
+			// 			if(result.length == 0){
+			// 				endRequest = true;
+			// 			}
+			// 			this.AddEntriesToSegment(type, result);
+			// 			npage++;
+			// 		}).catch((error) => {
+			// 			endRequest = true;
+			// 			console.error(e);
+			// 			reject(e);
+			// 			return;
+			// 		});
+			// 		await currentTask;
+			// 		if(endRequest){
+			// 			break;
+			// 		}
+			// 	}
+			// 	this.cacheSegments[type].loading = false;
+			// 	resolve(this.cacheSegments[type].mappedData);
+			// });
+		},
+		AddEntriesToSegment(type, entires){
+			for (let entry of entires) {
+				this.cacheSegments[type].mappedData[entry.id] = entry;
+			}
+		},
+		RequestPage(type, page, perPage){
 			return new Promise((resolve, reject) => {
 				if(! type in typeCacheFields){console.error("Invalid type: " + type); reject("Invalid type: " + type); return;}
-				this.ObjectManager.GetObjects(type, this.GetTypeFieldFilter(type)).then((result) => {
-					let mappedData = Object.assign({}, ...result.map((element) => ({[element.id]: element})));
-
-					this.cacheSegments[type].mappedData = mappedData;
-					resolve(mappedData);
+				this.ObjectManager.GetObjects(type, this.GetTypeFieldFilter(type) + `&page=${page}&per_page=${perPage}`).then((result) => {
+					resolve(result);
 				}).catch((error) => {
 					reject(error);
-				})
-				.finally(() => {
-					this.cacheSegments[type].loading = false;
 				});
 			});
 		},
-		UpdateSegmentData(type, object){
-			//TODO updates the cache segment with the new object in order to avoid a reload
+		UpdateSegmentWithData(type, objectId, data){
+			// console.log(data)
+			let hashBefore = this.cacheSegments[type].hash;
+			this.cacheSegments[type].hash = data.fields_hash.after;
+			if(hashBefore != data.fields_hash.before){
+				console.log(`Hash mismatch, reloading segment, ${type}`);
+				this.ReloadSegment(type);
+				return;
+			}
+			let cachedFields = typeCacheFields[type];
+			for (let field of cachedFields) {
+				let path = field.split(".");
+				let value = ReadAtPath(data, path);
+				if(value){
+					AssignAtPath(this.cacheSegments[type].mappedData[objectId],path, value);
+				}
+			}
+			console.log(`Hash intact, Updated segment ${type}`);
 		},
+		CreateSegmentEntryWithData(type, data){
+			let cachedFields = typeCacheFields[type];
+			let id = data.id;
+			let cachedObject = {};
+			for (let field of cachedFields) {
+				let path = field.split(".");
+				let value = ReadAtPath(data, path);
+				if(value){
+					CreateAtPath(cachedObject, path);
+					AssignAtPath(cachedObject, path, value);
+				}
+			}
+			this.cacheSegments[type].mappedData[id] = cachedObject;
+
+			console.log(`Updated segment, ${type}`);
+		},
+		DeleteSegmentEntry(type, id, data){
+			delete this.cacheSegments[type].mappedData[id];
+		},
+
 		SegmentLoading(type){
 			return this.cacheSegments[type].loading;
 		},

@@ -3,6 +3,7 @@ import {useAPIAccess} from './APIAccess.js';
 import {useObjectCache} from './ObjectCache.js';
 
 import defaults from 'json-schema-defaults';
+import {AssignAtPath} from '@/Utils.js';
 
 import tv4 from 'tv4';
 let exampleObjectData = {
@@ -36,6 +37,17 @@ const useObjectManager = defineStore({
 			APIAccess: APIAccess,
 			ObjectCache: useObjectCache(),
 			schemas: schemas,
+			events: {
+				succesfulWrite: "succesfulWrite",
+				failedWrite: "failedWrite",
+				succesfulRead: "succesfulRead",
+				failedRead: "failedRead",
+				succesfulCreate: "succesfulCreate",
+				failedCreate: "failedCreate",
+				succesfulDelete: "succesfulDelete",
+				failedDelete: "failedDelete",
+			},
+			eventListeners: {},
 		};
 	},
 	getters: {
@@ -44,16 +56,39 @@ const useObjectManager = defineStore({
 		}
 	},
 	actions: {
+		CallEvent(eventType, args){
+			if(this.events[eventType] == undefined){
+				console.error("Invalid event: " + eventType);
+				return;
+			}
+			if(this.eventListeners[eventType]){
+				for (let listener of this.eventListeners[eventType]) {
+					listener(...args, eventType);
+				}
+			}
+		},
+		on(eventType, callback){
+			if(this.events[eventType] == undefined){
+				console.error("Invalid event: " + action);
+				return;
+			}
+			if(! this.eventListeners[eventType]){
+				this.eventListeners[eventType] = [];
+			}
+			this.eventListeners[eventType].push(callback);
+		},
 		GetObject(objectType, objectID){
 			return new Promise((resolve, reject) => {
 				this.APIAccess.GetREST(typeRequestLookup[objectType] + "/" + objectID)
 				.then(function(responce){
 					SetDefaultAsInvalid(this.schemas[objectType], responce.data);
+					this.CallEvent(this.events.succesfulRead, [objectType, objectID, responce.data]);
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+					this.CallEvent(this.events.failedRead, [objectType, objectID, error.response]);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -62,12 +97,14 @@ const useObjectManager = defineStore({
 			return new Promise((resolve, reject) => {
 				this.APIAccess.PostREST(typeRequestLookup[objectType] + "/" + objectID, objectData)
 				.then(function(responce){
-					this.ObjectCache.ReloadSegment(objectType);
+					this.CallEvent(this.events.succesfulWrite, [objectType, objectID, responce.data]);
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+
+					this.CallEvent(this.events.failedWrite, [objectType, objectID, error.response]);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -75,13 +112,16 @@ const useObjectManager = defineStore({
 			return new Promise((resolve, reject) => {
 				this.APIAccess.PostREST(typeRequestLookup[objectType], objectData)
 				.then(function(responce){
-					this.ObjectCache.ReloadSegment(objectType);
+
 					SetDefaultAsInvalid(this.schemas[objectType], responce.data);
+					this.CallEvent(this.events.succesfulCreate, [objectType, responce.data]);
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+
+					this.CallEvent(this.events.failedCreate, [objectType, error.response]);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -89,12 +129,13 @@ const useObjectManager = defineStore({
 			return new Promise((resolve, reject) => {
 				this.APIAccess.DeleteREST(typeRequestLookup[objectType] + "/" + objectID)
 				.then(function(responce){
-					this.ObjectCache.ReloadSegment(objectType);
+					this.CallEvent(this.events.succesfulDelete, [objectType, objectID]);
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+					this.CallEvent(this.events.failedDelete, [objectType, objectID, error.response]);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -105,8 +146,8 @@ const useObjectManager = defineStore({
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -119,12 +160,14 @@ const useObjectManager = defineStore({
 					},
 				})
 				.then(function(responce){
-					this.ObjectCache.ReloadSegment(objectType);
+
+					this.CallEvent(this.events.succesfulCreate, [objectType, responce.data]);
 					resolve(responce.data);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+					this.CallEvent(this.events.failedCreate, [objectType, error.response]);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		},
@@ -150,8 +193,8 @@ const useObjectManager = defineStore({
 					resolve(schema);
 				}.bind(this))
 				.catch(function(error){
-					console.log(error);
-					reject(error.responce);
+					console.warn(error);
+					reject(error.response);
 				}.bind(this));
 			});
 		}
@@ -172,14 +215,6 @@ function SetDefaultAsInvalid(schema, data){
 		console.log("DEFAULT: ", GetDefault(types[0]));
 		AssignAtPath(data, path, GetDefault(types[0]));
 	}
-}
-function AssignAtPath(data, path, value){
-	let current = data;
-	for(let i = 0; i < path.length-1; i++){
-		current = current[path[i]];
-	}
-	console.log(current);
-	return current[path[path.length-1]] = value;
 }
 function GetDefault(type){
 	const typeLookup = {

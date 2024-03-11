@@ -7,26 +7,24 @@
 	const UIManagment = useUIManagment();
 
 	import { ref, computed} from 'vue'
-	import ApartmentTitleRenderer from "@/components/ModalRenderers/ApartmentTitleRenderer.vue"
-	import ApartmentContentRenderer from "@/components/ModalRenderers/ApartmentContentRenderer.vue"
-	const titleRendererLookup = {
-		"apartment" : ApartmentTitleRenderer,
+
+	import dataDefaults from "@/DataDefaults.js";
+
+	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
+	const titleLookup = {
+		"apartment" : data => data.title,
 	};
 
 	const contentRendererLookup = {
-		"apartment" : ApartmentContentRenderer,
+		"apartment" : ApartmentContentEditor,
 	};
 
 	const props = defineProps({
 		objectType: {
 			type: String,
 			required: true,
-		}, 
-		objectId: {
-			type: String,
-			required: true,
 		},
-		modalIndex: {
+		uniqueId: {
 			type: Number,
 			required: true,
 		},
@@ -38,19 +36,9 @@
 
 
 	const modalOpen = ref(true);
-	const objectData = ref(null);
+	const objectData = ref(dataDefaults[props.objectType]);
 
 	//TODO Catch modal if type and id already open (call reject)
-	ObjectManager.GetObject(props.objectType, props.objectId)
-	.then(result => {
-		objectData.value = result;
-	})
-	.catch(error => {
-		console.error(error);
-		UIManagment.OpenToast({appearance: "error", text: `Unable to open ${props.objectType}!`, lifetime:2000, closeOnClick: true});
-		UIManagment.objectModals[props.modalIndex].reject("systemError", error);
-	});
-
 	
 	function CloseModal(){
 		return new Promise((resolve, reject) => {
@@ -63,24 +51,23 @@
 
 	function DiscardModal(){
 		CloseModal().then(() => {
-			UIManagment.objectModals[props.modalIndex].resolve("canceled");
+			UIManagment.GetModalByUniqueId(props.uniqueId).resolve("canceled");
 		});
 	}
 	function SaveModal(){
 		SetLoadingOverlay(true);
-		const toast = UIManagment.OpenToast({appearance:"loading",text: "Saving changes"});
+		const toast = UIManagment.OpenToast({appearance:"loading",text: `Creating ${props.objectType}`});
 
-		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value)
+		ObjectManager.CreateObject(props.objectType, objectData.value)
 			.then(result => {
-				UIManagment.OpenToast({appearance: "success", text: "Changes saved!", lifetime:2000, closeOnClick: true});
+				UIManagment.OpenToast({appearance: "success", text: "Changes succesfully!", lifetime:2000, closeOnClick: true});
 				CloseModal().then(() => {
-					UIManagment.objectModals[props.modalIndex].resolve("data-saved", result);
+					UIManagment.GetModalByUniqueId(props.uniqueId).resolve("data-saved", result);
 				});
 			})
 			.catch(error => {
 				UIManagment.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
 				console.error(error);
-				//Show error poppup
 			})
 			.finally(() => {
 				SetLoadingOverlay(false);
@@ -104,13 +91,13 @@
 			</div>
 			<div v-if="objectData">
 				<h3 class="font-bold text-lg">
-					<component :is="titleRendererLookup[props.objectType]" :objectData="objectData"></component> 
+					{{titleLookup[props.objectType](objectData)}} 
 				</h3>
 				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
 			    
 				<div class="modal-action">
 					<button class="btn btn-error" @click="DiscardModal()">Close</button>
-					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}" @click="SaveModal()">Save and close</button>
+					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}" @click="SaveModal()">Create and close</button>
 				</div>
 				
 			</div>

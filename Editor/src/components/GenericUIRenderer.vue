@@ -6,8 +6,12 @@
 	import Toast from "@/components/Toasts/Toast.vue"
 
 
-	import ObjectModal from "@/components/ObjectModal.vue"
-
+	import EditObjectModal from "@/components/EditObjectModal.vue";
+	import CreateObjectModal from "@/components/CreateObjectModal.vue";
+	const modalLookup = {
+		"Edit":EditObjectModal,
+		"Create":CreateObjectModal,
+	}
 
 </script>
 <template>
@@ -18,8 +22,8 @@
 		</div>
 	</div>
 	<!-- Object Modals Renderer -->
-	<div v-for="(modal,index) in UIManagment.objectModals" :key="modal.uniqueElementIndex" class="">
-		<ObjectModal :objectType="modal.objectType" :objectId="modal.objectId" :modalIndex="index">
-		</ObjectModal>
+	<div v-for="modal in UIManagment.objectModals" :key="modal.uniqueElementIndex" class="">
+		<component :is="modalLookup[modal.modalType]" v-bind="modal.modalProps" :uniqueId="modal.uniqueId">
+		</component>
 	</div>
 </template>

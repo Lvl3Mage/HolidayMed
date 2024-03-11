@@ -12,7 +12,14 @@
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
 	
 	function ViewObj(objectType, objectId){
-		UIManagment.OpenObjectModal(objectType, objectId).then((result) => {
+		UIManagment.OpenEditObjectModal(objectType, objectId).then((result) => {
+			console.log(result.code, result.data);
+		}).catch((error) => {
+			console.error(error.code, error.data);
+		});
+	}
+	function CreateObj(objectType){
+		UIManagment.OpenCreateObjectModal(objectType).then((result) => {
 			console.log(result.code, result.data);
 		}).catch((error) => {
 			console.error(error.code, error.data);
@@ -66,6 +73,10 @@
 				getSearchValue: (object) => object.title.rendered,
 			},
 			{
+				displayName: 'Inner ID',
+				render: (object) => object.acf.inner_id,
+			},
+			{
 				displayName: 'Group',
 				render: (object) => `<span class='${ObjectCache.GetObject('group', object.acf.group) ? 'link' : ''}'>${
 					ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : 'Group not found'
@@ -89,10 +100,10 @@
 			</div>
 			<input type="file" class="file-input file-input-bordered w-full max-w-xs" accept="image/png, image/jpeg, image/jpg" @change="LoadFile"/>
 		</label>
-
+		<div class="btn" @click="CreateObj('apartment')">Create</div>
 		<div class="flex flex-wrap gap-5 justify-around">
 			<div class="card w-96 bg-base-100 shadow-xl" v-for="image in ObjectCache.GetSegmentData('media')" :key="image.id">
-				<figure><img :src="image.link" alt="" class="w-full aspect-video object-cover object-center"/></figure>
+				<!-- <figure><img :src="image.link" alt="" class="w-full aspect-video object-cover object-center"/></figure> -->
 				<div class="card-body">
 					<h2 class="card-title mt-auto justify-center">{{image.title.rendered}}</h2>
 					<div class="text-error">
