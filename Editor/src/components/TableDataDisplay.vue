@@ -1,6 +1,7 @@
 <script setup>
 	import { ref, computed } from 'vue';
 	import TextInput from '@/components/FormElements/TextInput.vue';
+	import Fuse from 'fuse.js'
 
 	const props = defineProps({
 		rows: {
@@ -38,50 +39,19 @@
 			getSearchValue: (object) => object.id, // optional
 		}
 	]*/
-	const searchValue = ref('');
-	const searchFieldIndex = ref(-1);
-	function GetSearchRows(){
-		if(searchFieldIndex.value == -1 || searchValue.value == ''){
-			return props.rows;
-		}
-		return props.rows.filter(row => {
-			const field = props.fields[searchFieldIndex.value];
-			const value = field.getSearchValue(row);
-
-			return value.toString().toLowerCase().includes(searchValue.value.toLowerCase());
-		});
-	}
-	function ToggleSearchField(fieldIndex){
-		if(searchFieldIndex.value == fieldIndex){
-			searchFieldIndex.value = -1;
-		}
-		else{
-			searchFieldIndex.value = fieldIndex;
-		}
-		searchValue.value = '';
-	}
+	
+	
 
 
-	const sortFieldIndex = ref(-1);
-	const invertSort = ref(false);
-	function SwitchSortField(fieldIndex){
-		sortFieldIndex.value = fieldIndex;
-		invertSort.value = false;
-	}
-	function DisableSort(){
-		sortFieldIndex.value = -1;
-		invertSort.value = false;
-	}
+
+
+	
 	const pageIndex = ref(0);
-	function SortRows(rows){
-		if(sortFieldIndex.value == -1){
-			return rows;
-		}
-		if(props.fields[sortFieldIndex.value].getSortValue == undefined){
+	function SortRows(rows, field){
+		if(field.getSortValue == undefined){
 			return rows;
 		}
 		return rows.slice().sort((a, b) => {
-			const field = props.fields[sortFieldIndex.value];
 			const aValue = field.getSortValue(a);
 			const bValue = field.getSortValue(b);
 			if(aValue < bValue){
@@ -93,22 +63,25 @@
 			return 0;
 		});
 	}
-	function SearchRows(rows){
-		if(searchFieldIndex.value == -1 || searchValue.value == ''){
+	function SearchRows(rows, field, query){
+		if(!field.getSearchValue || query == ""){
 			return props.rows;
 		}
-		return props.rows.filter(row => {
-			const field = props.fields[searchFieldIndex.value];
-			const value = field.getSearchValue(row);
 
-			return value.toString().toLowerCase().includes(searchValue.value.toLowerCase());
-		});
+		const options = {
+			shouldSort: true,
+		};
+		const fuse = new Fuse(props.rows.map(row => field.getSearchValue(row)), options)
+		const result = fuse.search(query);
+		return result.map(resRow => props.rows[resRow.refIndex]);
 	}
+
 	function HandleFieldClick(row, field){
 		if(field.onClick){
 			field.onClick(row);
 		}
 	}
+
 	function PaginationIndexVisible(index, checkNeightbours = true){
 		if(props.rowsPerPage){
 			if(index < 2 || index >= PageAmount()-2 || Math.abs(index - pageIndex.value) < 2){
@@ -121,16 +94,46 @@
 		}
 		return true;
 	}
-	function GetPageOffset(){
-		if(props.rowsPerPage){
-			return pageIndex.value*props.rowsPerPage;
-		}
-		return 0;
+
+
+	const sortFieldIndex = ref(-1);
+	const invertSort = ref(false);
+	function SwitchSortField(fieldIndex){
+		sortFieldIndex.value = fieldIndex;
+		invertSort.value = false;
+		DisableSearch();
 	}
+	function DisableSort(){
+		sortFieldIndex.value = -1;
+		invertSort.value = false;
+	}
+	const searchValue = ref('');
+	const searchFieldIndex = ref(-1);
+	function ToggleSearchField(fieldIndex){
+		if(searchFieldIndex.value == fieldIndex){
+			searchFieldIndex.value = -1;
+
+		}
+		else{
+			searchFieldIndex.value = fieldIndex;
+			DisableSort();
+			
+		}
+		searchValue.value = '';
+	}
+	function DisableSearch(){
+		searchFieldIndex.value = -1;
+		searchValue.value = '';
+	}
+
 	const processedRows = computed(() => {
 		let rows = props.rows;
-		rows = SearchRows(rows);
-		rows = SortRows(rows);
+		if(searchFieldIndex.value != -1){
+			rows = SearchRows(rows, props.fields[searchFieldIndex.value], searchValue.value);
+		}
+		else if(sortFieldIndex.value != -1){
+			rows = SortRows(rows, props.fields[sortFieldIndex.value]);
+		}
 		return rows;
 	});
 	const currentPageRows = computed(() => {
@@ -144,6 +147,12 @@
 			return 1;
 		}
 		return Math.ceil(processedRows.value.length/props.rowsPerPage);
+	});
+	const pageOffsetIndex = computed(() => {
+		if(props.rowsPerPage){
+			return pageIndex.value*props.rowsPerPage;
+		}
+		return 0;
 	});
 
 </script>
@@ -195,7 +204,7 @@
 		<tbody>
 			<tr v-for="(row, rowIndex) in currentPageRows" :key="rowIndex">
 				<th v-if="props.showRowNumbers">
-					{{rowIndex + 1 + GetPageOffset()}}
+					{{rowIndex + 1 + pageOffsetIndex}}
 				</th>
 				<td v-for="(field, fleldIndex) in props.fields" :key="fleldIndex" v-html="field.render(row)" @click="HandleFieldClick(row, field)"></td>
 				<td v-if="props.actions">
