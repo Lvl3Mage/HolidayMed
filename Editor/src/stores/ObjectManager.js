@@ -6,10 +6,6 @@ import defaults from 'json-schema-defaults';
 import {AssignAtPath} from '@/Utils.js';
 
 import tv4 from 'tv4';
-let exampleObjectData = {
-	name: "OBJECT_NAME",
-	// .. more fields go here
-};
 const typeRequestLookup = {
 	"apartment": "/apartments",
 	"group": "/groups",

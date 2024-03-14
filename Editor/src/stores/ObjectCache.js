@@ -54,13 +54,17 @@ const useObjectCache = defineStore({
 			});
 		},
 		ReloadSegment(type){
+			this.cacheSegments[type].mappedData = {};
 			this.cacheSegments[type].loading = true;
 			return new Promise(async (resolve, reject) => {
 				let totalPages = 1;
 				let currentPage = 1;
 				while(currentPage <= totalPages){
-					break;
 					//request pages one by one using ObjectManager.GetPage and update total pages using X-WP-TotalPages header
+					let pageData = await this.ObjectManager.GetPage(type, currentPage, 100, this.GetTypeFieldFilter(type));
+					this.AddEntriesToSegment(type, pageData.data);
+					totalPages = pageData.headers["x-wp-totalpages"];
+					currentPage++;
 				}
 				this.cacheSegments[type].loading = false;
 				resolve(this.cacheSegments[type].mappedData);
@@ -70,16 +74,6 @@ const useObjectCache = defineStore({
 			for (let entry of entires) {
 				this.cacheSegments[type].mappedData[entry.id] = entry;
 			}
-		},
-		RequestPage(type, page, perPage){
-			return new Promise((resolve, reject) => {
-				if(! type in typeCacheFields){console.error("Invalid type: " + type); reject("Invalid type: " + type); return;}
-				this.ObjectManager.GetObjects(type, this.GetTypeFieldFilter(type) + `&page=${page}&per_page=${perPage}`).then((result) => {
-					resolve(result);
-				}).catch((error) => {
-					reject(error);
-				});
-			});
 		},
 		UpdateSegmentWithData(type, objectId, data){
 			// console.log(data)
