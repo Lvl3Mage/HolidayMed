@@ -59,6 +59,7 @@ const useObjectCache = defineStore({
 				let totalPages = 1;
 				let currentPage = 1;
 				while(currentPage <= totalPages){
+					break;
 					//request pages one by one using ObjectManager.GetPage and update total pages using X-WP-TotalPages header
 				}
 				this.cacheSegments[type].loading = false;
