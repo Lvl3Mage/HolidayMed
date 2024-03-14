@@ -55,32 +55,15 @@ const useObjectCache = defineStore({
 		},
 		ReloadSegment(type){
 			this.cacheSegments[type].loading = true;
-			// return new Promise(async (resolve, reject) => {
-			// 	let npage = 1;
-			// 	let endRequest = false;
-			// 	let currentTask;
-			// 	while(true){
-			// 		currentTask = this.RequestPage(type, npage, 30).then((result) => {
-			// 			console.log(result)
-			// 			if(result.length == 0){
-			// 				endRequest = true;
-			// 			}
-			// 			this.AddEntriesToSegment(type, result);
-			// 			npage++;
-			// 		}).catch((error) => {
-			// 			endRequest = true;
-			// 			console.error(e);
-			// 			reject(e);
-			// 			return;
-			// 		});
-			// 		await currentTask;
-			// 		if(endRequest){
-			// 			break;
-			// 		}
-			// 	}
-			// 	this.cacheSegments[type].loading = false;
-			// 	resolve(this.cacheSegments[type].mappedData);
-			// });
+			return new Promise(async (resolve, reject) => {
+				let totalPages = 1;
+				let currentPage = 1;
+				while(currentPage <= totalPages){
+					//request pages one by one using ObjectManager.GetPage and update total pages using X-WP-TotalPages header
+				}
+				this.cacheSegments[type].loading = false;
+				resolve(this.cacheSegments[type].mappedData);
+			});
 		},
 		AddEntriesToSegment(type, entires){
 			for (let entry of entires) {

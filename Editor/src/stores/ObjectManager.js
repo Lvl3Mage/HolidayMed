@@ -139,11 +139,11 @@ const useObjectManager = defineStore({
 				}.bind(this));
 			});
 		},
-		GetObjects(objectType, filters = ''){
+		GetPage(objectType, page, objectsPerPage, filters = ''){
 			return new Promise((resolve, reject) => {
-				this.APIAccess.GetREST(typeRequestLookup[objectType] + '?' + filters)
+				this.APIAccess.GetREST(typeRequestLookup[objectType] + '?' + filters + `&page=${page}&per_page=${objectsPerPage}`)
 				.then(function(responce){
-					resolve(responce.data);
+					resolve(responce);
 				}.bind(this))
 				.catch(function(error){
 					console.warn(error);
