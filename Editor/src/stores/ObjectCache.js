@@ -32,7 +32,7 @@ const useObjectCache = defineStore({
 			if(!this.listenersSetup){
 				this.listenersSetup = true;
 				this.ObjectManager.on(this.ObjectManager.events.succesfulWrite, this.UpdateSegmentWithData.bind(this));
-				this.ObjectManager.on(this.ObjectManager.events.succesfulCreate, this.ReloadSegment.bind(this));
+				this.ObjectManager.on(this.ObjectManager.events.succesfulCreate, this.CreateSegmentEntryWithData.bind(this));
 			}
 
 
@@ -60,7 +60,6 @@ const useObjectCache = defineStore({
 				let totalPages = 1;
 				let currentPage = 1;
 				while(currentPage <= totalPages){
-					//request pages one by one using ObjectManager.GetPage and update total pages using X-WP-TotalPages header
 					let pageData = await this.ObjectManager.GetPage(type, currentPage, 100, this.GetTypeFieldFilter(type));
 					this.AddEntriesToSegment(type, pageData.data);
 					totalPages = pageData.headers["x-wp-totalpages"];
@@ -76,7 +75,6 @@ const useObjectCache = defineStore({
 			}
 		},
 		UpdateSegmentWithData(type, objectId, data){
-			// console.log(data)
 			let hashBefore = this.cacheSegments[type].hash;
 			this.cacheSegments[type].hash = data.fields_hash.after;
 			if(hashBefore != data.fields_hash.before){
@@ -95,6 +93,13 @@ const useObjectCache = defineStore({
 			console.log(`Hash intact, Updated segment ${type}`);
 		},
 		CreateSegmentEntryWithData(type, data){
+			let hashBefore = this.cacheSegments[type].hash;
+			this.cacheSegments[type].hash = data.fields_hash.after;
+			if(hashBefore != data.fields_hash.before){
+				console.log(`Hash mismatch, reloading segment, ${type}`);
+				this.ReloadSegment(type);
+				return;
+			}
 			let cachedFields = typeCacheFields[type];
 			let id = data.id;
 			let cachedObject = {};
@@ -108,7 +113,7 @@ const useObjectCache = defineStore({
 			}
 			this.cacheSegments[type].mappedData[id] = cachedObject;
 
-			console.log(`Updated segment, ${type}`);
+			console.log(`Hash intact, Created entry in segment ${type} with data ${data}`);
 		},
 		DeleteSegmentEntry(type, id, data){
 			delete this.cacheSegments[type].mappedData[id];

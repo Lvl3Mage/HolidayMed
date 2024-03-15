@@ -23,6 +23,9 @@
 		}
 		return props.valid;
 	}
+	defineExpose({
+		isValid,
+	});
 </script>
 <template>
 	<label class="form-control">

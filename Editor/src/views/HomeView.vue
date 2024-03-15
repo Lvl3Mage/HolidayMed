@@ -10,6 +10,7 @@
 	const UIManagment = useUIManagment();
 
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
+	import SelectInput from '@/components/FormElements/SelectInput.vue';
 	
 	function ViewObj(objectType, objectId){
 		UIManagment.OpenEditObjectModal(objectType, objectId).then((result) => {
@@ -54,6 +55,7 @@
 			toast.CloseToast();
 		});
 	}
+	const selectedApartment = ref(null);
 </script>
 
 <template>
@@ -92,7 +94,7 @@
 			},
 		]"/>
 
-
+		<SelectInput v-model="selectedApartment" :options="ObjectCache.GetSegmentRows('apartment')" :render="ap=>ap.title.rendered"></SelectInput>
 		<img :src="filePath" alt="">
 		<label class="form-control w-full max-w-xs">
 			<div class="label">

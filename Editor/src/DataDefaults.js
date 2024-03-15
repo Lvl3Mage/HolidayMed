@@ -27,7 +27,7 @@ const dataDefaults = {
 					"zona_de_barbaco": false
 				}
 			},
-			"inner_id": "",
+			"inner_id": "Example id",
 			"floor": 0,
 			"number": "",
 			"group": null,
@@ -56,7 +56,6 @@ const dataDefaults = {
 			],
 			"images": [
 			],
-			"rate": 3.5
 		},
 		"featured_media": null,
 	},
