@@ -61,7 +61,9 @@ const useObjectCache = defineStore({
 				let currentPage = 1;
 				while(currentPage <= totalPages){
 					let pageData = await this.ObjectManager.GetPage(type, currentPage, 100, this.GetTypeFieldFilter(type));
+					// console.log("Recieved DATA for type", type, pageData.data);
 					this.AddEntriesToSegment(type, pageData.data);
+					// console.log("Assigned DATA for type", type, this.cacheSegments[type].mappedData);
 					totalPages = pageData.headers["x-wp-totalpages"];
 					currentPage++;
 				}
@@ -69,10 +71,9 @@ const useObjectCache = defineStore({
 				resolve(this.cacheSegments[type].mappedData);
 			});
 		},
-		AddEntriesToSegment(type, entires){
-			for (let entry of entires) {
-				this.cacheSegments[type].mappedData[entry.id] = entry;
-			}
+		AddEntriesToSegment(type, entries){
+			let mappedEntries = entries.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {});
+			this.cacheSegments[type].mappedData = {...this.cacheSegments[type].mappedData, ...mappedEntries};
 		},
 		UpdateSegmentWithData(type, objectId, data){
 			let hashBefore = this.cacheSegments[type].hash;

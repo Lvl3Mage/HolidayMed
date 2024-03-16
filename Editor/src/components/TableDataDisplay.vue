@@ -27,7 +27,7 @@
 		rowsPerPage:{
 			type: Number,
 			required: false,
-		}
+		},
 	});
 	//TODO implement sorting by fields and search by fields
 	/*[
@@ -65,15 +65,15 @@
 	}
 	function SearchRows(rows, field, query){
 		if(!field.getSearchValue || query == ""){
-			return props.rows;
+			return rows;
 		}
 
 		const options = {
 			shouldSort: true,
 		};
-		const fuse = new Fuse(props.rows.map(row => field.getSearchValue(row)), options)
+		const fuse = new Fuse(rows.map(row => field.getSearchValue(row)), options)
 		const result = fuse.search(query);
-		return result.map(resRow => props.rows[resRow.refIndex]);
+		return result.map(resRow => rows[resRow.refIndex]);
 	}
 
 	function HandleFieldClick(row, field){

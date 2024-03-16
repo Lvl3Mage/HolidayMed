@@ -8,7 +8,7 @@
 
 	import { ref, computed} from 'vue'
 
-	import dataDefaults from "@/DataDefaults.js";
+	import getDataDefaults from "@/DataDefaults.js";
 
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
 	const titleLookup = {
@@ -36,7 +36,7 @@
 
 
 	const modalOpen = ref(true);
-	const objectData = ref(dataDefaults[props.objectType]);
+	const objectData = ref(getDataDefaults(props.objectType));
 
 	//TODO Catch modal if type and id already open (call reject)
 	

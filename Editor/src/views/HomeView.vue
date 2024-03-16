@@ -10,6 +10,7 @@
 	const UIManagment = useUIManagment();
 
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
+	import CacheSegmentRenderer from '@/components/CacheSegmentRenderer.vue';
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
 	
 	function ViewObj(objectType, objectId){
@@ -60,41 +61,81 @@
 
 <template>
 	<main>
+		<div class="flex flex-wrap gap-12">
+			<CacheSegmentRenderer type="apartment" class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title mb-2">Ultimas reservas</h2>
+					<div class="grow flex flex-col justify-between">
+						<TableDataDisplay :rows="ObjectCache.GetSegmentRows('apartment')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
+							{
+								displayName: 'ID',
+								render: (object) => object.id,
+								getSortValue: (object) => object.id,
 
-		<TableDataDisplay :rows="ObjectCache.GetSegmentRows('apartment')" :compact="true" :showRowNumbers="true" :rowsPerPage="5" :fields="[
-			{
-				displayName: 'ID',
-				render: (object) => object.id,
-				getSortValue: (object) => object.id,
+							},
+							{
+								displayName: 'Title',
+								render: (object) => object.title.rendered,
+								getSortValue: (object) => object.title.rendered,
+								getSearchValue: (object) => object.title.rendered,
+							},
+							{
+								displayName: 'Inner ID',
+								render: (object) => object.acf.inner_id,
+							},
+							{
+								displayName: 'Group',
+								render: (object) => `<span class='${ObjectCache.GetObject('group', object.acf.group) ? 'link' : ''}'>${
+									ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : 'Group not found'
+								}</span>`,
+								onClick: (object) => ViewObj('group', object.acf.group),
+								getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
+							},
+						]"
+						:actions="[
+							{
+								render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
+								onClick: (object) => ViewObj('apartment', object.id),
+							},
+						]"/>
+					</div>
+				</div>
+			</CacheSegmentRenderer>
+			<CacheSegmentRenderer class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl" type="media" :renderWhenLoading="false">
+				<div class="card-body">
+					<h2 class="card-title mb-2">Ultimas reservas</h2>
+					<div class="grow flex flex-col justify-between">
+						<TableDataDisplay :rows="ObjectCache.GetSegmentRows('media')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
+							{
+								displayName: 'ID',
+								render: (object) => object.id,
+								getSortValue: (object) => object.id,
 
-			},
-			{
-				displayName: 'Title',
-				render: (object) => object.title.rendered,
-				getSortValue: (object) => object.title.rendered,
-				getSearchValue: (object) => object.title.rendered,
-			},
-			{
-				displayName: 'Inner ID',
-				render: (object) => object.acf.inner_id,
-			},
-			{
-				displayName: 'Group',
-				render: (object) => `<span class='${ObjectCache.GetObject('group', object.acf.group) ? 'link' : ''}'>${
-					ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : 'Group not found'
-				}</span>`,
-				onClick: (object) => ViewObj('group', object.acf.group),
-				getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
-			},
-		]"
-		:actions="[
-			{
-				render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-				onClick: (object) => ViewObj('apartment', object.id),
-			},
-		]"/>
+							},
+							{
+								displayName: 'Title',
+								render: (object) => object.title.rendered,
+								getSortValue: (object) => object.title.rendered,
+								getSearchValue: (object) => object.title.rendered,
+							},
+							{
+								displayName: 'Preview',
+								render: (object) => `<img src='${object.link}' alt='' class='w-6'>`,
+							},
+						]"
+						:actions="[
+							{
+								render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
+								onClick: (object) => ViewObj('apartment', object.id),
+							},
+						]"/>	
+						
+					</div>
+				</div>
+			</CacheSegmentRenderer>
 
-		<SelectInput v-model="selectedApartment" :options="ObjectCache.GetSegmentRows('apartment')" :render="ap=>ap.title.rendered"></SelectInput>
+		</div>
+		<SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput>
 		<img :src="filePath" alt="">
 		<label class="form-control w-full max-w-xs">
 			<div class="label">
@@ -103,18 +144,5 @@
 			<input type="file" class="file-input file-input-bordered w-full max-w-xs" accept="image/png, image/jpeg, image/jpg" @change="LoadFile"/>
 		</label>
 		<div class="btn" @click="CreateObj('apartment')">Create</div>
-		<div class="flex flex-wrap gap-5 justify-around">
-			<div class="card w-96 bg-base-100 shadow-xl" v-for="image in ObjectCache.GetSegmentData('media')" :key="image.id">
-				<!-- <figure><img :src="image.link" alt="" class="w-full aspect-video object-cover object-center"/></figure> -->
-				<div class="card-body">
-					<h2 class="card-title mt-auto justify-center">{{image.title.rendered}}</h2>
-					<div class="text-error">
-						<button class="btn btn-circle" @click="RemoveImage(image.id)">
-						  <i class="fa-solid fa-trash"></i>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
 	</main>
 </template>
