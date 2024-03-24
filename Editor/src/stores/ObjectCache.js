@@ -3,7 +3,7 @@ import {useObjectManager} from '@/stores/ObjectManager.js';
 import {AssignAtPath, ReadAtPath, CreateAtPath} from '@/Utils.js';
 
 const typeCacheFields = {
-	"apartment": ["id", "title", "acf.group", "acf.inner_id"],
+	"apartment": ["id", "title", "acf.group", "acf.inner_id", "translations"],
 	"group": ["id", "title", "acf.building"],
 	"reservation": ["id", "title"],
 	"building": ["id", "title"],

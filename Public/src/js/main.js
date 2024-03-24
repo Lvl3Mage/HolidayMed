@@ -101,6 +101,7 @@ $(document).ready(function(){
 					}
 				}
 			],
+			adaptiveHeight: true,
 	        prevArrow:`<div class='z-10 cursor-pointer absolute left-0.5 h-full m-auto flex justify-center items-center'>
 		        <div class="bg-black/50 rounded-full w-5 h-5 flex justify-center items-center text-white text-base">
 		        	<i class='fa-solid fa-angle-left'></i>

@@ -47,7 +47,8 @@ const useLoginState = defineStore({
 						this.loginData.verified = true;
 						resolve(response);
 					}).catch((error) => {
-						LoginState.ClearLoginData();
+						this.ClearLoginData();
+						console.log("login failed")
 						reject(error);
 					});
 				});

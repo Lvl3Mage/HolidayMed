@@ -69,6 +69,7 @@
 	
 	import {useObjectCache} from '@/stores/ObjectCache.js'
 	const ObjectCache = useObjectCache();
+	//TODO - chain behind login 
 	ObjectCache.PopulateCache();
 
 	import HeaderNavbar from '@/components/HeaderNavbar.vue'
