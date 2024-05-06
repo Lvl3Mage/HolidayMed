@@ -8,12 +8,15 @@
 
 	import { ref, computed} from 'vue'
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
+	import GroupContentEditor from "@/components/ModalRenderers/GroupContentEditor.vue"
 	const titleLookup = {
 		"apartment" : data => data.title.rendered,
+		"group" : data => data.title.rendered,
 	};
 
 	const contentRendererLookup = {
 		"apartment" : ApartmentContentEditor,
+		"group" : GroupContentEditor,
 	};
 
 	const props = defineProps({

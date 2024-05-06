@@ -4,10 +4,11 @@ import {AssignAtPath, ReadAtPath, CreateAtPath} from '@/Utils.js';
 
 const typeCacheFields = {
 	"apartment": ["id", "title", "acf.group", "acf.inner_id", "translations"],
-	"group": ["id", "title", "acf.building"],
-	"reservation": ["id", "title"],
+	"group": ["id", "title", "acf.edificio"],
+	"reservation": ["id", "title", "acf.order"],
 	"building": ["id", "title"],
 	"media": ["id", "title", "link"],
+	"order": ["id", "title", "acf.order_status"],
 }
 
 const useObjectCache = defineStore({

@@ -28,7 +28,7 @@
 	});
 </script>
 <template>
-	<label class="form-control">
+	<div class="form-control">
 		<div class="label" v-if="$slots.label || $slots.labelRight">
 			<span class="label-text">
 				<slot name="label"></slot>
@@ -52,7 +52,7 @@
 			</span>
 		</div>
 		
-	</label>
+	</div>
 </template>
 <style scoped lang="scss">
 </style>

@@ -37,6 +37,11 @@
 
 	const modalOpen = ref(true);
 	const objectData = ref(getDataDefaults(props.objectType));
+	const creationParams = UIManagment.GetModalByUniqueId(props.uniqueId).creationParams;
+	if(creationParams.dataHandler){
+		creationParams.dataHandler(objectData.value);
+	}
+
 
 	//TODO Catch modal if type and id already open (call reject)
 	

@@ -3,7 +3,7 @@ import {useAPIAccess} from './APIAccess.js';
 import {useObjectCache} from './ObjectCache.js';
 
 import defaults from 'json-schema-defaults';
-import {AssignAtPath} from '@/Utils.js';
+import {AssignAtPath, ReadAtPath} from '@/Utils.js';
 
 import tv4 from 'tv4';
 const typeRequestLookup = {
@@ -11,7 +11,8 @@ const typeRequestLookup = {
 	"group": "/groups",
 	"reservation": "/reservations",
 	"building": "/buildings",
-	"media": "/media"
+	"media": "/media",
+	"order": "/pedido",
 };
 let exampleObjectToken = "OBJECT_TOKEN";
 const useObjectManager = defineStore({
@@ -208,9 +209,35 @@ function SetDefaultAsInvalid(schema, data){
 		console.log("PATH: ", path);
 		let types = error.params.expected.split('/');
 		console.log("TYPES: ", types);
-		console.log("DEFAULT: ", GetDefault(types[0]));
-		AssignAtPath(data, path, GetDefault(types[0]));
+		let curVal = ReadAtPath(data, path);
+		let processedVal = AttemptConvert(types[0], curVal);
+		if(processedVal == null){
+			processedVal = GetDefault(types[0]);
+		}
+		console.log("PROCESS: ", processedVal);
+		AssignAtPath(data, path, processedVal);
 	}
+}
+function AttemptConvert(type, val){
+	const typeLookup = {
+		"string" : (data) => {return data.toString()},
+		"number" : (data) => {return parseFloat(data)},
+		"integer" : (data) => {return parseInt(data)},
+		"object" : (data) => {return null},
+		"array" : (data) => {return null},
+		"boolean" : (data) => {return data == "true"},
+		"null" : (data) => {return null},
+	};
+	let result = null
+	if(type in typeLookup){
+		result = typeLookup[type](val);
+	}
+	if(result == null){
+		console.error("Failed to convert", val, "to", type);
+	}
+	return result;
+
+
 }
 function GetDefault(type){
 	const typeLookup = {

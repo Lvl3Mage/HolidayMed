@@ -61,7 +61,7 @@ const useUIManagment = defineStore({
 			});
 			return promiseData.modalPromise;
 		},
-		OpenCreateObjectModal(objectType){
+		OpenCreateObjectModal(objectType, creationParams = {}){
 			let promiseData = this.CreateModalPromise();
 			this.objectModals.push({
 				modalType: "Create",
@@ -71,6 +71,7 @@ const useUIManagment = defineStore({
 				resolve: promiseData.modalResolve,
 				reject: promiseData.modalReject,
 				uniqueId: this.uniqueElementIndex,
+				creationParams: creationParams,
 			});
 			return promiseData.modalPromise;
 		},

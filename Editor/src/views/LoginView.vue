@@ -4,11 +4,6 @@
 	import { useRouter, useRoute } from 'vue-router'
 	import { ref } from 'vue'
 	const APIAccess = useAPIAccess();
-	APIAccess.GetREST("/pages/135").then(result => {
-		console.log(result);
-	}).catch(error => {
-		console.error(error);
-	});
 
 	const LoginState = useLoginState();
 	const router = useRouter()

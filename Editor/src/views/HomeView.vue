@@ -57,6 +57,22 @@
 		});
 	}
 	const selectedApartment = ref(null);
+	function RenderApartmentGroup(object){
+		let group = ObjectCache.GetObject('group', object.acf.group);
+		return `<span class='${group ? 'link' : ''}'>
+		${group ? group.title.rendered : 'Group not found'}
+		</span>`;
+	}
+	function RenderApartmentBuilding(object){
+		let group = ObjectCache.GetObject('group', object.acf.group);
+		let building = null;
+		if(group){
+			building = ObjectCache.GetObject('building', group.acf.edificio);
+		}
+		return `<span class='${building ? 'link' : ''}'>
+		${building ? building.title.rendered : 'Building not found'}
+		</span>`;
+	}
 </script>
 
 <template>
@@ -67,12 +83,6 @@
 					<h2 class="card-title mb-2">Ultimas reservas</h2>
 					<div class="grow flex flex-col justify-between">
 						<TableDataDisplay :rows="ObjectCache.GetSegmentRows('apartment')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
-							{
-								displayName: 'ID',
-								render: (object) => object.id,
-								getSortValue: (object) => object.id,
-
-							},
 							{
 								displayName: 'Title',
 								render: (object) => object.title.rendered,
@@ -85,9 +95,13 @@
 							},
 							{
 								displayName: 'Group',
-								render: (object) => `<span class='${ObjectCache.GetObject('group', object.acf.group) ? 'link' : ''}'>${
-									ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : 'Group not found'
-								}</span>`,
+								render: RenderApartmentGroup,
+								onClick: (object) => ViewObj('group', object.acf.group),
+								getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
+							},
+							{
+								displayName: 'Building',
+								render: RenderApartmentBuilding,
 								onClick: (object) => ViewObj('group', object.acf.group),
 								getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
 							},
@@ -126,7 +140,7 @@
 						:actions="[
 							{
 								render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-								onClick: (object) => ViewObj('apartment', object.id),
+								onClick: (object) => ViewObj('media', object.id),
 							},
 						]"/>	
 						
@@ -144,5 +158,6 @@
 			<input type="file" class="file-input file-input-bordered w-full max-w-xs" accept="image/png, image/jpeg, image/jpg" @change="LoadFile"/>
 		</label>
 		<div class="btn" @click="CreateObj('apartment')">Create</div>
+		
 	</main>
 </template>

@@ -161,7 +161,7 @@
 			<template v-slot:after><i class="fa-solid fa-magnifying-glass"></i></template>
 		</TextInput>
 	</div>
-	<div class="p-1 w-full">
+	<div class="w-full">
 		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClasses, {'border-error': !isValid() && displayValidation}]">
 			<slot>
 				<div v-html="RenderOptionKey(value)"></div>
