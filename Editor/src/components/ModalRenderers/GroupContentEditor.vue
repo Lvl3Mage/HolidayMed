@@ -4,6 +4,8 @@
 	import TextInput from "@/components/FormElements/TextInput.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
+	import TableDataDisplay from '@/components/TableDataDisplay.vue';
+	import CacheSegmentRenderer from '@/components/CacheSegmentRenderer.vue';
 
 
 
@@ -20,6 +22,10 @@
 			required: true,
 		},
 	});
+
+	//Preparing Title for REST POST request since the title field needs to be a string but is an object //TODO this is kinda weird and maybe should be handled more globaly
+	props.objectData.title = props.objectData.title.rendered;
+
 	function getAcf(){
 		return props.objectData.acf;
 	};
@@ -65,57 +71,46 @@
 			console.error(error.code, error.data);
 		});
 	}
+	
+	function GetTitle(){
+		return props.objectData.title;
+	}
 	defineExpose({
 		isValid,
+		GetTitle
 	});
 </script>
 <template>
-	<InputLabel :validatedInput="validatableInputs['innerIdInput']">
-		<template v-slot:label>Apartment identifier</template>
-		<TextInput :ref="el => validatableInputs['innerIdInput'] = el" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="validation.notEmpty">
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
-	<InputLabel :validatedInput="validatableInputs['floorInput']">
-		<template v-slot:label>Apartment Floor</template>
-		<TextInput :ref="el => validatableInputs['floorInput'] = el" v-model="getAcf().floor" placeholder="Enter apartment identifier" :validate="validation.notEmpty" type='number'>
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
 	<div class="w-fit flex gap-5 items-end">
-		<InputLabel :validatedInput="validatableInputs['floorInput']">
-			<template v-slot:label>Apartment Group</template>
+		<InputLabel>
+			<template v-slot:label>Group Building</template>
 			<div class="join">
 				<SelectInput class="join-item" v-model="getAcf().edificio" :allowEmpty="false" :options="GetValidBuildings()" :render="building=>building.title.rendered" :getSearchValue="building=>building.title.rendered" :buttonClasses="['join-item']"></SelectInput>
 				<div class="btn btn-info join-item" @click="ViewObj('building', getAcf().edificio)">Edit</div>
 			</div>
-
-			<template v-slot:invalid>Cannot be empty</template>
 		</InputLabel>
 	</div>
-	<div class="overflow-x-auto">
-		<table class="table">
-			<!-- head -->
-			<thead>
-				<tr>
-					<th>Apartment</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="apartment in GetChildApartments()" :key="apartment.id">
-					<td>{{apartment.title.rendered}}</td>
-					<td>
-						<button class="btn btn-info btn-xs" @click="ViewObj('apartment', apartment.id)">Edit</button>
-					</td>
-				</tr>
 
-			</tbody>
-			
-		</table>
-		<div class="flex justify-center items-center gap-3">
-			<div class="btn btn-success" @click="CreateApartment()">Create new apartment</div>
-		</div>
+  <div class="divider">Group Apartments</div>
+	<CacheSegmentRenderer type="apartment" class="min-h-44">
+		<TableDataDisplay :rows="GetChildApartments()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
+			{
+				displayName: 'Apartment',
+				render: (object) => object.title.rendered,
+				getSortValue: (object) => object.title.rendered,
+				getSearchValue: (object) => object.title.rendered,
+			},
+		]"
+		:actions="[
+			{
+				render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
+				onClick: (object) => ViewObj('apartment', object.id),
+			},
+		]"/>
+	</CacheSegmentRenderer>
+
+	<div class="flex justify-center items-center gap-3 mt-4">
+		<div class="btn btn-success" @click="CreateApartment()">Create new apartment</div>
 	</div>
 </template>
 <style scoped lang="scss">

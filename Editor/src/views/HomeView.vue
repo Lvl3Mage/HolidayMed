@@ -119,7 +119,7 @@
 				<div class="card-body">
 					<h2 class="card-title mb-2">Ultimas reservas</h2>
 					<div class="grow flex flex-col justify-between">
-						<TableDataDisplay :rows="ObjectCache.GetSegmentRows('media')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
+						<TableDataDisplay :rows="ObjectCache.GetSegmentRows('reservation')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
 							{
 								displayName: 'ID',
 								render: (object) => object.id,
@@ -133,14 +133,21 @@
 								getSearchValue: (object) => object.title.rendered,
 							},
 							{
-								displayName: 'Preview',
-								render: (object) => `<img src='${object.link}' alt='' class='w-6'>`,
+								displayName: 'Apartment',
+								render: (object) => {
+									let apartment = ObjectCache.GetObject('apartment', object.acf.apartment);
+									return `<span class='${apartment ? 'link' : ''}'>
+									${apartment ? apartment.title.rendered : 'Apartment not found'}
+									</span>`;
+								},
+								onClick: (object) => ViewObj('apartment', object.acf.apartment),
+								getSearchValue: (object) => ObjectCache.GetObject('apartment', object.acf.apartment) ? ObjectCache.GetObject('apartment', object.acf.apartment).title.rendered : '',
 							},
 						]"
 						:actions="[
 							{
 								render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-								onClick: (object) => ViewObj('media', object.id),
+								onClick: (object) => ViewObj('reservation', object.id),
 							},
 						]"/>	
 						
@@ -149,15 +156,15 @@
 			</CacheSegmentRenderer>
 
 		</div>
-		<SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput>
-		<img :src="filePath" alt="">
+		<!-- <SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput> -->
+	<!-- 	<img :src="filePath" alt="">
 		<label class="form-control w-full max-w-xs">
 			<div class="label">
 				<span class="label-text">Pick a file</span>
 			</div>
 			<input type="file" class="file-input file-input-bordered w-full max-w-xs" accept="image/png, image/jpeg, image/jpg" @change="LoadFile"/>
 		</label>
-		<div class="btn" @click="CreateObj('apartment')">Create</div>
+		<div class="btn" @click="CreateObj('apartment')">Create</div> -->
 		
 	</main>
 </template>

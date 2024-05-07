@@ -2,7 +2,6 @@ function getDataDefaults(type){
 	let defaults = {
 		"apartment": {
 			"status": "publish",
-			"title": "Apartment Title",
 			"template": "",
 			"acf": {
 				"auto_filters": {
@@ -30,7 +29,7 @@ function getDataDefaults(type){
 				},
 				"inner_id": "Example id",
 				"floor": 0,
-				"number": "",
+				"number": "11",
 				"group": null,
 				"bedroom": 2,
 				"bathrooms": 2,

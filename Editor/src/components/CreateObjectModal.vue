@@ -10,13 +10,14 @@
 
 	import getDataDefaults from "@/DataDefaults.js";
 
-	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
+	import ApartmentContentCreator from "@/components/ModalRenderers/ApartmentContentCreator.vue"
 	const titleLookup = {
-		"apartment" : data => data.title,
+		"apartment" : data => "Create new apartment",
+		"group" : data => "Create new group",
 	};
 
 	const contentRendererLookup = {
-		"apartment" : ApartmentContentEditor,
+		"apartment" : ApartmentContentCreator,
 	};
 
 	const props = defineProps({
@@ -60,6 +61,7 @@
 		});
 	}
 	function SaveModal(){
+		if(!isValid()){return;}
 		SetLoadingOverlay(true);
 		const toast = UIManagment.OpenToast({appearance:"loading",text: `Creating ${props.objectType}`});
 
@@ -80,6 +82,12 @@
 			});
 
 	}
+	function GetTitle(){
+		if(modalContent.value){
+			return modalContent.value.GetTitle();
+		}
+		return '';
+	}
 
 	const modalContent = ref(null);
 	function isValid(){
@@ -95,8 +103,7 @@
 				<span class="loading loading-dots loading-lg"></span>	
 			</div>
 			<div v-if="objectData">
-				<h3 class="font-bold text-lg">
-					{{titleLookup[props.objectType](objectData)}} 
+				<h3 class="font-bold text-lg" v-html="GetTitle()">
 				</h3>
 				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
 			    

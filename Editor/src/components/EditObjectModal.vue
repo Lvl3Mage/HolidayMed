@@ -10,8 +10,8 @@
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
 	import GroupContentEditor from "@/components/ModalRenderers/GroupContentEditor.vue"
 	const titleLookup = {
-		"apartment" : data => data.title.rendered,
-		"group" : data => data.title.rendered,
+		"apartment" : data => data.title,
+		"group" : data => data.title,
 	};
 
 	const contentRendererLookup = {
@@ -74,9 +74,10 @@
 		});
 	}
 	function SaveModal(){
+		if(!isValid()){return;}
 		SetLoadingOverlay(true);
 		const toast = UIManagment.OpenToast({appearance:"loading",text: "Saving changes"});
-
+		
 		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value)
 			.then(result => {
 				UIManagment.OpenToast({appearance: "success", text: "Changes saved!", lifetime:2000, closeOnClick: true});
@@ -101,6 +102,12 @@
 		if(!modalContent.value){return false;}
 		return modalContent.value.isValid();
 	}
+	function GetTitle(){
+		if(modalContent.value){
+			return modalContent.value.GetTitle();
+		}
+		return '';
+	}
 </script>
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
@@ -109,8 +116,7 @@
 				<span class="loading loading-dots loading-lg"></span>	
 			</div>
 			<div v-if="objectData">
-				<h3 class="font-bold text-lg">
-					{{titleLookup[props.objectType](objectData)}}
+				<h3 class="font-bold text-lg" v-html="GetTitle()">
 				</h3>
 				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
 			    

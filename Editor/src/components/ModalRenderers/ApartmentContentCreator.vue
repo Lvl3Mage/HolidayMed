@@ -22,12 +22,6 @@
 			required: true,
 		},
 	});
-
-
-	//Preparing Title for REST POST request since the title field needs to be a string but is an object //TODO this is kinda weird and maybe should be handled more globaly
-	props.objectData.title = props.objectData.title.rendered;
-
-
 	function getAcf(){
 		return props.objectData.acf;
 	};
@@ -41,10 +35,8 @@
 
 	const validatableInputs = ref({});
 
-
-	
-	function GetApartmentReservations(){
-		return ObjectCache.GetSegmentRows('reservation').filter(reservation => reservation.acf.apartment == props.objectData.id);
+	function isValid(){
+		return Object.keys(validatableInputs.value).every(inputKey => validatableInputs.value[inputKey].valid);
 	}
 	function GetValidGroups(){
 		let currentGroup = ObjectCache.GetObject('group', getAcf().group);
@@ -58,28 +50,9 @@
 			console.error(error.code, error.data);
 		});
 	}
-	function RenderReservationOrder(object){
-		if(ObjectCache.GetObject('order', object.acf.order) == null){
-			return 'Order not found';
-		}
-		return ObjectCache.GetObject('order', object.acf.order).title.rendered;
-	}
-	function ParseYMDDate(date){
-		const year = date.substring(0,4);
-		const month = date.substring(4,6);
-		const day = date.substring(6,8);
-		return new Date(`${day}-${month}-${year}`);
-	}
-	function isValid(){
-		return Object.keys(validatableInputs.value).every(inputKey => validatableInputs.value[inputKey].valid);
-	}
-	function GetTitle(){
-		return props.objectData.title;
-	}
-
 	defineExpose({
 		isValid,
-		GetTitle,
+		GetTitle: () => "Creating Apartment",
 	});
 </script>
 <template>
@@ -115,38 +88,6 @@
 			</TextInput>
 		</div>
 	</InputLabel>
-  	<div class="divider">Reservations</div>
-  	<CacheSegmentRenderer type="reservation" class="min-h-44" >
-		<TableDataDisplay :rows="GetApartmentReservations()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
-			{
-				displayName: 'Title',
-				render: (object) => object.title.rendered,
-				getSortValue: (object) => object.title.rendered,
-				getSearchValue: (object) => object.title.rendered,
-			},
-			{
-				displayName: 'Start date',
-				render: (object) => ParseYMDDate(object.acf.start_date).toLocaleString(), // Ymd formatted string
-				getSortValue: (object) => ParseYMDDate(object.acf.start_date).getTime(),
-			},
-			{
-				displayName: 'End date',
-				render: (object) => ParseYMDDate(object.acf.end_date).toLocaleString(), // Ymd formatted string
-				getSortValue: (object) => ParseYMDDate(object.acf.end_date).getTime(),
-			},
-			{
-				displayName: 'Order',
-				render: RenderReservationOrder,
-				onClick: (object) => ViewObj('order', object.acf.order),
-			},
-		]"
-		:actions="[
-			{
-				render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-				onClick: (object) => UIManagment.OpenEditObjectModal('reservation', object.id),
-			},
-		]"/>
-	</CacheSegmentRenderer>
 </template>
 <style scoped lang="scss">
 </style>

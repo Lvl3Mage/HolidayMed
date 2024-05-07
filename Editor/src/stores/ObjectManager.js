@@ -206,6 +206,12 @@ function SetDefaultAsInvalid(schema, data){
 	for (let error of errors) {
 		console.log("INVALID: ", error);
 		let path = error.dataPath.slice(1).split('/');
+		let pathInExceptions = IsPathInExceptions(path);
+
+		if(pathInExceptions){
+			console.log("PATH EXCEPTION: ", path);
+			continue;
+		}
 		console.log("PATH: ", path);
 		let types = error.params.expected.split('/');
 		console.log("TYPES: ", types);
@@ -221,8 +227,20 @@ function SetDefaultAsInvalid(schema, data){
 function AttemptConvert(type, val){
 	const typeLookup = {
 		"string" : (data) => {return data.toString()},
-		"number" : (data) => {return parseFloat(data)},
-		"integer" : (data) => {return parseInt(data)},
+		"number" : (data) => {
+			let val = parseFloat(data)
+			if(isNaN(val)){
+				return null;
+			}
+			return val;
+		},
+		"integer" : (data) => {
+			let val = parseInt(data)
+			if(isNaN(val)){
+				return null;
+			}
+			return val;
+		},
 		"object" : (data) => {return null},
 		"array" : (data) => {return null},
 		"boolean" : (data) => {return data == "true"},
@@ -264,4 +282,21 @@ function PatchSchemaNullTypes(schema){//removes null from types in schema recurs
 		}
 	}
 	return schema;
+}
+const schemaPathExceptions= [["title"]];
+function IsPathInExceptions(path){
+	for(let schemaException of schemaPathExceptions){
+		let pathIsException = true;
+		for(let exceptionId = 0; exceptionId < schemaException.length; exceptionId++){
+			let exceptionElement = schemaException[exceptionId];
+			let pathElement = path[exceptionId];
+			if(exceptionElement != pathElement){
+				pathIsException = false;
+				break;
+			}
+		}
+		if(pathIsException){
+			return true;
+		}
+	}
 }

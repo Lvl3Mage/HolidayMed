@@ -5,7 +5,7 @@ import {AssignAtPath, ReadAtPath, CreateAtPath} from '@/Utils.js';
 const typeCacheFields = {
 	"apartment": ["id", "title", "acf.group", "acf.inner_id", "translations"],
 	"group": ["id", "title", "acf.edificio"],
-	"reservation": ["id", "title", "acf.order"],
+	"reservation": ["id", "title", "acf.order", "acf.apartment", "acf.start_date", "acf.end_date"],
 	"building": ["id", "title"],
 	"media": ["id", "title", "link"],
 	"order": ["id", "title", "acf.order_status"],
