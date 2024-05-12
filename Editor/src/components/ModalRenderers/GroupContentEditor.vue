@@ -12,6 +12,8 @@
 
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
+	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagment();
@@ -23,38 +25,24 @@
 			required: true,
 		},
 	});
-	const objectData = reactive(props.objectData);
-	//Preparing Title for REST POST request
-	props.objectData.title = props.objectData.title.rendered;
-	watch(objectData, (newData) => {
-		const title = newData.acf.title;
-		const building = ObjectCache.GetObject('building', newData.acf.edificio);
-		objectData.title = `${building.acf.title} &#8212; ${title}`;
+	const objectData = useObjectData(props.objectData, (data)=>{
+		const title = data.acf.title;
+		const building = ObjectCache.GetObject('building', data.acf.edificio);
+		data.title = `${building.acf.title} &#8212; ${title}`;
 	});
+	
 	function getAcf(){
-		return props.objectData.acf;
+		return objectData.acf;
 	};
 
-	const validatableInputs = shallowReactive({});
-	watch(validatableInputs, (newVal) => {
-			for(let key of Object.keys(newVal)){
-				if(newVal[key] === null){
-					delete newVal[key];
-				}
-			}
-		},
-		{ flush: 'sync' }
-	);
 
+	const inputGroup = reactive(useValidationGroup());
 
-	function isValid(){
-		return Object.keys(validatableInputs).every(inputKey => validatableInputs[inputKey].valid);
-	}
 	function GetValidBuildings(){
 		return ObjectCache.GetSegmentData('building');
 	}
 	function GetChildApartments(){
-		return ObjectCache.GetSegmentRows('apartment').filter(apartment => apartment.acf.group == props.objectData.id);
+		return ObjectCache.GetSegmentRows('apartment').filter(apartment => apartment.acf.group == objectData.id);
 	}
 
 	function ViewObj(objectType, objectId){
@@ -69,7 +57,7 @@
 	function CreateApartment(){
 		UIManagment.OpenCreateObjectModal('apartment', {
 			'dataHandler': (data) => {
-				data.acf.group = props.objectData.id;
+				data.acf.group = objectData.id;
 			}
 		
 		}).then((result) => {
@@ -80,10 +68,10 @@
 	}
 	
 	function GetTitle(){
-		return props.objectData.title;
+		return objectData.title;
 	}
 	defineExpose({
-		isValid,
+		isValid: inputGroup.isValid,
 		GetTitle
 	});
 </script>
@@ -100,9 +88,9 @@
 					</div>
 				</InputLabel>
 			</div>
-			<InputLabel :validatedInput="validatableInputs['titleInput']">
+			<InputLabel :validatedInput="inputGroup.elements['titleInput']">
 				<template v-slot:label>Group Title</template>
-				<TextInput :ref="el => validatableInputs['titleInput'] = el" v-model="getAcf().title" placeholder="Enter group title" :validate="formValueValidation.notEmpty" type='text'>
+				<TextInput :ref="el => inputGroup.elements['titleInput'] = el" v-model="getAcf().title" placeholder="Enter group title" :validate="formValueValidation.notEmpty" type='text'>
 				</TextInput>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>

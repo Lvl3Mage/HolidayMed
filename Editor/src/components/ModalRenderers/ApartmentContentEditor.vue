@@ -12,6 +12,8 @@
 
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
+	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagment();
@@ -24,39 +26,27 @@
 		},
 	});
 
-
-	const objectData = reactive(props.objectData);
-	//Preparing Title for REST POST request
-	props.objectData.title = props.objectData.title.rendered;
-	watch(objectData, (newData) => {
-		const innerID = newData.acf.inner_id;
-		const group = ObjectCache.GetObject('group', newData.acf.group);
+	const objectData = useObjectData(props.objectData, (data)=>{
+		const innerID = data.acf.inner_id;
+		const group = ObjectCache.GetObject('group', data.acf.group);
 		if(group == null){
-			objectData.title = innerID;
+			data.title = innerID;
 			return;
 		}
 		const building = ObjectCache.GetObject('building', group.acf.edificio);
-		objectData.title = `${innerID} &#8212; ${building.acf.title} &#8212; ${newData.acf.floor} &#8212; ${newData.acf.number}`;
+		data.title = `${innerID} &#8212; ${building.acf.title} &#8212; ${data.acf.floor} &#8212; ${data.acf.number}`;
 	});
 
 	function getAcf(){
-		return props.objectData.acf;
+		return objectData.acf;
 	};
 
-	const validatableInputs = shallowReactive({});
-	watch(validatableInputs, (newVal) => {
-			for(let key of Object.keys(newVal)){
-				if(newVal[key] === null){
-					delete newVal[key];
-				}
-			}
-		},
-		{ flush: 'sync' }
-	);
+	
+	const inputGroup = reactive(useValidationGroup());
 
 	
 	function GetApartmentReservations(){
-		return ObjectCache.GetSegmentRows('reservation').filter(reservation => reservation.acf.apartment == props.objectData.id);
+		return ObjectCache.GetSegmentRows('reservation').filter(reservation => reservation.acf.apartment == objectData.id);
 	}
 	function GetValidGroups(){
 		let currentGroup = ObjectCache.GetObject('group', getAcf().group);
@@ -84,15 +74,12 @@
 			day: "numeric",
 		});
 	}
-	function isValid(){
-		return Object.keys(validatableInputs).every(inputKey => validatableInputs[inputKey].valid);
-	}
 	function GetTitle(){
-		return props.objectData.title;
+		return objectData.title;
 	}
 
 	defineExpose({
-		isValid,
+		isValid: inputGroup.isValid,
 		GetTitle,
 	});
 </script>
@@ -101,9 +88,9 @@
 	<div role="tablist" class="tabs tabs-lifted">
 		<input type="radio" name="apartmentTabs" role="tab" class="tab" aria-label="Info" checked />
 		<div role="tabpanel" class="tab-content">
-			<InputLabel :validatedInput="validatableInputs['innerIdInput']">
+			<InputLabel :validatedInput="inputGroup.elements['innerIdInput']">
 				<template v-slot:label>Apartment identifier</template>
-				<TextInput :ref="el => validatableInputs['innerIdInput'] = el" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="formValueValidation.notEmpty">
+				<TextInput :ref="el => inputGroup.elements['innerIdInput'] = el" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="formValueValidation.notEmpty">
 				</TextInput>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
@@ -119,10 +106,10 @@
 			<InputLabel>
 				<template v-slot:label>Apartment Address</template>
 				<div class="join w-full">
-					<TextInput :ref="el => validatableInputs['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="formValueValidation.notEmpty" type='number' class="join-item grow max-w-32">
+					<TextInput :ref="el => inputGroup.elements['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="formValueValidation.notEmpty" type='number' class="join-item grow max-w-32">
 						<template v-slot:before>Floor:</template>
 					</TextInput>
-					<TextInput :ref="el => validatableInputs['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="formValueValidation.notEmpty" type='text' class="join-item grow max-w-32">
+					<TextInput :ref="el => inputGroup.elements['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="formValueValidation.notEmpty" type='text' class="join-item grow max-w-32">
 						<template v-slot:before>Door:</template>
 					</TextInput>
 				</div>

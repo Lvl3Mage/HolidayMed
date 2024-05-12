@@ -14,6 +14,7 @@
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useUIManagment} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
+	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagment();
@@ -25,11 +26,8 @@
 			required: true,
 		},
 	});
-	const objectData = reactive(props.objectData);
-	//Preparing Title for REST POST request since the title field needs to be a string but is an object //TODO this is kinda weird and maybe should be handled more globaly
-	props.objectData.title = props.objectData.title.rendered;
-	watch(objectData, (newVal) => {
-		objectData.title = props.objectData.acf.title;
+	const objectData = useObjectData(props.objectData, (data)=>{
+		data.title = data.acf.title;
 	});
 
 	function getAcf(){
@@ -46,7 +44,7 @@
 	}
 
 	function GetChildGroups(){
-		return ObjectCache.GetSegmentRows('group').filter(group => group.acf.edificio == props.objectData.id);
+		return ObjectCache.GetSegmentRows('group').filter(group => group.acf.edificio == objectData.id);
 	}
 	function GetChildApartments(){
 		const groups = GetChildGroups();
@@ -69,7 +67,7 @@
 	function CreateGroup(){
 		UIManagment.OpenCreateObjectModal('group', {
 			'dataHandler': (data) => {
-				data.acf.edificio = props.objectData.id;
+				data.acf.edificio = objectData.id;
 			}
 		}).then((result) => {
 			console.log(result.code, result.data);
@@ -82,6 +80,14 @@
 			place: '', 
 			distance: null, 
 			unidades: ''
+		});
+	}
+	function AddRule(){
+		getAcf().rules.push({
+			title: '', 
+			text: '',
+			image: null,
+			description: ''
 		});
 	}
 	
@@ -179,7 +185,7 @@
 						</div>
 					</div>
 					<div class="flex justify-center items-center gap-3 mt-4">
-						<div class="btn btn-secondary btn-circle text-xl" @click="AddLocation()">
+						<div class="btn btn-secondary btn-circle text-xl" @click="AddRule()">
 							<i class="fa-solid fa-plus"></i>
 						</div>
 					</div>	
