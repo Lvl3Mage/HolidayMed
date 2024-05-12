@@ -1,5 +1,5 @@
 <script setup>
-	import { ref, computed } from 'vue';
+	import { ref, computed, watch } from 'vue';
 	import TextInput from '@/components/FormElements/TextInput.vue';
 	import Fuse from 'fuse.js'
 
@@ -114,6 +114,10 @@
 	}
 	const searchValue = ref('');
 	const searchFieldIndex = ref(-1);
+	watch(searchValue, (newValue) => { // reset page index when search value changes
+		pageIndex.value = 0;
+	});
+
 	function ToggleSearchField(fieldIndex){
 		if(searchFieldIndex.value == fieldIndex){
 			searchFieldIndex.value = -1;
@@ -121,6 +125,7 @@
 		}
 		else{
 			searchFieldIndex.value = fieldIndex;
+			pageIndex.value = 0;// reset page index when search field changes
 			DisableSort();
 			
 		}
