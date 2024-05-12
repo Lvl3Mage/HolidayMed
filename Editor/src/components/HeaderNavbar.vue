@@ -28,12 +28,12 @@
 			</div>
 		</div>
 		<div class="navbar-end">
-			<button class="btn btn-ghost btn-circle text-xl">
+			<!-- <button class="btn btn-ghost btn-circle text-xl">
 				<i class="fa-solid fa-user"></i>
 			</button>
 			<button class="btn btn-ghost btn-circle text-xl">
 				<i class="fa-solid fa-bell"></i>
-			</button>
+			</button> -->
 			<button class="btn btn-ghost btn-circle text-xl" @click="Logout()">
 				<i class="fa-solid fa-arrow-right-from-bracket"></i>
 			</button>

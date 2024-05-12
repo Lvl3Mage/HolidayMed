@@ -59,6 +59,88 @@ function getDataDefaults(type){
 			},
 			"featured_media": null,
 		},
+		"group": {
+		    "status": "publish",
+		    "title": "New Apartment Group",
+		    "template": "",
+		    "comodidades": [//number array
+		    ],
+		    "acf": {
+		        "title": "New Group title",
+		        "edificio": null,
+		        "description": "New Group description",
+		        "prices": {
+		            "base_price": 200,
+		            "promo_price": 100,
+		            "season_prices": []
+		        },
+		        "images": [//id array
+		        ],
+		        "price_variants": [],
+		        "additional_costs": [],
+		        "advantages": [
+		            // {
+		            //     "image": 931,
+		            //     "text": "Hasta 6 personas"
+		            // },
+		            // {
+		            //     "image": 945,
+		            //     "text": "Patio de juegos"
+		            // },
+		        ]
+		    },
+		},
+		"building": {
+		    "status": "publish",
+		    "title": "Building title",
+		    "acf": {
+		        "auto_filters": {
+		            "location": {
+		                "first_line": false,
+		                "close_to_supermarket": false,
+		                "close_to_center": false,
+		                "close_to_pharmacy": false,
+		                "close_to_aquatic_park": false
+		            },
+		            "servicios": {
+		                "swimming_pull": true,
+		                "play_area": true,
+		                "garden": true
+		            }
+		        },
+		        "title": "Building title",
+		        "area": 168,
+		        "images": [
+		            // 608,
+		            // 613,
+		            // 617,
+		            // 625,
+		        ],
+		        "seaside_position": "1",
+		        "locations": [
+		            // {
+		            //     "place": "Playa",
+		            //     "distance": 50,
+		            //     "unidades": "m"
+		            // },
+		        ],
+		        "rules": [
+		            // {
+		            //     "title": "Llegada",
+		            //     "image": 922,
+		            //     "text": "De 16:00 a 19:00",
+		            //     "description": "Tendrás que informar al establecimiento con antelación a qué hora llegarás."
+		            // },
+		            // {
+		            //     "title": "Salida",
+		            //     "image": 924,
+		            //     "text": "De 10:00 a 12:00",
+		            //     "description": "Debe informar al hotel con antelación de su hora de salida."
+		            // },
+		        ],
+		        "address": ""
+		    },
+		}
 	};
 	return defaults[type];
 } 

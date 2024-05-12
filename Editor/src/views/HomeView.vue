@@ -63,22 +63,34 @@
 		${group ? group.title.rendered : 'Group not found'}
 		</span>`;
 	}
-	function RenderApartmentBuilding(object){
+	function GetApartmentBuilding(object){
 		let group = ObjectCache.GetObject('group', object.acf.group);
 		let building = null;
 		if(group){
 			building = ObjectCache.GetObject('building', group.acf.edificio);
 		}
-		return `<span class='${building ? 'link' : ''}'>
-		${building ? building.title.rendered : 'Building not found'}
+		return building;
+	}
+	function RenderApartmentBuilding(object){
+		const building = GetApartmentBuilding(object);
+		if(!building){
+			return `<span>Building not found</span>`;
+		}
+		return `<span class='link'>
+			${building.title.rendered}
 		</span>`;
+	}
+	function ViewBuilding(building){
+		if(building){
+			ViewObj('building', building.id);
+		}
 	}
 </script>
 
 <template>
 	<main>
 		<div class="flex flex-wrap gap-12">
-			<CacheSegmentRenderer type="apartment" class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl">
+			<CacheSegmentRenderer :types="['apartment', 'group', 'building']" class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl">
 				<div class="card-body">
 					<h2 class="card-title mb-2">Ultimas reservas</h2>
 					<div class="grow flex flex-col justify-between">
@@ -102,7 +114,7 @@
 							{
 								displayName: 'Building',
 								render: RenderApartmentBuilding,
-								onClick: (object) => ViewObj('group', object.acf.group),
+								onClick: (object) => ViewBuilding(GetApartmentBuilding(object)),
 								getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
 							},
 						]"

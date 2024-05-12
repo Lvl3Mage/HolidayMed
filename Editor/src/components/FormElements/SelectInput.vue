@@ -116,7 +116,6 @@
 	function handleBlur(event) {
 		if(dropdown.value == null){open.value = false; return;}
 		open.value = dropdown.value.contains(event.relatedTarget);
-		console.log(open.value);
 	}
 	function OpenDropdown(event) {
 		open.value = true;

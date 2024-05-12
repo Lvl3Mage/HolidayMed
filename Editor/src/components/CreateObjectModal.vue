@@ -98,10 +98,10 @@
 </script>
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
-		<div class="modal-box w-11/12 max-w-5xl"  >
-			<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': loadingOverlay}">
-				<span class="loading loading-dots loading-lg"></span>	
-			</div>
+		<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': loadingOverlay}">
+			<span class="loading loading-dots loading-lg"></span>	
+		</div>
+		<div class="modal-box relative w-11/12 max-w-5xl"  >
 			<div v-if="objectData">
 				<h3 class="font-bold text-lg" v-html="GetTitle()">
 				</h3>

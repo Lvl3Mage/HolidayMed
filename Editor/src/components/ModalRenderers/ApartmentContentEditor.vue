@@ -1,6 +1,7 @@
 <script setup>
 
-	import {ref, computed} from "vue";
+	import {ref, computed, shallowReactive, watch, reactive} from "vue";
+	import {formValueValidation, ParseYMDString} from "@/Utils.js";
 	import TextInput from "@/components/FormElements/TextInput.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
@@ -24,23 +25,34 @@
 	});
 
 
-	//Preparing Title for REST POST request since the title field needs to be a string but is an object //TODO this is kinda weird and maybe should be handled more globaly
+	const objectData = reactive(props.objectData);
+	//Preparing Title for REST POST request
 	props.objectData.title = props.objectData.title.rendered;
-
+	watch(objectData, (newData) => {
+		const innerID = newData.acf.inner_id;
+		const group = ObjectCache.GetObject('group', newData.acf.group);
+		if(group == null){
+			objectData.title = innerID;
+			return;
+		}
+		const building = ObjectCache.GetObject('building', group.acf.edificio);
+		objectData.title = `${innerID} &#8212; ${building.acf.title} &#8212; ${newData.acf.floor} &#8212; ${newData.acf.number}`;
+	});
 
 	function getAcf(){
 		return props.objectData.acf;
 	};
 
-
-	const validation = {
-		"notEmpty": function(value){
-			return value !== ""
+	const validatableInputs = shallowReactive({});
+	watch(validatableInputs, (newVal) => {
+			for(let key of Object.keys(newVal)){
+				if(newVal[key] === null){
+					delete newVal[key];
+				}
+			}
 		},
-	}
-
-	const validatableInputs = ref({});
-
+		{ flush: 'sync' }
+	);
 
 	
 	function GetApartmentReservations(){
@@ -64,14 +76,16 @@
 		}
 		return ObjectCache.GetObject('order', object.acf.order).title.rendered;
 	}
-	function ParseYMDDate(date){
-		const year = date.substring(0,4);
-		const month = date.substring(4,6);
-		const day = date.substring(6,8);
-		return new Date(`${day}-${month}-${year}`);
+	function RenderDate(date){
+		return date.toLocaleString("es-ES",
+		{
+			year: "numeric",
+			month: "numeric",
+			day: "numeric",
+		});
 	}
 	function isValid(){
-		return Object.keys(validatableInputs.value).every(inputKey => validatableInputs.value[inputKey].valid);
+		return Object.keys(validatableInputs).every(inputKey => validatableInputs[inputKey].valid);
 	}
 	function GetTitle(){
 		return props.objectData.title;
@@ -83,70 +97,80 @@
 	});
 </script>
 <template>
-	<InputLabel :validatedInput="validatableInputs['innerIdInput']">
-		<template v-slot:label>Apartment identifier</template>
-		<TextInput :ref="el => validatableInputs['innerIdInput'] = el" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="validation.notEmpty">
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
-	<div class="w-fit">
-		<InputLabel>
-			<template v-slot:label>Apartment Group</template>
-			<div class="join">
-				<SelectInput class="join-item" v-model="getAcf().group" :allowEmpty="false" :options="GetValidGroups()" :render="group=>group.title.rendered" :getSearchValue="group=>group.title.rendered" :buttonClasses="['join-item']"></SelectInput>
-				<div class="btn btn-info join-item" @click="ViewObj('group', getAcf().group)">Edit</div>
+
+	<div role="tablist" class="tabs tabs-lifted">
+		<input type="radio" name="apartmentTabs" role="tab" class="tab" aria-label="Info" checked />
+		<div role="tabpanel" class="tab-content">
+			<InputLabel :validatedInput="validatableInputs['innerIdInput']">
+				<template v-slot:label>Apartment identifier</template>
+				<TextInput :ref="el => validatableInputs['innerIdInput'] = el" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="formValueValidation.notEmpty">
+				</TextInput>
+				<template v-slot:invalid>Cannot be empty</template>
+			</InputLabel>
+			<div class="w-fit">
+				<InputLabel>
+					<template v-slot:label>Apartment Group</template>
+					<div class="join">
+						<SelectInput class="join-item" v-model="getAcf().group" :allowEmpty="false" :options="GetValidGroups()" :render="group=>group.title.rendered" :getSearchValue="group=>group.title.rendered" :buttonClasses="['join-item']"></SelectInput>
+						<div class="btn btn-info join-item" @click="ViewObj('group', getAcf().group)">Edit</div>
+					</div>
+				</InputLabel>
 			</div>
-		</InputLabel>
-	</div>
-	<InputLabel :validatedInput="validatableInputs['titleInput']">
-		<template v-slot:label>Apartment Title</template>
-		<TextInput :ref="el => validatableInputs['titleInput'] = el" v-model="objectData.title" placeholder="Enter apartment title" :validate="validation.notEmpty" type='text'>
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
-	<InputLabel>
-		<template v-slot:label>Apartment Address</template>
-		<div class="join w-full">
-			<TextInput :ref="el => validatableInputs['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="validation.notEmpty" type='number' class="join-item grow max-w-32">
-				<template v-slot:before>Floor:</template>
-			</TextInput>
-			<TextInput :ref="el => validatableInputs['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="validation.notEmpty" type='text' class="join-item grow max-w-32">
-				<template v-slot:before>Door:</template>
-			</TextInput>
+			<InputLabel>
+				<template v-slot:label>Apartment Address</template>
+				<div class="join w-full">
+					<TextInput :ref="el => validatableInputs['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="formValueValidation.notEmpty" type='number' class="join-item grow max-w-32">
+						<template v-slot:before>Floor:</template>
+					</TextInput>
+					<TextInput :ref="el => validatableInputs['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="formValueValidation.notEmpty" type='text' class="join-item grow max-w-32">
+						<template v-slot:before>Door:</template>
+					</TextInput>
+				</div>
+			</InputLabel>
 		</div>
-	</InputLabel>
-  	<div class="divider">Reservations</div>
-  	<CacheSegmentRenderer type="reservation" class="min-h-44" >
-		<TableDataDisplay :rows="GetApartmentReservations()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
-			{
-				displayName: 'Title',
-				render: (object) => object.title.rendered,
-				getSortValue: (object) => object.title.rendered,
-				getSearchValue: (object) => object.title.rendered,
-			},
-			{
-				displayName: 'Start date',
-				render: (object) => ParseYMDDate(object.acf.start_date).toLocaleString(), // Ymd formatted string
-				getSortValue: (object) => ParseYMDDate(object.acf.start_date).getTime(),
-			},
-			{
-				displayName: 'End date',
-				render: (object) => ParseYMDDate(object.acf.end_date).toLocaleString(), // Ymd formatted string
-				getSortValue: (object) => ParseYMDDate(object.acf.end_date).getTime(),
-			},
-			{
-				displayName: 'Order',
-				render: RenderReservationOrder,
-				onClick: (object) => ViewObj('order', object.acf.order),
-			},
-		]"
-		:actions="[
-			{
-				render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-				onClick: (object) => UIManagment.OpenEditObjectModal('reservation', object.id),
-			},
-		]"/>
-	</CacheSegmentRenderer>
+
+		<input type="radio" name="apartmentTabs" role="tab" class="tab" aria-label="Reservations" />
+		<div role="tabpanel" class="tab-content">
+			<div class="divider">Reservations</div>
+		  	<CacheSegmentRenderer type="reservation" class="min-h-44" >
+				<TableDataDisplay :rows="GetApartmentReservations()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
+					{
+						displayName: 'Title',
+						render: (object) => object.title.rendered,
+						getSortValue: (object) => object.title.rendered,
+						getSearchValue: (object) => object.title.rendered,
+					},
+					{
+						displayName: 'Start date',
+						render: (object) => RenderDate(ParseYMDString(object.acf.start_date)), // Ymd formatted string
+						getSortValue: (object) => ParseYMDString(object.acf.start_date).getTime(),
+					},
+					{
+						displayName: 'End date',
+						render: (object) => RenderDate(ParseYMDString(object.acf.end_date)), // Ymd formatted string
+						getSortValue: (object) => ParseYMDString(object.acf.end_date).getTime(),
+					},
+					{
+						displayName: 'Order',
+						render: RenderReservationOrder,
+						onClick: (object) => ViewObj('order', object.acf.order),
+					},
+				]"
+				:actions="[
+					{
+						render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
+						onClick: (object) => UIManagment.OpenEditObjectModal('reservation', object.id),
+					},
+				]"/>
+			</CacheSegmentRenderer>
+			<!-- TODO
+			<div class="flex justify-center items-center gap-3 mt-4">
+				<div class="btn btn-success" @click="CreateReservation()">Create new reservation</div>
+			</div> -->
+		</div>
+	</div>
+	
+  	
 </template>
 <style scoped lang="scss">
 </style>

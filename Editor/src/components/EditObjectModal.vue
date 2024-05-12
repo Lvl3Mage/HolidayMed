@@ -9,6 +9,7 @@
 	import { ref, computed} from 'vue'
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
 	import GroupContentEditor from "@/components/ModalRenderers/GroupContentEditor.vue"
+	import BuildingContentEditor from "@/components/ModalRenderers/BuildingContentEditor.vue"
 	const titleLookup = {
 		"apartment" : data => data.title,
 		"group" : data => data.title,
@@ -17,6 +18,8 @@
 	const contentRendererLookup = {
 		"apartment" : ApartmentContentEditor,
 		"group" : GroupContentEditor,
+		"building" : BuildingContentEditor,
+	
 	};
 
 	const props = defineProps({
@@ -111,17 +114,25 @@
 </script>
 <template>
 	<dialog class="modal" :class="{'modal-open' : modalOpen}">
-		<div class="modal-box w-11/12 max-w-5xl"  >
-			<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': loadingOverlay}">
-				<span class="loading loading-dots loading-lg"></span>	
-			</div>
+		<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': loadingOverlay}">
+			<span class="loading loading-dots loading-lg"></span>	
+		</div>
+		<div class="modal-box  w-11/12 max-w-5xl"  >
 			<div v-if="objectData">
 				<h3 class="font-bold text-lg" v-html="GetTitle()">
 				</h3>
 				<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
 			    
 				<div class="modal-action">
-					<button class="btn btn-error" @click="DiscardModal()">Close</button>
+					<div class="dropdown dropdown-top dropdown-end">
+						<div tabindex="0" role="button" class="btn btn-error">Close</div>
+						<div tabindex="0" class="card compact dropdown-content mb-2 z-[1] shadow bg-base-100 rounded-box w-64">
+							<div tabindex="0" class="card-body">
+								<p >Changes will be discarded</p> 
+								<button class="btn btn-error" @click="DiscardModal()">Continue?</button>
+							</div>
+						</div>
+					</div>
 					<button class="btn btn-success" :class="{'btn-disabled': !isValid()}" @click="SaveModal()">Save and close</button>
 				</div>
 				
