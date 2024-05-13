@@ -58,12 +58,6 @@
 			console.error(error.code, error.data);
 		});
 	}
-	function InputGroupValid(groupKeyword){
-		const inputKeys = Object.keys(validationGroup);
-		return inputKeys.every(key => key.includes(groupKeyword) ? validationGroup[key].valid : true);
-
-	}
-
 	function CreateGroup(){
 		UIManagment.OpenCreateObjectModal('group', {
 			'dataHandler': (data) => {
@@ -98,10 +92,29 @@
 		isValid,
 		GetTitle
 	});
+	const image = ref(null);
 </script>
 <template>
-	<div class="w-fit flex gap-5 items-end">
-	</div>
+	<InputLabel>
+
+		<template v-slot:label>Image</template>
+		<div class="join">
+			<SelectInput :ref="el => infoGroup.elements['imageInput'] = el" class="join-item" v-model="getAcf().group" 
+				:allowEmpty="false" 
+				:options="ObjectCache.GetSegmentRows('media')" 
+				:render="media=>`
+					<div class='flex gap-2 items-center'>
+						<img class='h-6' src='${media.link}' alt='Preview'>
+						<span>${media.title.rendered.slice(0,20)}</span>
+					</div>
+				`"
+				:maxOptions="10" 
+				:getSearchValue="media=>media.title.rendered" 
+				:buttonClasses="['join-item']">
+			</SelectInput>
+			<div class="btn btn-info join-item" @click="ViewObj('group', getAcf().group)">Edit</div>
+		</div>
+	</InputLabel>
 	<div role="tablist" class="tabs tabs-lifted">
 		<input type="radio" name="buildingTabs" role="tab" class="tab" aria-label="Info" checked />
 		<div role="tabpanel" class="tab-content">
@@ -155,7 +168,7 @@
 					</div>	
 				</div>
 			</div>
-			<div class="collapse collapse-arrow bg-base-200 my-5">
+			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !rulesGroup.isValid()}">
 				<input type="checkbox" /> 
 				<div class="collapse-title text-xl font-medium">
 					Rules
@@ -199,7 +212,7 @@
 			<CacheSegmentRenderer type="group" class="min-h-44">
 				<TableDataDisplay :rows="GetChildGroups()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
 					{
-						displayName: 'Apartment',
+						displayName: 'Group',
 						render: (object) => object.title.rendered,
 						getSortValue: (object) => object.title.rendered,
 						getSearchValue: (object) => object.title.rendered,

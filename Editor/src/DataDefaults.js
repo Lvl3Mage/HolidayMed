@@ -27,9 +27,9 @@ function getDataDefaults(type){
 						"zona_de_barbaco": false
 					}
 				},
-				"inner_id": "Example id",
-				"floor": 0,
-				"number": "11",
+				"inner_id": "",
+				"floor": null,
+				"number": "",
 				"group": null,
 				"bedroom": 2,
 				"bathrooms": 2,
@@ -61,14 +61,14 @@ function getDataDefaults(type){
 		},
 		"group": {
 		    "status": "publish",
-		    "title": "New Apartment Group",
+		    "title": "",
 		    "template": "",
 		    "comodidades": [//number array
 		    ],
 		    "acf": {
-		        "title": "New Group title",
+		        "title": "",
 		        "edificio": null,
-		        "description": "New Group description",
+		        "description": "",
 		        "prices": {
 		            "base_price": 200,
 		            "promo_price": 100,
@@ -92,7 +92,7 @@ function getDataDefaults(type){
 		},
 		"building": {
 		    "status": "publish",
-		    "title": "Building title",
+		    "title": "",
 		    "acf": {
 		        "auto_filters": {
 		            "location": {
@@ -108,15 +108,15 @@ function getDataDefaults(type){
 		                "garden": true
 		            }
 		        },
-		        "title": "Building title",
-		        "area": 168,
+		        "title": "",
+		        "area": null,
 		        "images": [
 		            // 608,
 		            // 613,
 		            // 617,
 		            // 625,
 		        ],
-		        "seaside_position": "1",
+		        "seaside_position": "",
 		        "locations": [
 		            // {
 		            //     "place": "Playa",

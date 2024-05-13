@@ -13,6 +13,11 @@
 			require: true,
 			type: Object
 		},
+		maxOptions: {
+			require: false,
+			type: Number,
+			default: -1,
+		},
 		render: {
 			require: false,
 			type: Function,
@@ -77,7 +82,7 @@
 		return props.render(props.options[optionKey]);
 	}
 	function isValid(){
-		return value.value != null || props.allowEmpty;
+		return (value.value !== null && value.value !== "") || props.allowEmpty;
 	}
 	defineExpose({
 		isValid,
@@ -107,6 +112,9 @@
 
 		if(props.getSearchValue){
 			options = SearchRows(options, props.getSearchValue, searchQuery.value);
+		}
+		if(props.maxOptions > 0){
+			options = options.slice(0, props.maxOptions);
 		}
 		return options;
 	});

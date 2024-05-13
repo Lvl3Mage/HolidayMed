@@ -11,13 +11,13 @@
 	import getDataDefaults from "@/DataDefaults.js";
 
 	import ApartmentContentCreator from "@/components/ModalRenderers/ApartmentContentCreator.vue"
-	const titleLookup = {
-		"apartment" : data => "Create new apartment",
-		"group" : data => "Create new group",
-	};
+	import GroupContentCreator from "@/components/ModalRenderers/GroupContentCreator.vue"
+	import BuildingContentCreator from "@/components/ModalRenderers/BuildingContentCreator.vue"
 
 	const contentRendererLookup = {
 		"apartment" : ApartmentContentCreator,
+		"group" : GroupContentCreator,
+		"building" : BuildingContentCreator,
 	};
 
 	const props = defineProps({

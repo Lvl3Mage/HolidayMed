@@ -101,6 +101,11 @@ const useObjectCache = defineStore({
 		},
 		CreateSegmentEntryWithData(type, data){
 			let hashBefore = this.cacheSegments[type].hash;
+			if(!data.fields_hash){
+				console.log("No hash in data, reloading segment");
+				this.ReloadSegment(type);
+				return;
+			}
 			this.cacheSegments[type].hash = data.fields_hash.after;
 			if(hashBefore != data.fields_hash.before){
 				console.log(`Hash mismatch, reloading segment, ${type}`);

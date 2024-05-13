@@ -168,6 +168,7 @@
 			</CacheSegmentRenderer>
 
 		</div>
+		<div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('building')">Create Building</div>
 		<!-- <SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput> -->
 	<!-- 	<img :src="filePath" alt="">
 		<label class="form-control w-full max-w-xs">
