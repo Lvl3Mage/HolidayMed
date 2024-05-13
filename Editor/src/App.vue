@@ -6,46 +6,46 @@
 				{
 					text:"Home",
 					address:"/",
-					subLinks:[
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-					]
+					// subLinks:[
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// ]
 				},
 				{
-					text:"Home",
-					address:"/",
-					subLinks:[
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-						{
-							text:"sublink",
-							address:"/xd",
-						},
-					]
+					text:"Reservas",
+					address:"/reservations",
+					// subLinks:[
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// 	// {
+					// 	// 	text:"sublink",
+					// 	// 	address:"/xd",
+					// 	// },
+					// ]
 				},
-				{
-					text:"Home",
-				},
-				{
-					text:"Home",
-					address:"/"
-				},
+				// {
+				// 	text:"Home",
+				// },
+				// {
+				// 	text:"Home",
+				// 	address:"/"
+				// },
 			]
 		}),
 		mounted(){

@@ -94,15 +94,27 @@
 				</TextInput>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
+			<InputLabel :validatedInput="inputGroup.elements['title']">
+				<template v-slot:label>Apartment identifier</template>
+				<TextInput :ref="el => inputGroup.elements['title'] = el" v-model="getAcf().title" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
+				</TextInput>
+				<template v-slot:invalid>Cannot be empty</template>
+			</InputLabel>
 			<div class="w-fit">
 				<InputLabel>
 					<template v-slot:label>Apartment Group</template>
 					<div class="join">
-						<SelectInput class="join-item" v-model="getAcf().group" :allowEmpty="false" :options="GetValidGroups()" :render="group=>group.title.rendered" :getSearchValue="group=>group.title.rendered" :buttonClasses="['join-item']"></SelectInput>
+						<SelectInput class="join-item" v-model="getAcf().group" :allowEmpty="false" :options="GetValidGroups()" :render="group=>group.acf.title" :getSearchValue="group=>group.acf.title" :buttonClasses="['join-item']"></SelectInput>
 						<div class="btn btn-info join-item" @click="ViewObj('group', getAcf().group)">Edit</div>
 					</div>
 				</InputLabel>
 			</div>
+			<InputLabel :validatedInput="inputGroup.elements['bathrooms']">
+				<template v-slot:label>Bathrooms</template>
+				<TextInput type="number" :ref="el => inputGroup.elements['bathrooms'] = el" v-model="getAcf().bathrooms" placeholder="1" :validate="formValueValidation.notEmpty">
+				</TextInput>
+				<template v-slot:invalid>Cannot be empty</template>
+			</InputLabel>
 			<InputLabel>
 				<template v-slot:label>Apartment Address</template>
 				<div class="join w-full">

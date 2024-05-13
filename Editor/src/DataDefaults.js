@@ -4,7 +4,8 @@ function getDataDefaults(type){
 			"status": "publish",
 			"template": "",
 			"acf": {
-				"auto_filters": {
+				"published": false,//checkbox
+				"auto_filters": {//using page135
 					"types_and_options": {
 						"front_facing": false,
 						"sea_view": true,
@@ -31,7 +32,7 @@ function getDataDefaults(type){
 				"floor": null,
 				"number": "",
 				"group": null,
-				"bedroom": 2,
+				"bedroom": null, // bind to number of rooms
 				"bathrooms": 2,
 				"rooms": [
 					{
@@ -57,7 +58,7 @@ function getDataDefaults(type){
 				"images": [
 				],
 			},
-			"featured_media": null,
+			"featured_media": null,//select from images
 		},
 		"group": {
 		    "status": "publish",

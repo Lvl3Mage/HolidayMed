@@ -80,12 +80,6 @@
 		</TextInput>
 		<template v-slot:invalid>Cannot be empty</template>
 	</InputLabel>
-	<InputLabel :validatedInput="infoGroup.elements['seasidePosition']">
-		<template v-slot:label>Seaside position</template>
-		<TextInput :ref="el => infoGroup.elements['seasidePosition'] = el" v-model="getAcf().seaside_position" placeholder="1" :validate="formValueValidation.notEmpty" type='text'>
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
 	<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !locationsGroup.isValid()}">
 		<input type="checkbox" /> 
 		<div class="collapse-title text-xl font-medium">

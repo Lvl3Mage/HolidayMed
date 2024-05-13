@@ -68,6 +68,12 @@
 		</TextInput>
 		<template v-slot:invalid>Cannot be empty</template>
 	</InputLabel>
+	<InputLabel :validatedInput="inputGroup.elements['title']">
+		<template v-slot:label>Apartment title</template>
+		<TextInput :ref="el => inputGroup.elements['title'] = el" v-model="getAcf().title" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
+		</TextInput>
+		<template v-slot:invalid>Cannot be empty</template>
+	</InputLabel>
 	<div class="w-fit">
 		<InputLabel>
 			<template v-slot:label>Apartment Group</template>
@@ -77,12 +83,6 @@
 			</div>
 		</InputLabel>
 	</div>
-	<InputLabel :validatedInput="inputGroup.elements['titleInput']">
-		<template v-slot:label>Apartment Title</template>
-		<TextInput :ref="el => inputGroup.elements['titleInput'] = el" v-model="getAcf().title" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty" type='text'>
-		</TextInput>
-		<template v-slot:invalid>Cannot be empty</template>
-	</InputLabel>
 	<InputLabel>
 		<template v-slot:label>Apartment Address</template>
 		<div class="join w-full">

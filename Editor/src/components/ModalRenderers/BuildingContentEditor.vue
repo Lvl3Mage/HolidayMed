@@ -38,9 +38,9 @@
 	const locationsGroup = reactive(useValidationGroup());
 	const rulesGroup = reactive(useValidationGroup());
 
-	const validatedGroups = [infoGroup, locationsGroup, rulesGroup];
+	const validatedGroups = ref([infoGroup, locationsGroup, rulesGroup]);
 	function isValid(){
-		return validatedGroups.every(group => group.isValid());
+		return validatedGroups.value.every(group => group.isValid());
 	}
 
 	function GetChildGroups(){
@@ -121,12 +121,6 @@
 			<InputLabel :validatedInput="infoGroup.elements['titleInput']">
 				<template v-slot:label>Title</template>
 				<TextInput :ref="el => infoGroup.elements['titleInput'] = el" v-model="getAcf().title" placeholder="Enter Building title" :validate="formValueValidation.notEmpty" type='text'>
-				</TextInput>
-				<template v-slot:invalid>Cannot be empty</template>
-			</InputLabel>
-			<InputLabel :validatedInput="infoGroup.elements['seasidePosition']">
-				<template v-slot:label>Seaside position</template>
-				<TextInput :ref="el => infoGroup.elements['seasidePosition'] = el" v-model="getAcf().seaside_position" placeholder="1" :validate="formValueValidation.notEmpty" type='text'>
 				</TextInput>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>

@@ -81,11 +81,11 @@
 		}
 		return props.render(props.options[optionKey]);
 	}
-	function isValid(){
-		return (value.value !== null && value.value !== "") || props.allowEmpty;
-	}
+	const valid = computed(()=>{
+		return (value.value != null && value.value != "") || props.allowEmpty;
+	});
 	defineExpose({
-		isValid,
+		valid,
 	});
 	function SearchRows(rows, getSearchValue, query){
 		if(query == ""){
@@ -169,7 +169,7 @@
 		</TextInput>
 	</div>
 	<div class="w-full">
-		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClasses, {'border-error': !isValid() && displayValidation}]">
+		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClasses, {'border-error': !valid && displayValidation}]">
 			<slot>
 				<div v-html="RenderOptionKey(value)"></div>
 				<div class="group-focus-within/dropdown:rotate-180 transition" v-if="props.showIcon">
