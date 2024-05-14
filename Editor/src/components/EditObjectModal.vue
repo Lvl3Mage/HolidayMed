@@ -10,6 +10,7 @@
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
 	import GroupContentEditor from "@/components/ModalRenderers/GroupContentEditor.vue"
 	import BuildingContentEditor from "@/components/ModalRenderers/BuildingContentEditor.vue"
+	import OrderContentEditor from "@/components/ModalRenderers/OrderContentEditor.vue"
 	const titleLookup = {
 		"apartment" : data => data.title,
 		"group" : data => data.title,
@@ -19,6 +20,7 @@
 		"apartment" : ApartmentContentEditor,
 		"group" : GroupContentEditor,
 		"building" : BuildingContentEditor,
+		"order" : OrderContentEditor,
 	
 	};
 

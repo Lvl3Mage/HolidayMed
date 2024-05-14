@@ -39,39 +39,44 @@
 	<main>
 		<div class="container">
 			<div class="flex flex-wrap gap-12">
-				<CacheSegmentRenderer class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl" type="media" :renderWhenLoading="false">
+				<CacheSegmentRenderer class="card card-bordered card-compact basis-1/3 grow lg:basis-full bg-base-100 shadow-xl" type="order" :renderWhenLoading="false">
 					<div class="card-body">
-						<h2 class="card-title mb-2">Ultimas reservas</h2>
+						<h2 class="card-title mb-2">Ultimos pedidos</h2>
 						<div class="grow flex flex-col justify-between">
-							<TableDataDisplay :rows="ObjectCache.GetSegmentRows('reservation')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
+							<TableDataDisplay :rows="ObjectCache.GetSegmentRows('order')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
 								{
-									displayName: 'ID',
-									render: (object) => object.id,
-									getSortValue: (object) => object.id,
-
-								},
-								{
-									displayName: 'Title',
+									displayName: 'Titulo',
 									render: (object) => object.title.rendered,
 									getSortValue: (object) => object.title.rendered,
 									getSearchValue: (object) => object.title.rendered,
 								},
 								{
-									displayName: 'Apartment',
+									displayName: 'Estado',
 									render: (object) => {
-										let apartment = ObjectCache.GetObject('apartment', object.acf.apartment);
-										return `<span class='${apartment ? 'link' : ''}'>
-										${apartment ? apartment.title.rendered : 'Apartment not found'}
-										</span>`;
+										const status = object.acf.order_status;
+										switch(status){
+											case 'initial':
+												return `<span class='badge badge-neutral'>Inicial</span>`;
+											case 'pending':
+												return `<span class='badge badge-ghost'>Pendiente</span>`;
+											case 'completed':
+												return `<span class='badge badge-success'>Completado</span>`;
+											case 'canceled':
+												return `<span class='badge badge-error'>Cancelado</span>`;
+											case 'confirmed':
+												return `<span class='badge badge-success'>Confirmado</span>`;
+											default:
+												return `<span class='badge'>${status}</span>`;
+										}
 									},
-									onClick: (object) => ViewObj('apartment', object.acf.apartment),
-									getSearchValue: (object) => ObjectCache.GetObject('apartment', object.acf.apartment) ? ObjectCache.GetObject('apartment', object.acf.apartment).title.rendered : '',
+									getSortValue: (object) => object.title.rendered,
+									getSearchValue: (object) => object.title.rendered,
 								},
 							]"
 							:actions="[
 								{
 									render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-									onClick: (object) => ViewObj('reservation', object.id),
+									onClick: (object) => ViewObj('order', object.id),
 								},
 							]"/>	
 							
@@ -80,7 +85,7 @@
 				</CacheSegmentRenderer>
 
 			</div>
-			<div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('building')">Create Building</div>
+			<!-- <div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('building')">Create Building</div> -->
 			
 		</div>
 		<!-- <SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput> -->

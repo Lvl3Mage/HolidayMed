@@ -35,7 +35,6 @@
 		const building = ObjectCache.GetObject('building', group.acf.edificio);
 		data.title = `${innerID} &#8212; ${building.acf.title} &#8212; ${data.acf.floor} &#8212; ${data.acf.number}`;
 	});
-	console.log(objectData);
 	function getAcf(){
 		return objectData.acf;
 	};
