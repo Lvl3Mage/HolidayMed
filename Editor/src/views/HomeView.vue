@@ -177,7 +177,7 @@
 											${building.acf.title}
 										</span>`;
 									},
-									onClick: (object) => ViewBuilding(object.acf.edificio),
+									onClick: (object) => ViewObj('building',object.acf.edificio),
 									getSearchValue: (object) => ObjectCache.GetObject('building', object.acf.edificio) ? ObjectCache.GetObject('building', object.acf.edificio).acf.title : '',
 								},
 							]"

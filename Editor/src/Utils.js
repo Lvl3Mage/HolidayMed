@@ -42,11 +42,11 @@ function ParseYMDString(dateString){
 	return new Date(year, month-1, day);
 }
 function ToYMDString(date){
-	const day = date.getDate();
+	let day = date.getDate();
 	day = day < 10 ? `0${day}` : day.toString();
-	const month = date.getMonth();
+	let month = date.getMonth();
 	month = month < 10 ? `0${month}` : month.toString();
-	const year = date.getFullYear();
+	let year = date.getFullYear();
 	return `${year}${month}${day}`;
 }
 export { CreateExposedPromise, AssignAtPath, ReadAtPath, CreateAtPath, formValueValidation, ParseYMDString, ToYMDString};

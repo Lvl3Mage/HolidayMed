@@ -95,7 +95,7 @@
 	const image = ref(null);
 </script>
 <template>
-	<InputLabel>
+	<!-- <InputLabel>
 
 		<template v-slot:label>Image</template>
 		<div class="join">
@@ -114,7 +114,7 @@
 			</SelectInput>
 			<div class="btn btn-info join-item" @click="ViewObj('group', getAcf().group)">Edit</div>
 		</div>
-	</InputLabel>
+	</InputLabel> -->
 	<div role="tablist" class="tabs tabs-lifted">
 		<input type="radio" name="buildingTabs" role="tab" class="tab" aria-label="Info" checked />
 		<div role="tabpanel" class="tab-content">

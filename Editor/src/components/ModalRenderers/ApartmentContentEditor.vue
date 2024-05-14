@@ -18,7 +18,6 @@
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagment();
 
-
 	const props = defineProps({
 		objectData: {
 			type: Object,
@@ -36,15 +35,18 @@
 		const building = ObjectCache.GetObject('building', group.acf.edificio);
 		data.title = `${innerID} &#8212; ${building.acf.title} &#8212; ${data.acf.floor} &#8212; ${data.acf.number}`;
 	});
-
+	console.log(objectData);
 	function getAcf(){
 		return objectData.acf;
 	};
 
 	
 	const inputGroup = reactive(useValidationGroup());
+	const syncGroup = reactive(useValidationGroup());
 
-	
+	function AddSyncItem(){
+		getAcf().sync.push({label:'', url:''})
+	}
 	function GetApartmentReservations(){
 		return ObjectCache.GetSegmentRows('reservation').filter(reservation => reservation.acf.apartment == objectData.id);
 	}
@@ -79,7 +81,7 @@
 	}
 
 	defineExpose({
-		isValid: inputGroup.isValid,
+		isValid: () => inputGroup.isValid() && syncGroup.isValid(),
 		GetTitle,
 	});
 </script>
@@ -126,6 +128,41 @@
 					</TextInput>
 				</div>
 			</InputLabel>
+
+			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !syncGroup.isValid()}">
+				<input type="checkbox" /> 
+				<div class="collapse-title text-xl font-medium">
+					Sincronización
+				</div>
+				<div class="collapse-content"> 
+					<div class="">
+						<div class="group/syncItem" v-for="(syncItem,id) in getAcf().sync" :key="id">
+							<div class="flex">
+								<div class="join join-vertical w-0 grow">
+									<TextInput :ref="el => syncGroup.elements[`syncItem${id}Label`] = el" v-model="syncItem.label" placeholder="Nombre de plataforma" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0">
+										<template v-slot:before><span class="font-bold">Etiqueta:</span></template>
+									</TextInput>
+									<TextInput :ref="el => syncGroup.elements[`syncItem${id}URL`] = el" v-model="syncItem.url" :validate="formValueValidation.notEmpty" placeholder="link" type='text' class="join-item grow min-w-0">
+										<template v-slot:before><span class="font-bold">Link:</span></template>
+									</TextInput>
+								</div>
+
+								<div class="flex justify-center items-center p-2">
+									<div class="btn btn-warning btn-sm btn-circle" @click="getAcf().sync.splice(id,1)">
+										<i class="fa-solid fa-minus"></i>
+									</div>
+								</div>
+							</div>
+							<div class="divider group-last/syncItem:hidden"></div> 
+						</div>
+					</div>
+					<div class="flex justify-center items-center gap-3 mt-4">
+						<div class="btn btn-secondary btn-circle text-xl" @click="AddSyncItem()">
+							<i class="fa-solid fa-plus"></i>
+						</div>
+					</div>	
+				</div>
+			</div>
 		</div>
 
 		<input type="radio" name="apartmentTabs" role="tab" class="tab" aria-label="Reservations" />
