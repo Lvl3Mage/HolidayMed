@@ -2,7 +2,7 @@
 
 	import {ref, computed, watch, shallowReactive, reactive} from "vue";
 	import {formValueValidation} from "@/Utils.js";
-	import TextInput from "@/components/FormElements/TextInput.vue"
+	import Input from "@/components/FormElements/Input.vue"
 	import TextAreaInput from "@/components/FormElements/TextAreaInput.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
@@ -12,12 +12,12 @@
 
 
 	import {useObjectCache} from '@/stores/ObjectCache'
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
 	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
-	const UIManagment = useUIManagment();
+	const UIManagment = useUIManagement();
 
 
 	const props = defineProps({
@@ -76,8 +76,8 @@
 <template>
 	<InputLabel :validatedInput="infoGroup.elements['titleInput']">
 		<template v-slot:label>Title</template>
-		<TextInput :ref="el => infoGroup.elements['titleInput'] = el" v-model="getAcf().title" placeholder="Enter Building title" :validate="formValueValidation.notEmpty" type='text'>
-		</TextInput>
+		<Input :ref="el => infoGroup.elements['titleInput'] = el" v-model="getAcf().title" placeholder="Enter Building title" :validate="formValueValidation.notEmpty" type='text'>
+		</Input>
 		<template v-slot:invalid>Cannot be empty</template>
 	</InputLabel>
 	<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !locationsGroup.isValid()}">
@@ -91,15 +91,15 @@
 				<div class="group/location" v-for="(location,id) in getAcf().locations" :key="id">
 					<div class="flex">
 						<div class="join join-horizontal sm:join-vertical w-0 grow">
-							<TextInput :ref="el => locationsGroup.elements[`location${id}Place`] = el" v-model="location.place" placeholder="Playa" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0 basis-0 sm:basis-auto">
+							<Input :ref="el => locationsGroup.elements[`location${id}Place`] = el" v-model="location.place" placeholder="Playa" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0 basis-0 sm:basis-auto">
 								<template v-slot:before><span class="font-bold">Place:</span></template>
-							</TextInput>
-							<TextInput :ref="el => locationsGroup.elements[`location${id}Distance`] = el" v-model="location.distance" placeholder="10" :validate="formValueValidation.notEmpty" type='number' class="join-item grow min-w-0 basis-0 sm:basis-auto">
+							</Input>
+							<Input :ref="el => locationsGroup.elements[`location${id}Distance`] = el" v-model="location.distance" placeholder="10" :validate="formValueValidation.notEmpty" type='number' class="join-item grow min-w-0 basis-0 sm:basis-auto">
 								<template v-slot:before><span class="font-bold">Distance:</span></template>
-							</TextInput>
-							<TextInput :ref="el => locationsGroup.elements[`location${id}Unit`] = el" v-model="location.unidades" placeholder="Playa" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0 basis-0 sm:basis-auto">
+							</Input>
+							<Input :ref="el => locationsGroup.elements[`location${id}Unit`] = el" v-model="location.unidades" placeholder="Playa" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0 basis-0 sm:basis-auto">
 								<template v-slot:before><span class="font-bold">Unit:</span></template>
-							</TextInput>
+							</Input>
 						</div>
 
 						<div class="flex justify-center items-center p-2">
@@ -128,12 +128,12 @@
 				<div class="group/rule" v-for="(rule,id) in getAcf().rules" :key="id">
 					<div class="flex">
 						<div class="join join-vertical w-0 grow">
-							<TextInput :ref="el => rulesGroup.elements[`rule${id}Title`] = el" v-model="rule.title" placeholder="Rule title" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0">
+							<Input :ref="el => rulesGroup.elements[`rule${id}Title`] = el" v-model="rule.title" placeholder="Rule title" :validate="formValueValidation.notEmpty" type='text' class="join-item grow min-w-0">
 								<template v-slot:before><span class="font-bold">Title:</span></template>
-							</TextInput>
-							<TextInput v-model="rule.text" placeholder="Rule text" type='text' class="join-item grow min-w-0">
+							</Input>
+							<Input v-model="rule.text" placeholder="Rule text" type='text' class="join-item grow min-w-0">
 								<template v-slot:before><span class="font-bold">Text:</span></template>
-							</TextInput>
+							</Input>
 							<TextAreaInput  rows="4" v-model="rule.description" placeholder="Rule description" type='text' class="join-item grow min-w-0">
 							</TextAreaInput>
 						</div>

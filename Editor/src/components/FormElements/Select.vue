@@ -8,11 +8,11 @@
 	const emit = defineEmits(["update:modelValue", "change"])
 	const props = defineProps({
 		modelValue: {
-			require: true,
+			require: false,
 		},
 		options: {
 			require: true,
-			type: Object
+			type: Array
 		},
 		maxOptions: {
 			require: false,
@@ -20,6 +20,11 @@
 			default: -1,
 		},
 		render: {
+			require: false,
+			type: Function,
+			default: option => option,
+		},
+		getOptionValue: {
 			require: false,
 			type: Function,
 			default: option => option,
@@ -33,7 +38,7 @@
 			type: String,
 			default: "━━",
 		},
-		dropdownClasses: {
+		dropdownClass: {
 			require: false,
 			type: String,
 			default: "",
@@ -43,7 +48,7 @@
 			type: String,
 			default: "",
 		},
-		optionClasses: {
+		optionClass: {
 			require: false,
 			type: String,
 			default: "",
@@ -54,11 +59,6 @@
 			default: false,
 		},
 		displayValidation: {
-			require: false,
-			type: Boolean,
-			default: true,
-		},
-		showIcon: {
 			require: false,
 			type: Boolean,
 			default: true,
@@ -80,20 +80,11 @@
 			emit('change');
 		}
 	});
-	function RenderOptionKey(optionKey){
-		if(optionKey == null){
-			return props.emptyContent;
-		}
-		if (props.options[optionKey] === undefined){
-			return props.emptyContent;
-		}
-		return props.render(props.options[optionKey]);
-	}
 	/**
 	 * @type {Ref<boolean>}
 	 */
 	const valid = computed(()=>{
-		return props.options[value.value] !== undefined || props.allowEmpty;
+		return true;
 	});
 	
 	const uniqueId = uuidv4();
@@ -116,9 +107,9 @@
 	}
 	const searchQuery = ref('');
 	const optionRows = computed(() => {
-		return Object.keys(props.options).map(key => ({
-			key : key,
-			data: props.options[key], 
+		return props.options.map(option => ({
+			value : props.getOptionValue(option),///TODO AAAH REWRITE THIS
+			data: option, 
 		}));
 	});
 	/**
@@ -187,7 +178,7 @@
 		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClass, {'border-error': !valid && displayValidation}]">
 			<slot>
 				<div v-html="RenderOptionKey(value)"></div>
-				<div class="group-focus-within/dropdown:rotate-180 transition" v-if="props.showIcon">
+				<div class="group-focus-within/dropdown:rotate-180 transition">
 					<i class="fa-solid fa-chevron-down"></i>
 				</div>
 			</slot>
@@ -198,14 +189,14 @@
 			<template v-slot:after><i class="fa-solid fa-magnifying-glass"></i></template>
 		</Input>
 	</div>
-	<ul tabindex="0" @blur="handleBlur" class="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box min-w-full max-h-40 overflow-auto flex flex-col flex-nowrap" :class="props.dropdownClasses">
-		<li v-if="props.allowEmpty" @click="value = null" :class="[props.optionClasses]">
+	<ul tabindex="0" @blur="handleBlur" class="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box min-w-full max-h-40 overflow-auto flex flex-col flex-nowrap" :class="props.dropdownClass">
+		<li v-if="props.allowEmpty" @click="value = null" :class="props.optionClass">
 			<a class="p-2 w-full" :class="[{'active': value == null}, {'whitespace-nowrap': !props.wrapOptions}]" v-html="props.emptyContent"></a>
 		</li>
-		<li v-for="optionRow in processedOptions" :key="optionRow.key" @click="value = optionRow.key"  class="" :class="[props.optionClasses]">
+		<li v-for="optionRow in processedOptions" :key="optionRow.key" @click="value = optionRow.key"  class="" :class="[props.optionClass]">
 			<a v-html="props.render(optionRow.data)" class="p-2 w-full" :class="[{'active': optionRow.key == value}, {'whitespace-nowrap': !props.wrapOptions}]"></a>
 		</li>
-		<li class="p-2 w-full" v-if="processedOptions.length == 0" :class="[props.optionClasses]">
+		<li class="p-2 w-full" v-if="processedOptions.length == 0" :class="[props.optionClass]">
 			No results
 		</li>
 	</ul>

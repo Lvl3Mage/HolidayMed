@@ -1,6 +1,7 @@
 <script setup>
 
 	import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+	import { v4 as uuidv4 } from 'uuid';
 	const emit = defineEmits(['change','update:modelValue', 'blur', 'focus'])
 	const props = defineProps({
 		modelValue: {
@@ -40,10 +41,11 @@
 			input.value.focus();
 		}
 	}
-
+	const uniqueId = uuidv4();
 	defineExpose({
 		valid,
 		focus,
+		uniqueId,
 	});
 
 </script>

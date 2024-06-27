@@ -2,7 +2,7 @@
 
 	import {ref, computed, shallowReactive, watch, reactive} from "vue";
 	import {formValueValidation, ParseYMDString} from "@/Utils.js";
-	import TextInput from "@/components/FormElements/TextInput.vue"
+	import Input from "@/components/FormElements/Input.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
@@ -11,12 +11,12 @@
 
 
 	import {useObjectCache} from '@/stores/ObjectCache'
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
 	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
-	const UIManagment = useUIManagment();
+	const UIManagment = useUIManagement();
 
 	const props = defineProps({
 		objectData: {
@@ -68,45 +68,45 @@
 		<div role="tabpanel" class="tab-content">
 			<InputLabel :validatedInput="inputGroup.elements['guestCount']">
 				<template v-slot:label>Numero de huespedes</template>
-				<TextInput :ref="el => inputGroup.elements['guestCount'] = el" v-model="getAcf().order_data.guests_count" placeholder="5" :validate="formValueValidation.notEmpty" type="number">
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['guestCount'] = el" v-model="getAcf().order_data.guests_count" placeholder="5" :validate="formValueValidation.notEmpty" type="number">
+				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
 			<InputLabel :validatedInput="inputGroup.elements['priceTotal']">
 				<template v-slot:label>Precio total</template>
-				<TextInput :ref="el => inputGroup.elements['priceTotal'] = el" v-model="getAcf().order_data.prices.total" placeholder="" type="number" :validate="formValueValidation.notEmpty" disabled>
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['priceTotal'] = el" v-model="getAcf().order_data.prices.total" placeholder="" type="number" :validate="formValueValidation.notEmpty" disabled>
+				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
 			<InputLabel>
 				<template v-slot:label>Formulario de pago</template>
-				<TextInput  v-model="getAcf().order_data.pay_info.payment_form.label" placeholder="" disabled >
-				</TextInput>
+				<Input  v-model="getAcf().order_data.pay_info.payment_form.label" placeholder="" disabled >
+				</Input>
 			</InputLabel>
 			<InputLabel>
 				<template v-slot:label>Forma de pago</template>
-				<TextInput  v-model="getAcf().order_data.pay_info.payment_method.label" placeholder="" disabled >
-				</TextInput>
+				<Input  v-model="getAcf().order_data.pay_info.payment_method.label" placeholder="" disabled >
+				</Input>
 			</InputLabel>
 			<InputLabel :validatedInput="inputGroup.elements['clientName']">
 				<template v-slot:label>Nombre</template>
-				<TextInput :ref="el => inputGroup.elements['clientName'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.name" placeholder="" >
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['clientName'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.name" placeholder="" >
+				</Input>
 			</InputLabel>
 			<InputLabel :validatedInput="inputGroup.elements['clientSurname']">
 				<template v-slot:label>Apellido</template>
-				<TextInput :ref="el => inputGroup.elements['clientSurname'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.surname" placeholder="" >
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['clientSurname'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.surname" placeholder="" >
+				</Input>
 			</InputLabel>
 			<InputLabel :validatedInput="inputGroup.elements['clientEmail']">
 				<template v-slot:label>Correo Electronico</template>
-				<TextInput :ref="el => inputGroup.elements['clientEmail'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.email" placeholder="" >
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['clientEmail'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.email" placeholder="" >
+				</Input>
 			</InputLabel>
 			<InputLabel :validatedInput="inputGroup.elements['clientPhone']">
 				<template v-slot:label>Numero de telefono</template>
-				<TextInput :ref="el => inputGroup.elements['clientPhone'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.phone" placeholder="" type="number">
-				</TextInput>
+				<Input :ref="el => inputGroup.elements['clientPhone'] = el" :validate="formValueValidation.notEmpty" v-model="getAcf().order_data.contact_info.phone" placeholder="" type="number">
+				</Input>
 			</InputLabel>
 		</div>
 		<input type="radio" name="orderTabs" role="tab" class="tab" aria-label="Reservations" />
@@ -144,7 +144,7 @@
 							return `<span class='loading loading-dots loading-xs'></span>`
 						},
 						onClick: (object) => {
-							UIManagment.OpenEditObjectModal('apartment',object.acf.apartment);
+							UIManagement.OpenEditObjectModal('apartment',object.acf.apartment);
 						},
 						getSortValue: (object) => {
 							const apartment = ObjectCache.GetObject('apartment', object.acf.apartment);

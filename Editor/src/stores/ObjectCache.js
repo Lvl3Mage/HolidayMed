@@ -2,9 +2,15 @@ import { defineStore } from 'pinia';
 import {useObjectManager} from '@/stores/ObjectManager.js';
 import {AssignAtPath, ReadAtPath, CreateAtPath} from '@/Utils.js';
 
+const objectTypes = Object.freeze({
+	apartment: "apartment",
+	reservation: "reservation",
+	building: "building",
+	media: "media",
+	order: "order",
+});
 const typeCacheFields = {
-	"apartment": ["id", "title", "acf.group", "acf.inner_id", "acf.title"],
-	"group": ["id", "title", "acf.edificio", "acf.title"],
+	"apartment": ["id", "title", "acf.building", "acf.inner_id", "acf.title"],
 	"reservation": ["id", "title", "acf.order", "acf.apartment", "acf.start_date", "acf.end_date"],
 	"building": ["id", "title", "acf.title"],
 	"media": ["id", "title", "link"],
@@ -24,6 +30,9 @@ const useObjectCache = defineStore({
 	getters: {
 	},
 	actions: {
+		/**
+		 * @param {string} type
+		 */
 		GetTypeFieldFilter(type){
 			const fields = typeCacheFields[type];
 			const filter = "_fields=id," + fields.join(",");
@@ -54,6 +63,11 @@ const useObjectCache = defineStore({
 				});
 			});
 		},
+		/**
+		 * 
+		 * @param {string} type
+		 * @returns {Promise<unknown>}
+		 */
 		ReloadSegment(type){
 			this.cacheSegments[type].mappedData = {};
 			this.cacheSegments[type].loading = true;
@@ -80,14 +94,12 @@ const useObjectCache = defineStore({
 			let hashBefore = this.cacheSegments[type].hash;
 			if(!data.fields_hash){
 				console.log("No hash in data, reloading segment");
-				this.ReloadSegment(type);
-				return;
+				return this.ReloadSegment(type);
 			}
 			this.cacheSegments[type].hash = data.fields_hash.after;
 			if(hashBefore != data.fields_hash.before){
 				console.log(`Hash mismatch, reloading segment, ${type}`);
-				this.ReloadSegment(type);
-				return;
+				return this.ReloadSegment(type);
 			}
 			let cachedFields = typeCacheFields[type];
 			for (let field of cachedFields) {
@@ -98,6 +110,8 @@ const useObjectCache = defineStore({
 				}
 			}
 			console.log(`Hash intact, Updated segment ${type}`);
+			return new Promise((resolve)=>resolve());
+		
 		},
 		CreateSegmentEntryWithData(type, data){
 			let hashBefore = this.cacheSegments[type].hash;
@@ -130,7 +144,6 @@ const useObjectCache = defineStore({
 		DeleteSegmentEntry(type, id, data){
 			delete this.cacheSegments[type].mappedData[id];
 		},
-
 		SegmentLoading(type){
 			return this.cacheSegments[type].loading;
 		},

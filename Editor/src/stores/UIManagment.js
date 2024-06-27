@@ -2,8 +2,8 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useAPIAccess } from '@/stores/APIAccess.js';
 
-const useUIManagment = defineStore({
-	id: 'UIManagment',
+const useUIManagement = defineStore({
+	id: 'UIManagement',
 	state: () => {
 		return {
 			objectModals: [],
@@ -111,4 +111,4 @@ const useUIManagment = defineStore({
 		
 	}
 });
-export {useUIManagment};
+export {useUIManagement};

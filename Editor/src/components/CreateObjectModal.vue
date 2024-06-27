@@ -2,21 +2,19 @@
 <script setup>
 
 	import {useObjectManager} from '@/stores/ObjectManager.js'	
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	const ObjectManager = useObjectManager();
-	const UIManagment = useUIManagment();
+	const UIManagement = useUIManagement();
 
 	import { ref, computed} from 'vue'
 
 	import getDataDefaults from "@/DataDefaults.js";
 
 	import ApartmentContentCreator from "@/components/ModalRenderers/ApartmentContentCreator.vue"
-	import GroupContentCreator from "@/components/ModalRenderers/GroupContentCreator.vue"
 	import BuildingContentCreator from "@/components/ModalRenderers/BuildingContentCreator.vue"
 
 	const contentRendererLookup = {
 		"apartment" : ApartmentContentCreator,
-		"group" : GroupContentCreator,
 		"building" : BuildingContentCreator,
 	};
 
@@ -38,7 +36,7 @@
 
 	const modalOpen = ref(true);
 	const objectData = ref(getDataDefaults(props.objectType));
-	const creationParams = UIManagment.GetModalByUniqueId(props.uniqueId).creationParams;
+	const creationParams = UIManagement.GetModalByUniqueId(props.uniqueId).creationParams;
 	if(creationParams.dataHandler){
 		creationParams.dataHandler(objectData.value);
 	}
@@ -57,23 +55,23 @@
 
 	function DiscardModal(){
 		CloseModal().then(() => {
-			UIManagment.GetModalByUniqueId(props.uniqueId).resolve("canceled");
+			UIManagement.GetModalByUniqueId(props.uniqueId).resolve("canceled");
 		});
 	}
 	function SaveModal(){
 		if(!isValid()){return;}
 		SetLoadingOverlay(true);
-		const toast = UIManagment.OpenToast({appearance:"loading",text: `Creating ${props.objectType}`});
+		const toast = UIManagement.OpenToast({appearance:"loading",text: `Creating ${props.objectType}`});
 
 		ObjectManager.CreateObject(props.objectType, objectData.value)
 			.then(result => {
-				UIManagment.OpenToast({appearance: "success", text: "Changes succesfully!", lifetime:2000, closeOnClick: true});
+				UIManagement.OpenToast({appearance: "success", text: "Changes succesfully!", lifetime:2000, closeOnClick: true});
 				CloseModal().then(() => {
-					UIManagment.GetModalByUniqueId(props.uniqueId).resolve("data-saved", result);
+					UIManagement.GetModalByUniqueId(props.uniqueId).resolve("data-saved", result);
 				});
 			})
 			.catch(error => {
-				UIManagment.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
+				UIManagement.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
 				console.error(error);
 			})
 			.finally(() => {

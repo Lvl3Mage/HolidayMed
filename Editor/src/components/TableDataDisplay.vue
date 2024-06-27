@@ -1,6 +1,6 @@
 <script setup>
 	import { ref, computed, watch } from 'vue';
-	import TextInput from '@/components/FormElements/TextInput.vue';
+	import Input from '@/components/FormElements/Input.vue';
 	import Fuse from 'fuse.js'
 
 	const props = defineProps({
@@ -192,9 +192,9 @@
 									<i class="fa-solid fa-magnifying-glass px-1" ></i>
 								</div>
 								<ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box" v-if="searchFieldIndex == fieldIndex">
-									<TextInput v-model="searchValue" class="max-w-xs input-xs" placeholder="Search" inputClass="input-xs">
+									<Input v-model="searchValue" class="max-w-xs input-xs" placeholder="Search" inputClass="input-xs">
 										<template v-slot:after><i class="fa-solid fa-magnifying-glass"></i></template>
-									</TextInput>
+									</Input>
 								</ul>
 							</div>
 						</span>

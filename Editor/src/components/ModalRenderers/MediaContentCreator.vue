@@ -2,7 +2,7 @@
 
 	import {ref, computed, shallowReactive, watch, reactive} from "vue";
 	import {formValueValidation} from "@/Utils.js";
-	import TextInput from "@/components/FormElements/TextInput.vue"
+	import Input from "@/components/FormElements/Input.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
@@ -11,12 +11,12 @@
 
 
 	import {useObjectCache} from '@/stores/ObjectCache'
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
 	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
-	const UIManagment = useUIManagment();
+	const UIManagment = useUIManagement();
 
 
 	const props = defineProps({
@@ -36,11 +36,6 @@
 	
 	const inputGroup = reactive(useValidationGroup());
 
-	function GetValidGroups(){
-		let currentGroup = ObjectCache.GetObject('group', getAcf().group);
-		let rows = ObjectCache.GetSegmentRows('group').filter(group => group.acf.edificio == currentGroup.acf.edificio);
-		return rows.reduce((a, v) => ({ ...a, [v.id]: v}), {}) 
-	}
 	function ViewObj(objectType, objectId){
 		UIManagment.OpenEditObjectModal(objectType, objectId).then((result) => {
 			console.log(result.code, result.data);
@@ -50,7 +45,7 @@
 	}
 	defineExpose({
 		isValid : inputGroup.isValid,
-		GetTitle: () => "Creating Apartment",
+		GetTitle: () => "Uploading Media",
 	});
 </script>
 <template>

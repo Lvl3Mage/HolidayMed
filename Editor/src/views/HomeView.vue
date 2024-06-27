@@ -1,75 +1,66 @@
 <script setup>
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useObjectManager} from '@/stores/ObjectManager'
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useAPIAccess} from '@/stores/APIAccess.js'
 	import { ref } from 'vue'
 	const APIAccess = useAPIAccess();
 	const ObjectCache = useObjectCache();
 	const ObjectManager = useObjectManager();
-	const UIManagment = useUIManagment();
+	const UIManagement = useUIManagement();
 
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
 	import CacheSegmentRenderer from '@/components/CacheSegmentRenderer.vue';
 	import SelectInput from '@/components/FormElements/SelectInput.vue';
+	import TabDisplay from "@/components/FormElements/TabDisplay.vue";
+	import Input from "@/components/FormElements/Input.vue"
+	import {formValueValidation} from "@/Utils";
 	
 	function ViewObj(objectType, objectId){
-		UIManagment.OpenEditObjectModal(objectType, objectId).then((result) => {
+		UIManagement.OpenEditObjectModal(objectType, objectId).then((result) => {
 			console.log(result.code, result.data);
 		}).catch((error) => {
 			console.error(error.code, error.data);
 		});
 	}
 	function CreateObj(objectType){
-		UIManagment.OpenCreateObjectModal(objectType).then((result) => {
+		UIManagement.OpenCreateObjectModal(objectType).then((result) => {
 			console.log(result.code, result.data);
 		}).catch((error) => {
 			console.error(error.code, error.data);
 		});
 	}
-	const filePath = ref('');
-	function LoadFile(e){
-		const file = e.target.files[0];
-		console.log(file)
-		if(file == undefined){
-			filePath.value = '';
-			return;
-		}
-		filePath.value = URL.createObjectURL(file);
-		ObjectManager.UploadFile('media', file).then(result => {
-			console.log(result);
-		}).catch(error => {
-			console.error(error);
-		});
-	}
-	function RemoveImage(imageId){
-		const toast = UIManagment.OpenToast({appearance: 'loading', text: 'Removing image...'});
-		ObjectManager.DeleteObject('media', imageId).then(result => {
-			console.log(result);
-			toast.CloseToast();
-			UIManagment.OpenToast({appearance: 'success', text: 'Image removed!', closeOnClick:true, lifetime:2000});
-		}).catch(error => {
-			console.error(error);
-			UIManagment.OpenToast({appearance: 'error', text: `Image could not be removed!`, closeOnClick:true, lifetime:2000});
-		})
-		.finally(() => {
-			toast.CloseToast();
-		});
-	}
-	const selectedApartment = ref(null);
-	function RenderApartmentGroup(object){
-		let group = ObjectCache.GetObject('group', object.acf.group);
-		return `<span class='${group ? 'link' : ''}'>
-		${group ? group.title.rendered : 'Group not found'}
-		</span>`;
-	}
+	// const filePath = ref('');
+	// function LoadFile(e){
+	// 	const file = e.target.files[0];
+	// 	console.log(file)
+	// 	if(file == undefined){
+	// 		filePath.value = '';
+	// 		return;
+	// 	}
+	// 	filePath.value = URL.createObjectURL(file);
+	// 	ObjectManager.UploadFile('media', file).then(result => {
+	// 		console.log(result);
+	// 	}).catch(error => {
+	// 		console.error(error);
+	// 	});
+	// }
+	// function RemoveImage(imageId){
+	// 	const toast = UIManagement.OpenToast({appearance: 'loading', text: 'Removing image...'});
+	// 	ObjectManager.DeleteObject('media', imageId).then(result => {
+	// 		console.log(result);
+	// 		toast.CloseToast();
+	// 		UIManagement.OpenToast({appearance: 'success', text: 'Image removed!', closeOnClick:true, lifetime:2000});
+	// 	}).catch(error => {
+	// 		console.error(error);
+	// 		UIManagement.OpenToast({appearance: 'error', text: `Image could not be removed!`, closeOnClick:true, lifetime:2000});
+	// 	})
+	// 	.finally(() => {
+	// 		toast.CloseToast();
+	// 	});
+	// }
 	function GetApartmentBuilding(object){
-		let group = ObjectCache.GetObject('group', object.acf.group);
-		let building = null;
-		if(group){
-			building = ObjectCache.GetObject('building', group.acf.edificio);
-		}
-		return building;
+		return ObjectCache.GetObject('building', object.acf.building);
 	}
 	function RenderApartmentBuilding(object){
 		const building = GetApartmentBuilding(object);
@@ -103,13 +94,43 @@
 	// }).catch(error => {
 	// 	console.error(error);
 	// });
+	const test = ref("");
 </script>
 
 <template>
 	<main>
 		<div class="container">
+			<TabDisplay :tabs="{
+				tab1: {name: 'Tab 1'},
+				tab2: {name: 'Tab 2'},
+				tab3: {name: 'Tab 3'},
+			}">
+				<template #tab1>
+					<div class="card card-body">
+						<h2 class="card-title">Tab 1</h2>
+						<p>Tab 1 content</p>
+					</div>
+				</template>
+				<template #tab2="{validationGroup}">
+					<div class="card card-body">
+						<h2 class="card-title">Tab 2</h2>
+						<p>Tab 2 content</p>
+						
+						<Input :ref="el => validationGroup.Add(el, 'title')" v-model="test" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
+						</Input>
+					</div>
+				</template>
+				
+				<template #tab3>
+					<div class="card card-body">
+						<h2 class="card-title">Tab 3</h2>
+						<p>Tab 3 content</p>
+					</div>
+				</template>
+			</TabDisplay>
 			<div class="flex flex-wrap gap-12">
-				<CacheSegmentRenderer :types="['apartment', 'group', 'building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">
+				{{APIAccess.ongoingRequests}}
+				<CacheSegmentRenderer :types="['apartment', 'building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">
 					<div class="card-body">
 						<h2 class="card-title mb-2">Apartamentos</h2>
 						<div class="grow flex flex-col justify-between">
@@ -125,24 +146,10 @@
 									getSearchValue: (object) => object.acf.title,
 								},
 								{
-									displayName: 'Group',
-									render: (object) => {
-										const building = GetApartmentBuilding(object);
-										if(!building){
-											return `<span>Building not found</span>`;
-										}
-										return `<span class='link'>
-											${building.acf.title}
-										</span>`;
-									},
-									onClick: (object) => ViewObj('group', object.acf.group),
-									getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
-								},
-								{
 									displayName: 'Building',
 									render: RenderApartmentBuilding,
 									onClick: (object) => ViewBuilding(GetApartmentBuilding(object)),
-									getSearchValue: (object) => ObjectCache.GetObject('group', object.acf.group) ? ObjectCache.GetObject('group', object.acf.group).title.rendered : '',
+									getSearchValue: (object) => ObjectCache.GetSegmentRows('building'),
 								},
 							]"
 							:actions="[
@@ -152,46 +159,9 @@
 								},
 							]"/>
 						</div>
-						<!-- <div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('apartment')">Nuevo apartamento</div> -->
+						 <div class="btn btn-success" @click="UIManagement.OpenCreateObjectModal('apartment')">Nuevo apartamento</div> 
 					</div>
 				</CacheSegmentRenderer>
-				<CacheSegmentRenderer :types="['group', 'building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title mb-2">Grupos</h2>
-						<div class="grow flex flex-col justify-between">
-							<TableDataDisplay :rows="ObjectCache.GetSegmentRows('group')" :compact="true" :showRowNumbers="true" :rowsPerPage="10" :fields="[
-								{
-									displayName: 'Title',
-									render: (object) => object.acf.title,
-									getSortValue: (object) => object.acf.title,
-									getSearchValue: (object) => object.acf.title,
-								},
-								{
-									displayName: 'Building',
-									render: (object) => {
-										const building = ObjectCache.GetObject('building', object.acf.edificio)
-										if(!building){
-											return `<span>Building not found</span>`;
-										}
-										return `<span class='link'>
-											${building.acf.title}
-										</span>`;
-									},
-									onClick: (object) => ViewObj('building',object.acf.edificio),
-									getSearchValue: (object) => ObjectCache.GetObject('building', object.acf.edificio) ? ObjectCache.GetObject('building', object.acf.edificio).acf.title : '',
-								},
-							]"
-							:actions="[
-								{
-									render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-									onClick: (object) => ViewObj('group', object.id),
-								},
-							]"/>
-						</div>
-						<!-- <div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('group')">Nuevo grupo</div> -->
-					</div>
-				</CacheSegmentRenderer>
-
 				<CacheSegmentRenderer :types="['building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">
 					<div class="card-body">
 						<h2 class="card-title mb-2">Edificios</h2>
@@ -211,7 +181,7 @@
 								},
 							]"/>
 						</div>
-						<div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('building')">Nuevo edificio</div>
+						<div class="btn btn-success" @click="UIManagement.OpenCreateObjectModal('building')">Nuevo edificio</div>
 					</div>
 				</CacheSegmentRenderer>
 

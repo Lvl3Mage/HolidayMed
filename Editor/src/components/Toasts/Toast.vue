@@ -2,8 +2,8 @@
 	import gsap from 'gsap';
 
 
-	import {useUIManagment} from "@/stores/UIManagment.js"
-	const UIManagment = useUIManagment();
+	import {useUIManagement} from "@/stores/UIManagment.js"
+	const UIManagment = useUIManagement();
 
 	import {ref, computed, onMounted} from "vue";
 	const props = defineProps({

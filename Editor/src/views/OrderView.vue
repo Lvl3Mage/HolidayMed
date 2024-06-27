@@ -1,13 +1,13 @@
 <script setup>
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useObjectManager} from '@/stores/ObjectManager'
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useAPIAccess} from '@/stores/APIAccess.js'
 	import { ref } from 'vue'
 	const APIAccess = useAPIAccess();
 	const ObjectCache = useObjectCache();
 	const ObjectManager = useObjectManager();
-	const UIManagment = useUIManagment();
+	const UIManagment = useUIManagement();
 
 	import TableDataDisplay from '@/components/TableDataDisplay.vue';
 	import CacheSegmentRenderer from '@/components/CacheSegmentRenderer.vue';
@@ -85,7 +85,7 @@
 				</CacheSegmentRenderer>
 
 			</div>
-			<!-- <div class="btn btn-success" @click="UIManagment.OpenCreateObjectModal('building')">Create Building</div> -->
+			<!-- <div class="btn btn-success" @click="UIManagement.OpenCreateObjectModal('building')">Create Building</div> -->
 			
 		</div>
 		<!-- <SelectInput v-model="selectedApartment" :allowEmpty="true" :options="ObjectCache.GetSegmentData('apartment')" :render="ap=>ap.title.rendered" :getSearchValue="ap=>ap.title.rendered"></SelectInput> -->

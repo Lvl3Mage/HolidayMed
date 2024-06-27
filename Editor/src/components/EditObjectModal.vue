@@ -2,13 +2,12 @@
 <script setup>
 
 	import {useObjectManager} from '@/stores/ObjectManager.js'	
-	import {useUIManagment} from '@/stores/UIManagment.js'
+	import {useUIManagement} from '@/stores/UIManagment.js'
 	const ObjectManager = useObjectManager();
-	const UIManagment = useUIManagment();
+	const UIManagement = useUIManagement();
 
 	import { ref, computed} from 'vue'
 	import ApartmentContentEditor from "@/components/ModalRenderers/ApartmentContentEditor.vue"
-	import GroupContentEditor from "@/components/ModalRenderers/GroupContentEditor.vue"
 	import BuildingContentEditor from "@/components/ModalRenderers/BuildingContentEditor.vue"
 	import OrderContentEditor from "@/components/ModalRenderers/OrderContentEditor.vue"
 	const titleLookup = {
@@ -18,7 +17,6 @@
 
 	const contentRendererLookup = {
 		"apartment" : ApartmentContentEditor,
-		"group" : GroupContentEditor,
 		"building" : BuildingContentEditor,
 		"order" : OrderContentEditor,
 	
@@ -49,15 +47,15 @@
 
 	//TODO Catch modal if type and id already open (call reject)
 
-	const requestToast = UIManagment.OpenToast({appearance:"loading",text: `Loading ${props.objectType}!`});
+	const requestToast = UIManagement.OpenToast({appearance:"loading",text: `Loading ${props.objectType}!`});
 	ObjectManager.GetObject(props.objectType, props.objectId)
 	.then(result => {
 		objectData.value = result;
 	})
 	.catch(error => {
 		console.error(error);
-		UIManagment.OpenToast({appearance: "error", text: `Unable to open ${props.objectType}!`, lifetime:2000, closeOnClick: true});
-		UIManagment.GetModalByUniqueId(props.uniqueId).reject("systemError", error);
+		UIManagement.OpenToast({appearance: "error", text: `Unable to open ${props.objectType}!`, lifetime:2000, closeOnClick: true});
+		UIManagement.GetModalByUniqueId(props.uniqueId).reject("systemError", error);
 	})
 	.finally(() => {
 		requestToast.CloseToast();
@@ -75,23 +73,23 @@
 
 	function DiscardModal(){
 		CloseModal().then(() => {
-			UIManagment.GetModalByUniqueId(props.uniqueId).resolve("canceled");
+			UIManagement.GetModalByUniqueId(props.uniqueId).resolve("canceled");
 		});
 	}
 	function SaveModal(){
 		if(!isValid()){return;}
 		SetLoadingOverlay(true);
-		const toast = UIManagment.OpenToast({appearance:"loading",text: "Saving changes"});
+		const toast = UIManagement.OpenToast({appearance:"loading",text: "Saving changes"});
 		
 		ObjectManager.WriteObject(props.objectType, props.objectId, objectData.value)
 			.then(result => {
-				UIManagment.OpenToast({appearance: "success", text: "Changes saved!", lifetime:2000, closeOnClick: true});
+				UIManagement.OpenToast({appearance: "success", text: "Changes saved!", lifetime:2000, closeOnClick: true});
 				CloseModal().then(() => {
-					UIManagment.GetModalByUniqueId(props.uniqueId).resolve("data-saved", result);
+					UIManagement.GetModalByUniqueId(props.uniqueId).resolve("data-saved", result);
 				});
 			})
 			.catch(error => {
-				UIManagment.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
+				UIManagement.OpenToast({appearance: "error", text: "Unable to save changes!", lifetime:2000, closeOnClick: true});
 				console.error(error);
 			})
 			.finally(() => {

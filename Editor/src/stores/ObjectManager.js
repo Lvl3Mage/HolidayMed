@@ -168,18 +168,19 @@ const useObjectManager = defineStore({
 				}.bind(this));
 			});
 		},
-		UpdateSchemas(){
+		 UpdateSchemas(){
 
 			let types = Object.keys(typeRequestLookup);
-			for (let type of types) {
+			for (let i = 0; i < types.length; i++){
+				let type = types[i];
 				if(this.schemas[type] == undefined){
 					this.UpdateSchema(type);//immediate request
 				}
 				else{
-					setTimeout(this.UpdateSchema.bind(this), 10*1000, type);//delayed request since schema is already cached
+					setTimeout(this.UpdateSchema.bind(this), (i)*2*1000 + 5*1000, type);//delayed request since schema is already cached
 				}
 			}
-		},
+		 },
 		UpdateSchema(objectType){
 			return new Promise((resolve, reject) => {
 				this.APIAccess.OptionsREST(typeRequestLookup[objectType])
