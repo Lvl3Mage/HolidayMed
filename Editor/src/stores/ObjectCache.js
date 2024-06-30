@@ -13,7 +13,7 @@ const typeCacheFields = {
 	"apartment": ["id", "title", "acf.building", "acf.inner_id", "acf.title"],
 	"reservation": ["id", "title", "acf.order", "acf.apartment", "acf.start_date", "acf.end_date"],
 	"building": ["id", "title", "acf.title"],
-	"media": ["id", "title", "link"],
+	"media": ["id", "title", "link", "media_details"],
 	"order": ["id", "title", "acf.order_status"],
 }
 

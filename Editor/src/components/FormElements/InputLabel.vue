@@ -1,5 +1,6 @@
 <script setup>
 	import { ref, computed } from 'vue';
+	import { v4 as uuidv4 } from 'uuid';
 
 	const props = defineProps({
 		valid: {
@@ -19,12 +20,15 @@
 
 	function isValid(){
 		if(props.validatedInput){
-			return props.validatedInput.valid;
+			return props.validatedInput.isValid();
 		}
 		return props.valid;
 	}
+	
+	const uniqueId = uuidv4();
 	defineExpose({
 		isValid,
+		uniqueId
 	});
 </script>
 <template>

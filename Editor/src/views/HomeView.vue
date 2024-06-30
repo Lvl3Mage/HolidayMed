@@ -100,34 +100,7 @@
 <template>
 	<main>
 		<div class="container">
-			<TabDisplay :tabs="{
-				tab1: {name: 'Tab 1'},
-				tab2: {name: 'Tab 2'},
-				tab3: {name: 'Tab 3'},
-			}">
-				<template #tab1>
-					<div class="card card-body">
-						<h2 class="card-title">Tab 1</h2>
-						<p>Tab 1 content</p>
-					</div>
-				</template>
-				<template #tab2="{validationGroup}">
-					<div class="card card-body">
-						<h2 class="card-title">Tab 2</h2>
-						<p>Tab 2 content</p>
-						
-						<Input :ref="el => validationGroup.Add(el, 'title')" v-model="test" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
-						</Input>
-					</div>
-				</template>
-				
-				<template #tab3>
-					<div class="card card-body">
-						<h2 class="card-title">Tab 3</h2>
-						<p>Tab 3 content</p>
-					</div>
-				</template>
-			</TabDisplay>
+			<div class="" @click="UIManagement.OpenModal('select-image')">COOOL</div>
 			<div class="flex flex-wrap gap-12">
 				{{APIAccess.ongoingRequests}}
 				<CacheSegmentRenderer :types="['apartment', 'building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">

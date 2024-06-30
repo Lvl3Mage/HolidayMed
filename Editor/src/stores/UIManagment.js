@@ -48,32 +48,21 @@ const useUIManagement = defineStore({
 			return {modalPromise, modalResolve, modalReject};
 		},
 		OpenEditObjectModal(objectType, objectId){
-			let promiseData = this.CreateModalPromise();
-			this.objectModals.push({
-				modalType: "Edit",
-				modalProps: {
-					objectType: objectType,
-					objectId: objectId,
-				},
-				resolve: promiseData.modalResolve,
-				reject: promiseData.modalReject,
-				uniqueId: this.uniqueElementIndex,
-			});
-			return promiseData.modalPromise;
+			return this.OpenModal("edit-object", {objectType: objectType, objectId: objectId});
 		},
-		OpenCreateObjectModal(objectType, creationParams = {}){
+		OpenCreateObjectModal(objectType, dataHandler = ()=>{}){
+			return this.OpenModal("create-object", {objectType: objectType, dataHandler: dataHandler});
+		},
+		OpenModal(modalType, modalProps = {}){
 			let promiseData = this.CreateModalPromise();
 			this.objectModals.push({
-				modalType: "Create",
-				modalProps: {
-					objectType: objectType,
-				},
+				modalType: modalType,
+				modalProps: modalProps,
 				resolve: promiseData.modalResolve,
 				reject: promiseData.modalReject,
 				uniqueId: this.uniqueElementIndex,
-				creationParams: creationParams,
 			});
-			return promiseData.modalPromise;
+			return promiseData.modalPromise;	
 		},
 		GetModalByUniqueId(uniqueId){
 			return this.objectModals.find((modal) => modal.uniqueId == uniqueId);

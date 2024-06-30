@@ -14,7 +14,8 @@
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
-	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
+	import {useObjectData} from '@/components/Modals/ModalRenderers/ObjectData.js'
+	import TabDisplay from "@/components/FormElements/TabDisplay.vue";
 
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagement();
@@ -39,9 +40,7 @@
 	};
 
 	
-	const inputGroup = reactive(useValidationGroup());
 	const syncGroup = reactive(useValidationGroup());
-	const imagesGroup = reactive(useValidationGroup());
 
 	function GetApartmentReservations(){
 		return ObjectCache.GetSegmentRows('reservation').filter(reservation => reservation.acf.apartment == objectData.id);
@@ -70,26 +69,29 @@
 	function GetTitle(){
 		return objectData.title;
 	}
+	const tabDisplay = ref(null);
 
 	defineExpose({
-		isValid: () => inputGroup.isValid() && syncGroup.isValid() && imagesGroup.isValid(),
+		isValid: () => tabDisplay.value?.isValid(),
 		GetTitle,
 	});
 </script>
 <template>
-
-	<div role="tablist" class="tabs tabs-lifted">
-		<a role="tab" class="tab tab-active"   >Info</a>
-		<div role="tabpanel" class="tab-content">
-			<InputLabel :validatedInput="inputGroup.elements['innerIdInput']">
+	<TabDisplay :tabs="{
+		info: {name: 'Info', validationElements: [syncGroup]},
+		images: {name: 'Imagines'},
+		reservations: {name: 'Reservations'},
+	}" :ref="el=>tabDisplay = el">
+		<template #info="{validationGroup}">
+			<InputLabel :validatedInput="validationGroup.elements['innerIdInput']">
 				<template v-slot:label>Apartment identifier</template>
-				<Input :ref="el => inputGroup.Add(el, 'innerIdInput')" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="formValueValidation.notEmpty">
+				<Input :ref="el => validationGroup.Add(el, 'innerIdInput')" v-model="getAcf().inner_id" placeholder="Enter apartment identifier" :validate="formValueValidation.notEmpty">
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
-			<InputLabel :validatedInput="inputGroup.elements['title']">
+			<InputLabel :validatedInput="validationGroup.elements['title']">
 				<template v-slot:label>Apartment identifier</template>
-				<Input :ref="el => inputGroup.elements['title'] = el" v-model="getAcf().title" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
+				<Input :ref="el => validationGroup.elements['title'] = el" v-model="getAcf().title" placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
@@ -104,19 +106,19 @@
 					</div>
 				</InputLabel>
 			</div>
-			<InputLabel :validatedInput="inputGroup.elements['bathrooms']">
+			<InputLabel :validatedInput="validationGroup.elements['bathrooms']">
 				<template v-slot:label>Bathrooms</template>
-				<Input type="number" :ref="el => inputGroup.elements['bathrooms'] = el" v-model="getAcf().bathrooms" placeholder="1" :validate="formValueValidation.notEmpty">
+				<Input type="number" :ref="el => validationGroup.elements['bathrooms'] = el" v-model="getAcf().bathrooms" placeholder="1" :validate="formValueValidation.notEmpty">
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
 			<InputLabel>
 				<template v-slot:label>Apartment Address</template>
 				<div class="join w-full">
-					<Input :ref="el => inputGroup.elements['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="formValueValidation.notEmpty" type='number' class="join-item grow max-w-32">
+					<Input :ref="el => validationGroup.elements['floorInput'] = el" v-model="getAcf().floor" placeholder="0" :validate="formValueValidation.notEmpty" type='number' class="join-item grow max-w-32">
 						<template v-slot:before>Floor:</template>
 					</Input>
-					<Input :ref="el => inputGroup.elements['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="formValueValidation.notEmpty" type='text' class="join-item grow max-w-32">
+					<Input :ref="el => validationGroup.elements['doorInput'] = el" v-model="getAcf().number" placeholder="11" :validate="formValueValidation.notEmpty" type='text' class="join-item grow max-w-32">
 						<template v-slot:before>Door:</template>
 					</Input>
 				</div>
@@ -138,21 +140,20 @@
 					</ArrayContentEditor>
 				</div>
 			</div>
-		</div>
-		<a role="tab" class="tab"   >Imagines</a>
-		<div role="tabpanel" class="tab-content">
+		</template>
+		<template #images="{validationGroup}">
 			<div class="divider">Imagines</div>
-			<ArrayContentEditor :validation-group="imagesGroup" :value="getAcf().images" :element-constructor="() => ({label:'', url:''})" v-slot="{index, item}">
-				<SelectInput :ref="el=> imagesGroup.Add(el,  `image${index}`)" class="join-item" v-model="getAcf().images[index]" 
+			<ArrayContentEditor :validation-group="validationGroup" :value="getAcf().images" :element-constructor="() => ({label:'', url:''})" v-slot="{index, item}">
+				<SelectInput :ref="el=> validationGroup.Add(el,  `image${index}`)" class="join-item" v-model="getAcf().images[index]" 
 				             :allowEmpty="false" 
 				             :options="ObjectCache.GetSegmentData('media')"
 				             :maxOptions="10"
 				             :render="building=>building.title.rendered" 
 				             :getSearchValue="building=>building.title.rendered" buttonClass="join-item"></SelectInput>
 			</ArrayContentEditor>
-		</div>
-		<a role="tab" class="tab"   >Reservations</a>
-		<div role="tabpanel" class="tab-content">
+		</template>
+		
+		<template #reservations>
 			<div class="divider">Reservations</div>
 		  	<CacheSegmentRenderer type="reservation" class="min-h-44" >
 				<TableDataDisplay :rows="GetApartmentReservations()" :compact="true" :showRowNumbers="false" :rowsPerPage="10" :fields="[
@@ -189,11 +190,6 @@
 			<div class="flex justify-center items-center gap-3 mt-4">
 				<div class="btn btn-success" @click="CreateReservation()">Create new reservation</div>
 			</div> -->
-		</div>
-		
-	</div>
-	
-  	
+		</template>
+	</TabDisplay>
 </template>
-<style scoped lang="scss">
-</style>

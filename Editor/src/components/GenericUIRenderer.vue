@@ -6,11 +6,13 @@
 	import Toast from "@/components/Toasts/Toast.vue"
 
 
-	import EditObjectModal from "@/components/EditObjectModal.vue";
-	import CreateObjectModal from "@/components/CreateObjectModal.vue";
+	import EditObjectModal from "@/components/Modals/EditObjectModal.vue";
+	import CreateObjectModal from "@/components/Modals/CreateObjectModal.vue";
+	import SelectImageModal from "@/components/Modals/SelectImageModal.vue";
 	const modalLookup = {
-		"Edit":EditObjectModal,
-		"Create":CreateObjectModal,
+		"edit-object":EditObjectModal,
+		"create-object":CreateObjectModal,
+		"select-image":SelectImageModal,
 	}
 
 </script>

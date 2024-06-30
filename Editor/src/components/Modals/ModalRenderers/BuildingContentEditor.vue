@@ -15,7 +15,7 @@
 	import {useObjectCache} from '@/stores/ObjectCache'
 	import {useUIManagement} from '@/stores/UIManagment.js'
 	import {useValidationGroup} from '@/components/FormElements/ValidationGroup.js'
-	import {useObjectData} from '@/components/ModalRenderers/ObjectData.js'
+	import {useObjectData} from '@/components/Modals/ModalRenderers/ObjectData.js'
 
 	const ObjectCache = useObjectCache();
 	const UIManagment = useUIManagement();

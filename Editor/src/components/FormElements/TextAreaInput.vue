@@ -1,6 +1,7 @@
 <script setup>
 
 	import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+	import { v4 as uuidv4 } from 'uuid';
 	const emit = defineEmits(['change','update:modelValue', 'blur', 'focus'])
 	const props = defineProps({
 		modelValue: {
@@ -24,27 +25,28 @@
 			emit('change');
 		}
 	});
-	const valid = computed(()=>{
+	const isValid = ()=>{
 		if(props.validate != undefined){
 			return props.validate(value.value);
 		}
 		return true;
-	});
+	};
 	const input = ref(null);
 	function focus(){
 		if(input.value){
 			input.value.focus();
 		}
 	}
-
+ const uniqueId = uuidv4();
 	defineExpose({
-		valid,
+		isValid,
 		focus,
+		uniqueId,
 	});
 
 </script>
 <template>
-	<textarea ref="input" v-model="value" class="textarea textarea-bordered" :class="{'textarea-error' : !valid && displayValidation}" :placeholder="placeholder" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)">
+	<textarea ref="input" v-model="value" class="textarea textarea-bordered" :class="{'textarea-error' : !isValid() && displayValidation}" :placeholder="placeholder" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)">
 		
 	</textarea>
 </template>

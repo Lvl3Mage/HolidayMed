@@ -28,6 +28,8 @@ const useAPIAccess = defineStore({
 			return this.Get("/wp-json/wp/v2" + path, options);
 		},
 		Get(path, options = {}){
+			
+			console.log("GETTING", apiBaseURL + path, options);
 			return this.CountRequest(axios.get(apiBaseURL + path, options));
 		},
 		PostREST(path, data, options = {}){

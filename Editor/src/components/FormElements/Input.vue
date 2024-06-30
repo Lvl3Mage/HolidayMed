@@ -29,12 +29,12 @@
 			emit('change');
 		}
 	});
-	const valid = computed(()=>{
+	const isValid = ()=>{
 		if(props.validate != undefined){
 			return props.validate(value.value);
 		}
 		return true;
-	});
+	};
 	const input = ref(null);
 	function focus(){
 		if(input.value){
@@ -43,14 +43,14 @@
 	}
 	const uniqueId = uuidv4();
 	defineExpose({
-		valid,
+		isValid,
 		focus,
 		uniqueId,
 	});
 
 </script>
 <template>
-	<label class="input input-bordered flex items-center gap-2" :class="{'input-error' : !valid && displayValidation}">
+	<label class="input input-bordered flex items-center gap-2" :class="{'input-error' : !isValid() && displayValidation}">
 		<slot name="before"></slot>
 		<input ref="input" v-model="value" :type="type" :placeholder="placeholder"  class="grow min-w-0" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)"/>
 		<slot name="after"></slot>

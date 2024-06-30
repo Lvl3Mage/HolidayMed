@@ -1,5 +1,5 @@
 import {ref, computed, watch, shallowReactive, reactive} from "vue";
-
+import { v4 as uuidv4 } from 'uuid';
 export function useValidationGroup(){
 	const elements = shallowReactive({});
 	watch(elements, (newVal) => {
@@ -17,7 +17,7 @@ export function useValidationGroup(){
 	 * @returns {boolean} Validity of all elements in the group
 	 */
 	function isValid(){
-		return Object.keys(elements).every(inputKey => elements[inputKey].valid);
+		return Object.keys(elements).every(inputKey => elements[inputKey].isValid());
 	}
 
 	/**
@@ -40,5 +40,7 @@ export function useValidationGroup(){
 		// }
 		elements[key] = element;
 	}
-	return {elements, isValid, Add};
+	
+	const uniqueId = uuidv4();
+	return {elements, isValid, Add, uniqueId};
 }

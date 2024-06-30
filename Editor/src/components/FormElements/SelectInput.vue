@@ -92,13 +92,13 @@
 	/**
 	 * @type {Ref<boolean>}
 	 */
-	const valid = computed(()=>{
+	const isValid = ()=>{
 		return props.options[value.value] !== undefined || props.allowEmpty;
-	});
+	};
 	
 	const uniqueId = uuidv4();
 	defineExpose({
-		valid,
+		isValid,
 		uniqueId,
 	});
 	function SearchRows(rows, getSearchValue, query){
@@ -184,7 +184,7 @@
 <div ref="dropdown" class="dropdown group/dropdown relative min-w-56 w-fit" >
 	
 	<div class="w-full">
-		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClass, {'border-error': !valid && displayValidation}]">
+		<div tabindex="0" @blur="handleBlur" @focus="OpenDropdown" role="button" class="btn w-full justify-between" :class="[props.buttonClass, {'border-error': !isValid() && displayValidation}]">
 			<slot>
 				<div v-html="RenderOptionKey(value)"></div>
 				<div class="group-focus-within/dropdown:rotate-180 transition" v-if="props.showIcon">

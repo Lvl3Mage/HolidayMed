@@ -13,11 +13,19 @@ import {useValidationGroup} from "@/components/FormElements/ValidationGroup";
 	const validationGroups = {};
 	for (const tabName of Object.keys(props.tabs)){
 		validationGroups[tabName] = reactive(useValidationGroup());
+		if (props.tabs[tabName].validationElements){
+			props.tabs[tabName].validationElements.forEach((element) => {
+				validationGroups[tabName].Add(element, element.uniqueId);
+			});
+		}
 	}
-	console.log(slots)
+	function GetValidationGroups(){
+		return validationGroups;
+	}
 	defineExpose({
 		activeTab,
-		isValid : () => Object.keys(validationGroups).every(tabName => validationGroups[tabName].isValid)
+		isValid : () => Object.keys(validationGroups).every(tabName => validationGroups[tabName].isValid()),
+		GetValidationGroups,
 	});
 </script>
 
