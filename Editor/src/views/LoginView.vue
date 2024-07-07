@@ -4,7 +4,7 @@
 	import { useRouter, useRoute } from 'vue-router'
 	import { ref } from 'vue'
 	const APIAccess = useAPIAccess();
-
+	const AppConfig = useAppConfig()
 	const LoginState = useLoginState();
 	const router = useRouter()
 	const username = ref("");
@@ -32,13 +32,14 @@
 
 	function LogIn(){
 
-		if(!usernameInput.value.valid || !passwordInput.value.valid){
+		if(!usernameInput.value.isValid() || !passwordInput.value.isValid()){
 			displayValidation.value = true;
 			return;
 		}
 		ToggleLoading(true);
 		LoginState.AttemptLogin(username.value,password.value, remember.value).then(result => {
 			router.push('/');
+			ToggleLoading(false);
 		}).catch(error => {
 			console.log(error.response.data.code)
 			if(error.response.data.code == '[jwt_auth] incorrect_password'){
@@ -51,13 +52,13 @@
 				errorMsg.value = `Something went wrong...`;
 				console.error(error)
 			}
-		}).finally(function(){
 			ToggleLoading(false);
 		});
 
 	}
 	import Input from "@/components/FormElements/Input.vue"
 	import InputLabel from "@/components/FormElements/InputLabel.vue"
+	import {useAppConfig} from "@/stores/AppConfig";
 </script>
 
 <template>

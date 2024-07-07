@@ -8,22 +8,22 @@ function getDataDefaults(type){
 				"auto_filters": {//using page135
 					"types_and_options": {
 						"front_facing": false,
-						"sea_view": true,
+						"sea_view": false,
 						"ground_floor": false,
 						"private_patio": false,
 						"terrace": false,
-						"balcony": true,
+						"balcony": false,
 						"pet_friendly": false
 					},
 					"accessibility": {
-						"parking": true,
-						"air_conditioner": true,
+						"parking": false,
+						"air_conditioner": false,
 						"wifi": false,
-						"microwave": true,
-						"kitchen": true,
-						"fridge": true,
-						"tv": true,
-						"shower": true,
+						"microwave": false,
+						"kitchen": false,
+						"fridge": false,
+						"tv": false,
+						"shower": false,
 						"bathtub": false,
 						"zona_de_barbaco": false
 					}
@@ -31,32 +31,11 @@ function getDataDefaults(type){
 				"inner_id": "",
 				"floor": null,
 				"number": "",
-				"group": null,
 				"bedroom": null, // bind to number of rooms
 				"bathrooms": 2,
-				"rooms": [
-					{
-						"room_type": "dormitorio",
-						"beds": [
-							{
-								"bed": "double"
-							}
-						]
-					},
-					{
-						"room_type": "dormitorio",
-						"beds": [
-							{
-								"bed": "single"
-							},
-							{
-								"bed": "single"
-							}
-						]
-					}
-				],
-				"images": [
-				],
+				"rooms": [],
+				"images": [],
+				"sync":[],
 			},
 			"featured_media": null,//select from images
 		},

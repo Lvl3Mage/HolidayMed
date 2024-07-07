@@ -29,7 +29,6 @@
 			required: false,
 		},
 	});
-	//TODO implement sorting by fields and search by fields
 	/*[
 		{
 			displayName: "id", // required

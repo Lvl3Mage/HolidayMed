@@ -46,22 +46,16 @@ const useObjectCache = defineStore({
 			}
 
 
-			return new Promise((resolve, reject) => {
-				let promises = [];
-				for (let type in typeCacheFields) {
-					this.cacheSegments[type] = {
-						mappedData: {},
-						hash: "",
-						loading: false,
-					};
-					promises.push(this.ReloadSegment(type));
-				}
-				Promise.all(promises).then(() => {
-					resolve();
-				}).catch((error) => {
-					reject(error);
-				});
-			});
+			let promises = [];
+			for (let type in typeCacheFields) {
+				this.cacheSegments[type] = {
+					mappedData: {},
+					hash: "",
+					loading: false,
+				};
+				promises.push(this.ReloadSegment(type));
+			}
+			return promises;
 		},
 		/**
 		 * 

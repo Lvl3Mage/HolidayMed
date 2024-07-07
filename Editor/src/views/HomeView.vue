@@ -39,7 +39,7 @@
 	// 		return;
 	// 	}
 	// 	filePath.value = URL.createObjectURL(file);
-	// 	ObjectManager.UploadFile('media', file).then(result => {
+	// 	ObjectManager.RunUpload('media', file).then(result => {
 	// 		console.log(result);
 	// 	}).catch(error => {
 	// 		console.error(error);
@@ -71,36 +71,16 @@
 			${building.title.rendered}
 		</span>`;
 	}
-	function ViewBuilding(building){
-		if(building){
+	function ViewBuilding(building) {
+		if (building) {
 			ViewObj('building', building.id);
 		}
 	}
-	APIAccess.Get('/wp-json/options/dictionary-es').then(data => {
-		
-		console.log('dictionary',data);
-	}).catch(error => {
-		console.error(error);
-	});
-	APIAccess.GetREST('/pages/135').then(data => {
-		
-		console.log('options',data);
-	}).catch(error => {
-		console.error(error);
-	});
-	// APIAccess.GetREST('/options/dictionary-es').then(data => {
-		
-	// 	console.error('dictionary-es',data);
-	// }).catch(error => {
-	// 	console.error(error);
-	// });
-	const test = ref("");
 </script>
 
 <template>
 	<main>
 		<div class="container">
-			<div class="" @click="UIManagement.OpenModal('select-image')">COOOL</div>
 			<div class="flex flex-wrap gap-12">
 				{{APIAccess.ongoingRequests}}
 				<CacheSegmentRenderer :types="['apartment', 'building']" class="card card-bordered card-compact basis-full bg-base-100 shadow-xl">

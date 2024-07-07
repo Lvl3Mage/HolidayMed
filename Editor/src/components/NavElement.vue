@@ -16,11 +16,11 @@
 		mounted(){
 		},
 		watch:{
-			// modelValue:function(val){
+			// selection:function(val){
 			// 	this.selectedDate = val;
 			// },
 		},
-		// emits: ['update:modelValue'],
+		// emits: ['update:selection'],
 		methods: {
 		},
 		computed: {

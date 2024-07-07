@@ -65,12 +65,9 @@
 
 	import {useObjectManager} from '@/stores/ObjectManager.js'
 	const ObjectManager = useObjectManager();
-	ObjectManager.UpdateSchemas();
 	
 	import {useObjectCache} from '@/stores/ObjectCache.js'
 	const ObjectCache = useObjectCache();
-	//TODO - chain behind login 
-	ObjectCache.PopulateCache();
 
 	import HeaderNavbar from '@/components/HeaderNavbar.vue'
 	import NavDropdown from '@/components/NavDropdown.vue'

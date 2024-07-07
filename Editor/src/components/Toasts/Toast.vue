@@ -12,6 +12,18 @@
 			required: true,
 		}
 	});
+	/**
+	 * @typedef {Object} ToastAttrs
+	 * @property {string} [text] - The text content of the toast. This is mutually exclusive with `htmlContent`.
+	 * @property {string} [htmlContent] - The HTML content of the toast. This is mutually exclusive with `text`.
+	 * @property {boolean} [hideIcon=false] - If true, the toast will not display an icon.
+	 * @property {string} [iconHtml] - Custom HTML for the toast's icon. This overrides the default icon determined by `appearance`.
+	 * @property {string} [appearance] - The appearance of the toast. This can be "loading", "error", "success", or "info". This determines the default icon and wrapper class of the toast.
+	 * @property {string} [wrapperClass] - Custom class for the toast's wrapper. This overrides the default class determined by `appearance`.
+	 * @property {boolean} [closeOnClick=false] - If true, the toast will close when clicked.
+	 * @property {Promise} [promise] - A promise that, when resolved, will close the toast.
+	 * @property {number} [lifetime] - The duration (in milliseconds) for which the toast will be displayed. After this duration, the toast will close.
+	 */
 	const toastElement = ref(null);
 	const toastHeight = ref(0);
 	const toastVisible = ref(false);
@@ -41,7 +53,7 @@
 	};
 	const attrs = props.toastData.attrs;
 	if(attrs.promise){
-		attrs.task.then(() => {
+		attrs.promise.then(() => {
 			props.toastData.CloseToast();
 		});
 	}

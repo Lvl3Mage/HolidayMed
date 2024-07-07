@@ -1,59 +1,60 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import { useAPIAccess } from '@/stores/APIAccess.js';
+import {ref, computed} from "vue";
+import {defineStore} from "pinia";
+import {useAPIAccess} from "@/stores/APIAccess.js";
 
 const useUIManagement = defineStore({
-	id: 'UIManagement',
+	id: "UIManagement",
 	state: () => {
 		return {
 			objectModals: [],
 			toasts: [],
 			_elementIndexer: 0,
-		}
+		};
 	},
 	getters: {
-		uniqueElementIndex(){
+		uniqueElementIndex() {
 			return this._elementIndexer++;
-		}
+		},
 	},
 	actions: {
-		CreateModalPromise(){
+		CreateModalPromise() {
 			let modalResolve;
 			let modalReject;
 			let modalIndex = this.objectModals.length;
 			let modalPromise = new Promise((resolve, reject) => {
-				modalResolve = function(code='', data=null){
-					if(modalIndex+1 != this.objectModals.length){
+				modalResolve = function (code = "", data = null) {
+					if (modalIndex + 1 != this.objectModals.length) {
 						console.warn("Cannot resolve modal since it's not the last one opened.");
 						return;
 					}
 					this.objectModals.pop();
 					resolve({
 						code: code,
-						data: data
+						data: data,
 					});
 				}.bind(this);
-				modalReject = function(code='', data=null){
-					if(modalIndex+1 != this.objectModals.length){
+				modalReject = function (code = "", data = null) {
+					if (modalIndex + 1 != this.objectModals.length) {
 						console.warn("Cannot reject modal since it's not the last one opened.");
 						return;
 					}
 					this.objectModals.pop();
 					reject({
 						code: code,
-						data: data
+						data: data,
 					});
 				}.bind(this);
 			});
 			return {modalPromise, modalResolve, modalReject};
 		},
-		OpenEditObjectModal(objectType, objectId){
+		OpenEditObjectModal(objectType, objectId) {
 			return this.OpenModal("edit-object", {objectType: objectType, objectId: objectId});
 		},
-		OpenCreateObjectModal(objectType, dataHandler = ()=>{}){
+		OpenCreateObjectModal(objectType, dataHandler = () => {
+		}) {
 			return this.OpenModal("create-object", {objectType: objectType, dataHandler: dataHandler});
 		},
-		OpenModal(modalType, modalProps = {}){
+		OpenModal(modalType, modalProps = {}) {
 			let promiseData = this.CreateModalPromise();
 			this.objectModals.push({
 				modalType: modalType,
@@ -62,28 +63,35 @@ const useUIManagement = defineStore({
 				reject: promiseData.modalReject,
 				uniqueId: this.uniqueElementIndex,
 			});
-			return promiseData.modalPromise;	
+			return promiseData.modalPromise;
 		},
-		GetModalByUniqueId(uniqueId){
+		GetModalByUniqueId(uniqueId) {
 			return this.objectModals.find((modal) => modal.uniqueId == uniqueId);
 		},
-		OpenToast(attrs = {}){
-			const RemoveToastWithUniqueID = function (uniqueId){
+		
+		/**
+		 *
+		 * @param {ToastAttrs} attrs
+		 * @returns {{closePromiseTask: (function(): Promise<unknown>), CloseToast: Function, uniqueId: number}}
+		 * @constructor
+		 */
+		OpenToast(attrs = {}) {
+			const RemoveToastWithUniqueID = function (uniqueId) {
 				let index = this.toasts.findIndex((toast) => toast.uniqueId == uniqueId);
-				if(index != -1){
+				if (index != -1) {
 					this.toasts.splice(index, 1);
 				}
 			}.bind(this);
 
 			const toast = {
 				attrs: attrs,
-				closePromiseTask: function(){
-						return new Promise((resolve) => {
+				closePromiseTask: function () {
+					return new Promise((resolve) => {
 						console.warn("Close promise task not implemented.");
 						resolve();
 					});
 				},
-				CloseToast: function(){
+				CloseToast: function () {
 					this.closePromiseTask().then(() => {
 						RemoveToastWithUniqueID(this.uniqueId);
 					})
@@ -97,7 +105,7 @@ const useUIManagement = defineStore({
 			return toast;
 		},
 
-		
-	}
+
+	},
 });
 export {useUIManagement};

@@ -32,7 +32,8 @@
 </script>
 <template>
 	<div class="relative">
-		<div class="absolute z-50 inset-0 flex justify-center items-center bg-black/30 transition opacity-0 pointer-events-none" :class="{'opacity-100 pointer-events-auto': isLoading()}">
+<!--		shadow-[inset_0_0_10px+20px] shadow-base-100 -->
+		<div class="absolute z-50 inset-0 flex justify-center items-center opacity-0 bg-black/30 transition duration-300 pointer-events-none" :class="{'opacity-100 pointer-events-auto': isLoading()}">
 			<span class="loading loading-dots loading-lg"></span>	
 		</div>
 		<slot v-if="renderWhenLoading || !isLoading()">
@@ -42,3 +43,6 @@
 		</div> -->
 	</div>
 </template>
+<style lang="scss">
+
+</style>

@@ -52,7 +52,7 @@
 <template>
 	<label class="input input-bordered flex items-center gap-2" :class="{'input-error' : !isValid() && displayValidation}">
 		<slot name="before"></slot>
-		<input ref="input" v-model="value" :type="type" :placeholder="placeholder"  class="grow min-w-0" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)"/>
+		<input ref="input" v-model="value" :type="type" :placeholder="placeholder" :disabled="$attrs.disabled" class="grow min-w-0" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)"/>
 		<slot name="after"></slot>
 	</label>
 </template>

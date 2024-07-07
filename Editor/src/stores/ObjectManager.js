@@ -124,7 +124,7 @@ const useObjectManager = defineStore({
 		},
 		DeleteObject(objectType, objectID){
 			return new Promise((resolve, reject) => {
-				this.APIAccess.DeleteREST(typeRequestLookup[objectType] + "/" + objectID)
+				this.APIAccess.DeleteREST(typeRequestLookup[objectType] + "/" + objectID)   
 				.then(function(responce){
 					this.CallEvent(this.events.succesfulDelete, [objectType, objectID]);
 					resolve(responce.data);
@@ -149,6 +149,7 @@ const useObjectManager = defineStore({
 			});
 		},
 		UploadFile(objectType, file){
+			console.log("UPLOADING FILE: ", file);
 			return new Promise((resolve, reject) => {
 				this.APIAccess.PostREST(typeRequestLookup[objectType], file, {
 					headers: {
@@ -169,16 +170,18 @@ const useObjectManager = defineStore({
 			});
 		},
 		UpdateSchemas(){
+			let promises = [];
 			let types = Object.keys(typeRequestLookup);
 			for (let i = 0; i < types.length; i++){
 				let type = types[i];
-				if(this.schemas[type] == undefined){
-					this.UpdateSchema(type);//immediate request
+				if(this.schemas[type] === undefined){
+					promises.push(this.UpdateSchema(type));//immediate request
 				}
 				else{
 					setTimeout(this.UpdateSchema.bind(this), (i)*2*1000 + 5*1000, type);//delayed request since schema is already cached
 				}
 			}
+			return promises;
 		},
 		UpdateSchema(objectType){
 			return new Promise((resolve, reject) => {

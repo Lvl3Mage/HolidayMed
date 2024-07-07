@@ -11,7 +11,6 @@ const useAPIAccess = defineStore({
 	getters: {
 	},
 	actions: {
-		
 		CountRequest(request){
 			return new Promise((resolve, reject) => {
 				this.ongoingRequests++;

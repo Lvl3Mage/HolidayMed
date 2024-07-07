@@ -37,26 +37,29 @@
 
 <template>
 	<div class="">
-		<div class="group/list-item" v-for="(item,index) in value" :key="index">
-			<div class="flex">
-				
-				
-				<div class="w-0 grow" :class="[itemClass ? itemClass : 'join join-horizontal sm:join-vertical']">
-					<slot :item="item" :index="index"></slot>
-				</div>
-
-				<div class="flex justify-center items-center p-2">
-					<div class="btn btn-warning btn-sm btn-circle" @click="value.splice(index,1)">
-						<i class="fa-solid fa-minus"></i>
+		<div>
+			<div class="group/list-item" v-for="(item,index) in value" :key="index">
+				<div class="flex">
+					
+					
+					<div class="w-0 grow" :class="[itemClass ? itemClass : 'join join-horizontal sm:join-vertical']">
+						<slot :item="item" :index="index"></slot>
+					</div>
+					<div class="divider divider-horizontal"></div>
+					<div class="flex justify-center items-center p-2">
+						<div class="btn btn-warning btn-sm btn-circle" @click="value.splice(index,1)">
+							<i class="fa-solid fa-minus"></i>
+						</div>
 					</div>
 				</div>
+				<div class="divider"></div> 
 			</div>
-			<div class="divider group-last/list-item:hidden"></div> 
 		</div>
-	</div>
-	<div class="flex justify-center items-center gap-3 mt-4">
-		<div class="btn btn-secondary btn-circle text-xl" @click="AddElement()">
-			<i class="fa-solid fa-plus"></i>
+		<div class="flex justify-center items-center gap-3 mt-4">
+			<div class="btn btn-secondary btn-circle text-xl" @click="AddElement()">
+				<i class="fa-solid fa-plus"></i>
+			</div>
 		</div>
+		
 	</div>
 </template>

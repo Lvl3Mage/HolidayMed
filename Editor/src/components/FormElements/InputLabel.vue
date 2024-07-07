@@ -24,7 +24,9 @@
 		}
 		return props.valid;
 	}
-	
+	const valid = computed(()=>{
+		return isValid();
+	})
 	const uniqueId = uuidv4();
 	defineExpose({
 		isValid,
@@ -50,7 +52,7 @@
 				<slot name="labelAltRight"></slot>
 			</span>
 		</div>
-		<div class="label" v-if="$slots.invalid && !isValid() && props.displayValidation">
+		<div class="label" v-if="$slots.invalid && !valid && props.displayValidation">
 			<span class="label-text-alt text-error">
 				<slot name="invalid"></slot>
 			</span>
