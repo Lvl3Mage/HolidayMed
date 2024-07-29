@@ -39,6 +39,10 @@
 					// 	// },
 					// ]
 				},
+				{
+					text: "Calendar",
+					address: "/calendar",
+				}
 				// {
 				// 	text:"Home",
 				// },
@@ -77,13 +81,13 @@
 </script>
 
 <template>
-	<div class="drawer">
+	<div class="drawer min-h-full">
 		<input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
-		<div class="drawer-content">
+		<div class="drawer-content min-h-full flex flex-col">
 
 			<GenericUIRenderer></GenericUIRenderer>
 			<HeaderNavbar v-if="LoginState.isAuthenticated()"></HeaderNavbar>
-			<RouterView></RouterView>
+			<RouterView class="grow"></RouterView>
 		</div> 
 		<div v-if="LoginState.isAuthenticated()" class="drawer-side">
 			<label for="navbar-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -98,3 +102,12 @@
 		</div>
 	</div>
 </template>
+<style>
+html{
+	scrollbar-gutter: revert !important;
+}
+#app{
+	min-height: 100vh;
+	position: relative;
+}
+</style>

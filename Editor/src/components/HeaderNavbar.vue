@@ -14,7 +14,7 @@
 </script>
 
 <template>
-	<div class="navbar bg-base-100 relative">
+	<div class="navbar bg-base-100 sticky top-0">
 		<div class="navbar-start">
 			<div class="dropdown">
 				<label for="navbar-drawer" class="btn btn-ghost btn-circle" @click="sidebarOpen = !sidebarOpen">

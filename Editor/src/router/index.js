@@ -5,6 +5,7 @@ import LoginView from '@/views/LoginView.vue'
 import {useLoginState} from '@/stores/LoginState.js'
 import AppLoader from "@/views/AppLoader.vue";
 import {useAppConfig} from "@/stores/AppConfig";
+import CalendarView from "@/views/CalendarView.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
 			path: '/reservations',
 			name: 'reservations',
 			component: OrderView
+		},
+		{
+			path: '/calendar',
+			name: 'calendar',
+			component: CalendarView
 		},
 	]
 });
