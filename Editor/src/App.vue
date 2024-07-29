@@ -89,7 +89,7 @@
 			<HeaderNavbar v-if="LoginState.isAuthenticated()"></HeaderNavbar>
 			<RouterView class="grow"></RouterView>
 		</div> 
-		<div v-if="LoginState.isAuthenticated()" class="drawer-side">
+		<div v-if="LoginState.isAuthenticated()" class="drawer-side z-40">
 			<label for="navbar-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 			<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
 				<div class="join join-vertical w-full">
