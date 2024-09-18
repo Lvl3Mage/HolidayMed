@@ -18,6 +18,7 @@
 </script>
 <template>
 	<!-- ToastRenderer -->
+    <!-- Todo: Fix empty container blocking clicks	-->
 	<div class="toast z-[1000] toast-bottom toast-end min-w-[300px]">
 		<div v-for="toast in UIManagement.toasts" :key="toast.uniqueId">
 			<Toast :toastData="toast"></Toast>

@@ -96,13 +96,22 @@
 		}
 		return '';
 	}
+	function GetTargetContent(){
+		const content = contentRendererLookup[props.objectType];
+		if(!content){
+			UIManagement.OpenToast({appearance: "error", text: `Editing of ${props.objectType} not implemented!`, lifetime:2000, closeOnClick: true});
+			DiscardModal();
+			console.error(`Editing of ${props.objectType} not implemented!`);
+		}
+		return content;
+	}
 </script>
 <template>
 	<Modal :loading="loadingOverlay" ref="modal">
 		<div v-if="objectData">
 			<h3 class="font-bold text-lg" v-html="GetTitle()">
 			</h3>
-			<component :ref="(el) => modalContent = el" :is="contentRendererLookup[props.objectType]" :objectData="objectData"></component>   		
+			<component :ref="(el) => modalContent = el" :is="GetTargetContent()" :objectData="objectData"></component>   		
 		    
 			<div class="modal-action">
 				<div class="dropdown dropdown-top dropdown-end">

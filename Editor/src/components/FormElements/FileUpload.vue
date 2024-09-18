@@ -2,7 +2,6 @@
 	import {ref} from "vue";
 	import {useUIManagement} from "@/stores/UIManagment";
 	import {useObjectManager} from "@/stores/ObjectManager";
-	import Pagination from "@/components/FormElements/Pagination.vue";
 
 	const UIManagement = useUIManagement();
 	const ObjectManager = useObjectManager()
