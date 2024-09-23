@@ -1,6 +1,6 @@
 <script setup>
 
-import {reactive, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import {formValueValidation, ParseYMDString} from "@/Utils.js";
 import Input from "@/components/FormElements/Input.vue";
 import InputLabel from "@/components/FormElements/InputLabel.vue";
@@ -17,6 +17,8 @@ import {useObjectData} from "@/components/Modals/ModalRenderers/ObjectData.js";
 import TabDisplay from "@/components/FormElements/TabDisplay.vue";
 import ImageSelector from "@/components/FormElements/ImageSelector.vue";
 import {useAppConfig} from "@/stores/AppConfig";
+import DateRangeCalendar from "@/components/DateRangeCalendar.vue";
+import {DateRangeIntersect} from "@/DateUtils";
 
 const ObjectCache = useObjectCache();
 const UIManagement = useUIManagement();
@@ -33,7 +35,7 @@ const objectData = useObjectData(props.objectData, (data) => {
 	const innerID = data.acf.inner_id;
 	const building = ObjectCache.GetObject("building", data.acf.building);
 	data.title = `${innerID} &#8212; ${building?.acf?.title || "---"} &#8212; ${data.acf.floor} &#8212; ${data.acf.number}`;
-	data.bedroom = data.acf.rooms.length
+	data.bedroom = data.acf.rooms.length;
 });
 
 function getAcf() {
@@ -103,6 +105,105 @@ function SelectMedia() {
 
 const tabDisplay = ref(null);
 const test = ref(null);
+
+
+const displayedMonth = ref(new Date());
+
+const syncColors = ["bg-warning/60", "bg-success/60", "bg-info/60", "bg-secondary/60"];
+
+function GetSyncBlocks() {
+	return getAcf().sync.map((sync, index) => {
+		if (sync.blocked_dates === undefined || sync.blocked_dates === null) {
+			return [];
+		}
+		return sync.blocked_dates.map(block => {
+
+			return {
+				startDate: block.dtstart,
+				endDate: block.dtend,
+				data: sync,
+				colorClass: syncColors[index % syncColors.length],
+			};
+		});
+	});
+}
+
+function GetBlockedRanges() {
+	console.log("Recalculating days");
+	const reservationBlocks = ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.id === objectData.id).map(
+		(reservation) => {
+			return {
+				startDate: reservation.acf.start_date,
+				endDate: reservation.acf.end_date,
+				colorClass: "bg-error/60",
+			};
+		});
+	const selfBlocks = [];
+	const sync = GetSyncBlocks();
+	return [...reservationBlocks, ...selfBlocks, ...sync.flat()];
+}
+
+const calendar = ref(null);
+const selectedReservations = computed(() => {
+	const selectionRange = calendar.value?.GetSelectionRange();
+	if (!selectionRange) {
+		return [];
+	}
+	if (selectionRange[0] === null || selectionRange[1] === null) {
+		return [];
+	}
+	console.log("Recalculating selected reservations");
+	return ObjectCache.GetSegmentRows("reservation").filter((reservation) => {
+		return DateRangeIntersect(
+			ParseYMDString(reservation.acf.start_date),
+			ParseYMDString(reservation.acf.end_date),
+			selectionRange[0],
+			selectionRange[1],
+		);
+	});
+});
+const selectedSync = computed(() => {
+	const selectionRange = calendar.value?.GetSelectionRange();
+
+	console.log("Recalculating selected sync");
+	return getAcf().sync.map((sync) => {
+		const data = {
+			label: sync.label,
+			url: sync.url,
+			blocks: [],
+		};
+		if (!selectionRange) {
+			return data;
+		}
+		if (selectionRange[0] === null || selectionRange[1] === null) {
+			return data;
+		}
+		if (sync.blocked_dates === undefined || sync.blocked_dates === null) {
+			return data;
+		}
+		data.blocks = sync.blocked_dates.filter(block => {
+			console.log([
+				ParseYMDString(block.dtstart),
+				ParseYMDString(block.dtend),
+				selectionRange[0],
+				selectionRange[1],
+			]);
+			console.log(DateRangeIntersect(
+				ParseYMDString(block.dtstart),
+				ParseYMDString(block.dtend),
+				selectionRange[0],
+				selectionRange[1],
+			));
+			return DateRangeIntersect(
+				ParseYMDString(block.dtstart),
+				ParseYMDString(block.dtend),
+				selectionRange[0],
+				selectionRange[1],
+			);
+		});
+		return data;
+	});
+});
 defineExpose({
 	isValid: () => tabDisplay.value?.isValid(),
 	GetTitle,
@@ -113,7 +214,8 @@ defineExpose({
 		info: {name: 'Info', validationElements: [syncGroup, roomGroup]},
 		filters: {name: 'Filtros'},
 		images: {name: 'Imagines'},
-		reservations: {name: 'Reservations'},
+		reservations: {name: 'Reservas'},
+		calender: {name: 'Calendario'},
 	}" :ref="el=>tabDisplay = el">
 		<template #info="{validationGroup}">
 			<InputLabel :validatedInput="validationGroup.elements['innerIdInput']">
@@ -199,9 +301,10 @@ defineExpose({
 					             :render="(type)=>type.label.single">
 					</SelectInput>
 				</InputLabel>
-				<div class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
-					
-                    <input type="checkbox" class="peer" />
+				<div
+					class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
+
+					<input type="checkbox" class="peer"/>
 					<div class="collapse-title text-xl font-medium">Beds</div>
 					<div class="collapse-content">
 						<ArrayContentEditor :validation-group="roomGroup" :value="roomData.item.beds"
@@ -279,7 +382,6 @@ defineExpose({
 				<button class="btn btn-accent" @click="SelectMedia()">Seleccionar otras imagines</button>
 			</div>
 		</template>
-
 		<template #reservations>
 			<div class="divider">Reservations</div>
 			<CacheSegmentRenderer type="reservation" class="min-h-44">
@@ -318,6 +420,106 @@ defineExpose({
 			<div class="flex justify-center items-center gap-3 mt-4">
 				<div class="btn btn-success" @click="CreateReservation()">Create new reservation</div>
 			</div> -->
+		</template>
+		<template #calender="{validationGroup}">
+			<DateRangeCalendar ref="calendar" class="w-full m-auto max-w-md"
+			                   v-model:displayed-month="displayedMonth"
+			                   :blocked-ranges="GetBlockedRanges()"></DateRangeCalendar>
+			<div class="divider"></div>
+			<div class="flex justify-start gap-2 items-center">
+				<div class="text-sm">
+					Selection:
+				</div>
+				<div class="badge badge-info">{{ calendar?.GetSelectionRange()[0]?.toDateString() }}</div>
+				<div class="">-</div>
+				<div class="badge badge-info">{{ calendar?.GetSelectionRange()[1]?.toDateString() }}</div>
+			</div>
+			
+			<div class="divider"></div>
+			<div class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
+
+				<input type="checkbox" class="peer"/>
+				<div class="collapse-title text-xl font-medium capitalize">
+					Reservas - {{selectedReservations.length}} -
+					<span class="inline-block px-2 py-2 rounded-sm capitalize bg-error/60">
+					</span>
+				</div>
+				<div class="collapse-content">
+
+					<TableDataDisplay :actions="[
+						{
+							render(){
+								return `<div class='btn btn-accent btn-xs'>Edit</div>`;
+							},
+							onClick(row){
+								UIManagement.OpenEditObjectModal(`reservation`, row.id);
+							},
+						}
+					]"
+						                  :fields="[
+						{
+							displayName: 'Start Date',
+							render(row){
+							  return ParseYMDString(row.acf.start_date).toDateString();
+							},
+						},
+						{
+							displayName: 'End Date',
+							render(row){
+							  return ParseYMDString(row.acf.end_date).toDateString();
+							},
+						},
+					]"
+			                  :rows="selectedReservations"></TableDataDisplay>
+				</div>
+			</div>
+			
+
+			<div class="" v-for="(sync,index) in selectedSync">
+				<div class="divider"></div>
+				<div class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
+
+					<input type="checkbox" class="peer"/>
+					<div class="collapse-title text-xl font-medium capitalize">
+						{{ sync.label }} - {{sync.blocks.length}} - 
+						<span class="inline-block px-2 py-2 rounded-sm capitalize" :class="syncColors[index % syncColors.length]">
+						</span>
+					</div>
+					<div class="collapse-content">
+
+						<TableDataDisplay
+							:fields="[
+							{
+								displayName: 'UId',
+								render(row){
+								  return row.uid;
+								},
+							},
+							{
+								displayName: 'Summary',
+								render(row){
+								  return row.summary;
+								},
+							},
+							{
+								displayName: 'Start Date',
+								render(row){
+								  return ParseYMDString(row.dtstart).toDateString();
+								},
+							},
+							{
+								displayName: 'End Date',
+								render(row){
+								  return ParseYMDString(row.dtend).toDateString();
+								},
+							},
+						]"
+							:rows="sync.blocks"></TableDataDisplay>
+					</div>
+				</div>
+
+
+			</div>
 		</template>
 	</TabDisplay>
 </template>

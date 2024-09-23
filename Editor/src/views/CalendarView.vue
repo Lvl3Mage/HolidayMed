@@ -16,7 +16,7 @@ const blockedRanges = computed(() => {
 		return {
 			startDate: reservation.acf.start_date,
 			endDate: reservation.acf.end_date,
-			acf: reservation.acf,
+			colorClass: "bg-error/60",
 		};
 	});
 });

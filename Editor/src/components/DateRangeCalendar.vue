@@ -51,6 +51,7 @@ const days = computed(() => {
 	console.log("Recalculating days");
 	const blockedDays = {};
 	for (const blockRange of props.blockedRanges) {
+		const colorClass = blockRange.colorClass ?? "bg-error/60";
 		const reservationStart = ParseYMDString(blockRange.startDate);
 		const reservationEnd = ParseYMDString(blockRange.endDate);
 		let day = reservationStart;
@@ -64,6 +65,7 @@ const days = computed(() => {
 				blockRangeData: blockRange,
 			};
 			blockedDays[day.toDateString()].blockRanges.push(newBlock);
+			blockedDays[day.toDateString()].colorClass = colorClass;
 			if (IsBlockStart(day, newBlock)) {
 				blockedDays[day.toDateString()].blockTypes.start = true;
 			}
@@ -91,6 +93,7 @@ function CreateDay(date) {
 			single: false,
 		},
 		date: date,
+		colorClass: "bg-error/60",
 	};
 }
 function GetDay(date) {
@@ -137,6 +140,7 @@ function IsBlockSingle(date, blockRange) {
 	return IsBlockEnd(date, blockRange) && IsBlockStart(date, blockRange);
 }
 function IsBlockFull(date, blockRange) {
+	
 	return !SameDay(blockRange.startDate, date) && !SameDay(blockRange.endDate, date);
 }
 
@@ -239,8 +243,8 @@ defineExpose({
 				     :class="{
 						'disabled':!SameMonth(day.date, displayedMonth),
 				        'reserved-full': day.blockTypes.full,
-				        'reserved-end': day.blockTypes.end && !day.blockTypes.full,
-				        'reserved-start': day.blockTypes.start && !day.blockTypes.full,
+				        'reserved-end': day.blockTypes.end && !day.blockTypes.full && !day.blockTypes.single,
+				        'reserved-start': day.blockTypes.start && !day.blockTypes.full && !day.blockTypes.single,
 				        'reserved-single': day.blockTypes.single && !day.blockTypes.full,
 				        'selected':DisplayAsSelected(day.date),
 				        'selected-start':SameDay(day.date, selection.GetRange()[0]),
@@ -286,26 +290,26 @@ defineExpose({
 									<div class="
 										transition-all h-full basis-0 hidden grow-[4]
 										group-[&.reserved-full]/day:block
-										bg-error/60
-									">
+									"
+									:class="[day.colorClass]">
 									</div>
 									<div class="
 										transition-all h-full rounded-r-full hidden grow max-w-[70%] mr-auto
 										group-[&.reserved-end]/day:block
-										bg-error/60
-									">
+									"
+									:class="[day.colorClass]">
 									</div>
 									<div class="
 										transition-all h-full rounded-full hidden grow-[2] max-w-[70%] mx-1
 										group-[&.reserved-single]/day:block
-										bg-error/60
-									">
+									"
+									:class="[day.colorClass]">
 									</div>
 									<div class="
 										transition-all h-full rounded-l-full hidden grow max-w-[70%] ml-auto
 										group-[&.reserved-start]/day:block
-										bg-error/60
-									">
+									"
+									:class="[day.colorClass]">
 									</div>
 
 								</div>

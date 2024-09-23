@@ -145,7 +145,7 @@ function ResetDisplayScroll() {
 }
 
 
-const imageRows = computed(() => {
+function GetImageRows(){
 	let data = props.media;
 	console.log(data);
 	if (props.processMedia) {
@@ -161,7 +161,7 @@ const imageRows = computed(() => {
 		data = data.filter(row => IsMediaSelected(row.id));
 	}
 	return data;
-});
+}
 
 function SelectId(id) {
 	if (IsMediaSelected(id)) {
@@ -196,7 +196,7 @@ defineExpose({
 			<span class="label-text">Show selected</span>
 			<input type="checkbox" v-model="displaySelected" @change="ResetDisplay()" class="checkbox"/>
 		</label>
-		<pagination @change="ResetDisplayScroll()" ref="paginationDisplay" :items="imageRows"
+		<pagination @change="ResetDisplayScroll()" ref="paginationDisplay" :items="GetImageRows()"
 		            :items-per-page="props.rowsPerPage" v-slot="{items, index}">
 			<div class="py-4 mt-2" :class="{[props.scrollWrapperClass]:props.scroll, 'overflow-auto':props.scroll}" ref="imageDisplay">
 				<div class="flex flex-wrap gap-3 justify-around">
