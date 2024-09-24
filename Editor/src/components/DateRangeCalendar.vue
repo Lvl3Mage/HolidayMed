@@ -13,6 +13,11 @@ const props = defineProps({
 		required: false,
 		default: [],
 	},
+	disabledRanges: {
+		type: Array,
+		required: false,
+		default: [],
+	},
 });
 
 const displayedMonth = defineModel("displayedMonth", {
@@ -50,35 +55,52 @@ const weekDays_EN = ref(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 const days = computed(() => {
 	console.log("Recalculating days");
 	const blockedDays = {};
-	for (const blockRange of props.blockedRanges) {
-		const colorClass = blockRange.colorClass ?? "bg-error/60";
-		const reservationStart = ParseYMDString(blockRange.startDate);
-		const reservationEnd = ParseYMDString(blockRange.endDate);
-		let day = reservationStart;
-		while (day <= reservationEnd) {
-			if (blockedDays[day.toDateString()] === undefined) {
-				blockedDays[day.toDateString()] = CreateDay(day);
+	if (props.blockedRanges !== undefined) {
+		for (const blockRange of props.blockedRanges) {
+			const colorClass = blockRange.colorClass ?? "bg-error/60";
+			const reservationStart = ParseYMDString(blockRange.startDate);
+			const reservationEnd = ParseYMDString(blockRange.endDate);
+			let day = reservationStart;
+			while (day <= reservationEnd) {
+				if (blockedDays[day.toDateString()] === undefined) {
+					blockedDays[day.toDateString()] = CreateDay(day);
+				}
+				const newBlock = {
+					startDate: ParseYMDString(blockRange.startDate),
+					endDate: ParseYMDString(blockRange.endDate),
+					blockRangeData: blockRange,
+				};
+				blockedDays[day.toDateString()].blockRanges.push(newBlock);
+				blockedDays[day.toDateString()].colorClass = colorClass;
+				if (IsBlockStart(day, newBlock)) {
+					blockedDays[day.toDateString()].blockTypes.start = true;
+				}
+				if (IsBlockEnd(day, newBlock)) {
+					blockedDays[day.toDateString()].blockTypes.end = true;
+				}
+				if (IsBlockSingle(day, newBlock)) {
+					blockedDays[day.toDateString()].blockTypes.single = true;
+				}
+				if (IsBlockFull(day, newBlock)) {
+					blockedDays[day.toDateString()].blockTypes.full = true;
+				}
+				day = DateWithDayOffset(day, 1);
 			}
-			const newBlock = {
-				startDate: ParseYMDString(blockRange.startDate),
-				endDate: ParseYMDString(blockRange.endDate),
-				blockRangeData: blockRange,
-			};
-			blockedDays[day.toDateString()].blockRanges.push(newBlock);
-			blockedDays[day.toDateString()].colorClass = colorClass;
-			if (IsBlockStart(day, newBlock)) {
-				blockedDays[day.toDateString()].blockTypes.start = true;
+		}
+		
+	}
+	if (props.disabledRanges !== undefined) {
+		for (const blockRange of props.disabledRanges) {
+			const start = ParseYMDString(blockRange.startDate);
+			const end = ParseYMDString(blockRange.endDate);
+			let day = start;
+			while (day <= end) {
+				if (blockedDays[day.toDateString()] === undefined) {
+					blockedDays[day.toDateString()] = CreateDay(day);
+				}
+				blockedDays[day.toDateString()].disabled = true;
+				day = DateWithDayOffset(day, 1);
 			}
-			if (IsBlockEnd(day, newBlock)) {
-				blockedDays[day.toDateString()].blockTypes.end = true;
-			}
-			if (IsBlockSingle(day, newBlock)) {
-				blockedDays[day.toDateString()].blockTypes.single = true;
-			}
-			if (IsBlockFull(day, newBlock)) {
-				blockedDays[day.toDateString()].blockTypes.full = true;
-			}
-			day = DateWithDayOffset(day, 1);
 		}
 	}
 	return blockedDays;
@@ -92,6 +114,7 @@ function CreateDay(date) {
 			end: false,
 			single: false,
 		},
+		disabled: false,
 		date: date,
 		colorClass: "bg-error/60",
 	};
@@ -143,7 +166,6 @@ function IsBlockFull(date, blockRange) {
 	
 	return !SameDay(blockRange.startDate, date) && !SameDay(blockRange.endDate, date);
 }
-
 const selectionBuffer = defineModel('selectionBuffer', {
 	type: Array,
 	required: false,
@@ -238,10 +260,12 @@ defineExpose({
 				</div>
 				<div v-for="(day, index) of displayedDays"
 				     class="bg-base-100 aspect-square group/day 
-							[&.disabled]:bg-base-200
+							[&.outside-month]:bg-base-200
+							[&.disabled]:bg-base-300
 							cursor-pointer relative"
 				     :class="{
-						'disabled':!SameMonth(day.date, displayedMonth),
+						'disabled': day.disabled,
+						'outside-month':!SameMonth(day.date, displayedMonth) && !day.disabled,
 				        'reserved-full': day.blockTypes.full,
 				        'reserved-end': day.blockTypes.end && !day.blockTypes.full && !day.blockTypes.single,
 				        'reserved-start': day.blockTypes.start && !day.blockTypes.full && !day.blockTypes.single,
@@ -275,7 +299,7 @@ defineExpose({
 					</div>
 
 					<div class=" flex flex-col h-full relative z-10">
-						<div class="p-1 group-[&.disabled]/day:opacity-60">
+						<div class="p-1 group-[&.outside-month]/day:opacity-60">
 							<span
 								class="group-[&.today]/day:bg-accent rounded-full p-1 w-6 h-6 text-xs flex justify-center items-center">
 								<span class="opacity-60">

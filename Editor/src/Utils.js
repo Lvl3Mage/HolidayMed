@@ -44,7 +44,7 @@ function ParseYMDString(dateString){
 function ToYMDString(date){
 	let day = date.getDate();
 	day = day < 10 ? `0${day}` : day.toString();
-	let month = date.getMonth();
+	let month = date.getMonth()+1;
 	month = month < 10 ? `0${month}` : month.toString();
 	let year = date.getFullYear();
 	return `${year}${month}${day}`;

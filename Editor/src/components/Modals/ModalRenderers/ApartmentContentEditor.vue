@@ -1,7 +1,7 @@
 <script setup>
 
 import {computed, reactive, ref} from "vue";
-import {formValueValidation, ParseYMDString} from "@/Utils.js";
+import {formValueValidation, ParseYMDString, ToYMDString} from "@/Utils.js";
 import Input from "@/components/FormElements/Input.vue";
 import InputLabel from "@/components/FormElements/InputLabel.vue";
 import SelectInput from "@/components/FormElements/SelectInput.vue";
@@ -129,7 +129,6 @@ function GetSyncBlocks() {
 }
 
 function GetBlockedRanges() {
-	console.log("Recalculating days");
 	const reservationBlocks = ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.id === objectData.id).map(
 		(reservation) => {
 			return {
@@ -144,6 +143,104 @@ function GetBlockedRanges() {
 }
 
 const calendar = ref(null);
+
+function GetDaysInRange(range) {
+	let selectedDays = [];
+	let day = range[0];
+	while (day <= range[1]) {
+		selectedDays.push(day);
+		console.log(day);
+		day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
+	}
+	return selectedDays;
+}
+
+function ModifyCustomBlockRanges(range, modifPredicate = (a, b) => a.union(b)) {
+	
+	//Fucking spaghetti all of this
+	let blocks = getAcf().self_blocked_dates;
+	if (blocks === undefined || blocks === null) {
+		blocks = [];
+	}
+	let selectedDays = new Set(GetDaysInRange(range).map(ToYMDString));
+
+	let blockedDays = new Set();
+	for (let i = blocks.length - 1; i >= 0; i--) {
+		let block = blocks[i];
+		let start = ParseYMDString(block.dtstart);
+		let end = ParseYMDString(block.dtend);
+		if (DateRangeIntersect(start, end, range[0], range[1])) {
+			let days = new Set(GetDaysInRange([start, end]).map(ToYMDString));
+			blockedDays = blockedDays.union(days);
+			blocks.splice(i, 1);
+		}
+	}
+	blockedDays = modifPredicate(blockedDays, selectedDays);
+	blockedDays = Array.from(blockedDays)
+		.map(ParseYMDString)
+		.sort((a, b) => a.getTime() - b.getTime());
+
+	if(blockedDays.length === 0){
+		return;
+	}
+	let start = blockedDays[0];
+	let end = blockedDays[0];
+	console.log("Blocked", blockedDays);
+	for (let i = 1; i < blockedDays.length; i++) {
+		let day = blockedDays[i];
+		if (day.getTime() - end.getTime() > 24 * 60 * 60 * 1000) {
+			blocks.push({
+				dtstart: ToYMDString(start),
+				dtend: ToYMDString(end),
+			});
+			start = day;
+			end = day;
+			continue;
+		}
+		end = day;
+	}
+	blocks.push({
+		dtstart: ToYMDString(start),
+		dtend: ToYMDString(end),
+	});
+}
+
+function AddCustomBlock() {
+	const selectionRange = calendar.value?.GetSelectionRange();
+	if (!selectionRange) {
+		return;
+	}
+	if (selectionRange[0] === null || selectionRange[1] === null) {
+		return;
+	}
+	ModifyCustomBlockRanges(selectionRange, (a, b) => a.union(b));
+	console.log(getAcf().self_blocked_dates);
+}
+
+function RemoveCustomBlock() {
+	const selectionRange = calendar.value?.GetSelectionRange();
+	if (!selectionRange) {
+		return;
+	}
+	if (selectionRange[0] === null || selectionRange[1] === null) {
+		return;
+	}
+	ModifyCustomBlockRanges(selectionRange, (a, b) => a.difference(b));
+	console.log(getAcf().self_blocked_dates);
+
+}
+
+const customBlocks = computed(() => {
+	if (objectData.acf.self_blocked_dates === undefined || objectData.acf.self_blocked_dates === null) {
+		return [];
+	}
+	return objectData.acf.self_blocked_dates.map(block => {
+		return {
+			startDate: block.dtstart,
+			endDate: block.dtend,
+		};
+	});
+});
 const selectedReservations = computed(() => {
 	const selectionRange = calendar.value?.GetSelectionRange();
 	if (!selectionRange) {
@@ -152,7 +249,6 @@ const selectedReservations = computed(() => {
 	if (selectionRange[0] === null || selectionRange[1] === null) {
 		return [];
 	}
-	console.log("Recalculating selected reservations");
 	return ObjectCache.GetSegmentRows("reservation").filter((reservation) => {
 		return DateRangeIntersect(
 			ParseYMDString(reservation.acf.start_date),
@@ -164,8 +260,6 @@ const selectedReservations = computed(() => {
 });
 const selectedSync = computed(() => {
 	const selectionRange = calendar.value?.GetSelectionRange();
-
-	console.log("Recalculating selected sync");
 	return getAcf().sync.map((sync) => {
 		const data = {
 			label: sync.label,
@@ -182,18 +276,6 @@ const selectedSync = computed(() => {
 			return data;
 		}
 		data.blocks = sync.blocked_dates.filter(block => {
-			console.log([
-				ParseYMDString(block.dtstart),
-				ParseYMDString(block.dtend),
-				selectionRange[0],
-				selectionRange[1],
-			]);
-			console.log(DateRangeIntersect(
-				ParseYMDString(block.dtstart),
-				ParseYMDString(block.dtend),
-				selectionRange[0],
-				selectionRange[1],
-			));
 			return DateRangeIntersect(
 				ParseYMDString(block.dtstart),
 				ParseYMDString(block.dtend),
@@ -424,7 +506,12 @@ defineExpose({
 		<template #calender="{validationGroup}">
 			<DateRangeCalendar ref="calendar" class="w-full m-auto max-w-md"
 			                   v-model:displayed-month="displayedMonth"
-			                   :blocked-ranges="GetBlockedRanges()"></DateRangeCalendar>
+			                   :blocked-ranges="GetBlockedRanges()"
+			                   :disabled-ranges="customBlocks"></DateRangeCalendar>
+			<div class="flex gap-2 justify-end mt-5">
+				<button class="btn btn-secondary" @click="RemoveCustomBlock()">Unblock</button>
+				<button class="btn btn-primary" @click="AddCustomBlock()">Block</button>
+			</div>
 			<div class="divider"></div>
 			<div class="flex justify-start gap-2 items-center">
 				<div class="text-sm">
@@ -434,13 +521,13 @@ defineExpose({
 				<div class="">-</div>
 				<div class="badge badge-info">{{ calendar?.GetSelectionRange()[1]?.toDateString() }}</div>
 			</div>
-			
+
 			<div class="divider"></div>
 			<div class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
 
 				<input type="checkbox" class="peer"/>
 				<div class="collapse-title text-xl font-medium capitalize">
-					Reservas - {{selectedReservations.length}} -
+					Reservas - {{ selectedReservations.length }} -
 					<span class="inline-block px-2 py-2 rounded-sm capitalize bg-error/60">
 					</span>
 				</div>
@@ -456,7 +543,7 @@ defineExpose({
 							},
 						}
 					]"
-						                  :fields="[
+					                  :fields="[
 						{
 							displayName: 'Start Date',
 							render(row){
@@ -470,19 +557,21 @@ defineExpose({
 							},
 						},
 					]"
-			                  :rows="selectedReservations"></TableDataDisplay>
+					                  :rows="selectedReservations"></TableDataDisplay>
 				</div>
 			</div>
-			
+
 
 			<div class="" v-for="(sync,index) in selectedSync">
 				<div class="divider"></div>
-				<div class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
+				<div
+					class="collapse has-[:checked]:overflow-visible collapse-plus border-base-300 bg-base-200 border z-0">
 
 					<input type="checkbox" class="peer"/>
 					<div class="collapse-title text-xl font-medium capitalize">
-						{{ sync.label }} - {{sync.blocks.length}} - 
-						<span class="inline-block px-2 py-2 rounded-sm capitalize" :class="syncColors[index % syncColors.length]">
+						{{ sync.label }} - {{ sync.blocks.length }} -
+						<span class="inline-block px-2 py-2 rounded-sm capitalize"
+						      :class="syncColors[index % syncColors.length]">
 						</span>
 					</div>
 					<div class="collapse-content">
