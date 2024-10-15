@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios';
 
-const apiBaseURL = 'https://hm.dev.marmadot.com'; 
+const apiBaseURL = 'https://holidaymed.es'; 
 const useAPIAccess = defineStore({
 	id: 'APIAccess',
 	state: () => ({
