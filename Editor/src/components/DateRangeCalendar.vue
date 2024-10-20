@@ -136,6 +136,17 @@ function DateWithDayOffset(date, dayOffset) {
 		date.getDate() + dayOffset,
 	);
 }
+function DisplayRangeOfMonth(monthDate) {
+	let date = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+	let startDay = (displayedMonth.value.getDay() - 1);
+	if (startDay < 0) {
+		startDay = 6;
+	}
+	return [
+		DateWithDayOffset(date, -startDay),
+		DateWithDayOffset(date, 7 * 5 - startDay-1),
+	];
+}
 
 const displayedDays = computed(() => {
 	const elems = [];
@@ -236,6 +247,7 @@ defineExpose({
 	GetSelectionRange() {
 		return selection.GetRange();
 	},
+	DisplayRangeOfMonth,
 });
 
 

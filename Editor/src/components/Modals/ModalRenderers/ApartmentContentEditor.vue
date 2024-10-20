@@ -41,7 +41,12 @@ const objectData = useObjectData(props.objectData, (data) => {
 function getAcf() {
 	return objectData.acf;
 }
-
+function CalendarLink() {
+	return `https://holidaymed.es/calendar/?action=export&apartment=${objectData.id}`;
+}
+function CopyApartmentLink() {
+	navigator.clipboard.writeText(CalendarLink());
+}
 
 const syncGroup = reactive(useValidationGroup());
 const roomGroup = reactive(useValidationGroup());
@@ -62,7 +67,9 @@ function RenderReservationOrder(object) {
 	if (ObjectCache.GetObject("order", object.acf.order) == null) {
 		return "Order not found";
 	}
-	return ObjectCache.GetObject("order", object.acf.order).title.rendered;
+	return `<div class="underline cursor-pointer">
+				${ObjectCache.GetObject("order", object.acf.order).title.rendered}
+			</div>`;
 }
 
 function RenderDate(date) {
@@ -127,9 +134,11 @@ function GetSyncBlocks() {
 		});
 	});
 }
-
+function ApartmentReservations() {
+	return ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.acf.apartment === objectData.id);
+}
 function GetBlockedRanges() {
-	const reservationBlocks = ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.id === objectData.id).map(
+	const reservationBlocks = ApartmentReservations().map(
 		(reservation) => {
 			return {
 				startDate: reservation.acf.start_date,
@@ -149,14 +158,14 @@ function GetDaysInRange(range) {
 	let day = range[0];
 	while (day <= range[1]) {
 		selectedDays.push(day);
-		console.log(day);
+		//console.log(day);
 		day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
 	}
 	return selectedDays;
 }
 
 function ModifyCustomBlockRanges(range, modifPredicate = (a, b) => a.union(b)) {
-	
+
 	//Fucking spaghetti all of this
 	let blocks = getAcf().self_blocked_dates;
 	if (blocks === undefined || blocks === null) {
@@ -177,15 +186,15 @@ function ModifyCustomBlockRanges(range, modifPredicate = (a, b) => a.union(b)) {
 	}
 	blockedDays = modifPredicate(blockedDays, selectedDays);
 	blockedDays = Array.from(blockedDays)
-		.map(ParseYMDString)
-		.sort((a, b) => a.getTime() - b.getTime());
+	.map(ParseYMDString)
+	.sort((a, b) => a.getTime() - b.getTime());
 
-	if(blockedDays.length === 0){
+	if (blockedDays.length === 0) {
 		return;
 	}
 	let start = blockedDays[0];
 	let end = blockedDays[0];
-	console.log("Blocked", blockedDays);
+	//console.log("Blocked", blockedDays);
 	for (let i = 1; i < blockedDays.length; i++) {
 		let day = blockedDays[i];
 		if (day.getTime() - end.getTime() > 24 * 60 * 60 * 1000) {
@@ -214,7 +223,7 @@ function AddCustomBlock() {
 		return;
 	}
 	ModifyCustomBlockRanges(selectionRange, (a, b) => a.union(b));
-	console.log(getAcf().self_blocked_dates);
+	//console.log(getAcf().self_blocked_dates);
 }
 
 function RemoveCustomBlock() {
@@ -226,7 +235,7 @@ function RemoveCustomBlock() {
 		return;
 	}
 	ModifyCustomBlockRanges(selectionRange, (a, b) => a.difference(b));
-	console.log(getAcf().self_blocked_dates);
+	//console.log(getAcf().self_blocked_dates);
 
 }
 
@@ -242,45 +251,55 @@ const customBlocks = computed(() => {
 	});
 });
 const selectedReservations = computed(() => {
-	const selectionRange = calendar.value?.GetSelectionRange();
-	if (!selectionRange) {
+	// const selectionRange = calendar.value?.GetSelectionRange();
+	// if (!selectionRange) {
+	// 	return [];
+	// }
+	// if (selectionRange[0] === null || selectionRange[1] === null) {
+	// 	return [];
+	// }
+	if(calendar.value === null){
 		return [];
 	}
-	if (selectionRange[0] === null || selectionRange[1] === null) {
-		return [];
-	}
-	return ObjectCache.GetSegmentRows("reservation").filter((reservation) => {
+
+	let range = calendar.value?.DisplayRangeOfMonth(displayedMonth.value);
+	return ApartmentReservations().filter((reservation) => {
 		return DateRangeIntersect(
 			ParseYMDString(reservation.acf.start_date),
 			ParseYMDString(reservation.acf.end_date),
-			selectionRange[0],
-			selectionRange[1],
+			range[0],
+			range[1]
 		);
 	});
 });
 const selectedSync = computed(() => {
-	const selectionRange = calendar.value?.GetSelectionRange();
+	// const selectionRange = calendar.value?.GetSelectionRange();
 	return getAcf().sync.map((sync) => {
 		const data = {
 			label: sync.label,
 			url: sync.url,
 			blocks: [],
 		};
-		if (!selectionRange) {
-			return data;
-		}
-		if (selectionRange[0] === null || selectionRange[1] === null) {
+		// if (!selectionRange) {
+		// 	return data;
+		// }
+		// if (selectionRange[0] === null || selectionRange[1] === null) {
+		// 	return data;
+		// }
+
+		if(calendar.value === null){
 			return data;
 		}
 		if (sync.blocked_dates === undefined || sync.blocked_dates === null) {
 			return data;
 		}
+		let range = calendar.value?.DisplayRangeOfMonth(displayedMonth.value);
 		data.blocks = sync.blocked_dates.filter(block => {
 			return DateRangeIntersect(
 				ParseYMDString(block.dtstart),
 				ParseYMDString(block.dtend),
-				selectionRange[0],
-				selectionRange[1],
+				range[0],
+				range[1],
 			);
 		});
 		return data;
@@ -356,6 +375,17 @@ defineExpose({
 					Sincronización
 				</div>
 				<div class="collapse-content">
+
+					<div class="text-lg">
+						Calendar Link
+					</div>
+					<div class="flex gap-2 items-center mb-3">
+						<div class="italic text-sm ">
+							{{ CalendarLink() }}
+						</div>
+						<button class="btn btn-sm btn-info" @click="CopyApartmentLink">Copiar</button>
+
+					</div>
 					<ArrayContentEditor :validation-group="syncGroup" :value="getAcf().sync"
 					                    :element-constructor="() => ({label:'', url:''})" v-slot="{index, item}">
 						<Input :ref="el => syncGroup.Add(el,  `syncItem${index}Label`)" v-model="item.label"
@@ -490,12 +520,6 @@ defineExpose({
 						render: RenderReservationOrder,
 						onClick: (object) => ViewObj('order', object.acf.order),
 					},
-				]"
-				                  :actions="[
-					{
-						render: (object) => `<button class='btn btn-info btn-xs'>Edit</button>`,
-						onClick: (object) => UIManagement.OpenEditObjectModal('reservation', object.id),
-					},
 				]"/>
 			</CacheSegmentRenderer>
 			<!-- TODO
@@ -539,7 +563,7 @@ defineExpose({
 								return `<div class='btn btn-accent btn-xs'>Edit</div>`;
 							},
 							onClick(row){
-								UIManagement.OpenEditObjectModal(`reservation`, row.id);
+								UIManagement.OpenEditObjectModal(`order`, row.acf.order);
 							},
 						}
 					]"
