@@ -88,6 +88,7 @@ defineExpose({
 		reservations: {name: 'Reservations'},
 	}" :ref="el=>tabDisplay = el">
 		<template #info="{validationGroup}">
+
 			<InputLabel :validatedInput="validationGroup.elements['innerIdInput']">
 				<template v-slot:label>Apartment identifier</template>
 				<Input :ref="el => validationGroup.Add(el, 'innerIdInput')" v-model="getAcf().inner_id"
@@ -102,6 +103,11 @@ defineExpose({
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
+			<label class="cursor-pointer label justify-start gap-3">
+				<span class="label-text">Published</span>
+				<input type="checkbox" v-model="getAcf().published" class="checkbox" />
+
+			</label>
 			<div class="w-fit">
 				<InputLabel>
 					<template v-slot:label>Apartment Building</template>

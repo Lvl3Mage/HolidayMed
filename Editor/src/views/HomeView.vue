@@ -104,6 +104,11 @@
 									onClick: (object) => ViewBuilding(GetApartmentBuilding(object)),
 									getSearchValue: (object) => ObjectCache.GetSegmentRows('building'),
 								},
+								{
+									displayName: 'Published',
+									render: (object) => `<div class='flex items-center'><div class='w-2 h-2 rounded-full ${object.acf.published ? 'bg-success' : 'bg-warning'}'><div/></div> `,
+
+								}
 							]"
 							:actions="[
 								{
