@@ -97,6 +97,11 @@
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
 			</InputLabel>
+			<InputLabel>
+				<template v-slot:label>Map Source</template>
+				<Input v-model="getAcf().map_src" placeholder="Enter Map Source" type='text'>
+				</Input>
+			</InputLabel>
 			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !locationsGroup.isValid()}">
 				<input type="checkbox" /> 
 				<div class="collapse-title text-xl font-medium">

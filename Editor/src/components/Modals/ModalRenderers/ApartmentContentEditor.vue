@@ -137,6 +137,14 @@ function GetSyncBlocks() {
 function ApartmentReservations() {
 	return ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.acf.apartment === objectData.id);
 }
+function RemoveImage(image){
+	for (let i in objectData.acf.images){
+		let imgID = objectData.acf.images[i];
+		if(imgID === image.id){
+			objectData.acf.images.splice(i,1);
+		}
+	}
+}
 function GetBlockedRanges() {
 	const reservationBlocks = ApartmentReservations().map(
 		(reservation) => {
@@ -477,8 +485,25 @@ defineExpose({
 					<div @click="toggleSelection()"
 					     class="card bg-base-100 w-32 max-w-full shadow-xl cursor-pointer outline outline-0 hover:outline-2 outline-secondary transition"
 					     :class="{' bg-base-200 !opacity-100 outline-4 ':isSelected}">
-						<div class="text-center pt-2 opacity-0" :class="{'!opacity-100':isSelected}">
-							Portada
+						<div class="flex justify-between items-center px-2" >
+							<div class="text-center pt-2 opacity-0" :class="{'!opacity-100':isSelected}">
+								Portada
+							</div>
+							<button class="btn btn-circle btn-xs" @click.prevent.stop="RemoveImage(item)">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="w-2/3"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
+
 						</div>
 						<img :src="item.url"
 						     class="w-full h-full object-contain rounded p-3 contrast-50 transition"
@@ -486,6 +511,7 @@ defineExpose({
 						<div class="text-xs text-center break-all p-1" v-html="item.title" v-if="item.title">
 						</div>
 					</div>
+
 				</ImageSelector>
 
 			</CacheSegmentRenderer>
