@@ -102,6 +102,17 @@
 				<Input v-model="getAcf().map_src" placeholder="Enter Map Source" type='text'>
 				</Input>
 			</InputLabel>
+
+			<InputLabel>
+				<template v-slot:label>Dirección</template>
+				<Input v-model="getAcf().address">
+				</Input>
+			</InputLabel>
+			<InputLabel>
+				<template v-slot:label>Descripción</template>
+				<TextAreaInput v-model="getAcf().description">
+				</TextAreaInput>
+			</InputLabel>
 			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !locationsGroup.isValid()}">
 				<input type="checkbox" /> 
 				<div class="collapse-title text-xl font-medium">

@@ -16,6 +16,7 @@ import {useValidationGroup} from "@/components/FormElements/ValidationGroup";
 import ArrayContentEditor from "@/components/FormElements/ArrayContentEditor.vue";
 import {useAppConfig} from "@/stores/AppConfig";
 import ImageSelector from "@/components/FormElements/ImageSelector.vue";
+import TextAreaInput from "@/components/FormElements/TextAreaInput.vue";
 
 const ObjectCache = useObjectCache();
 const UIManagement = useUIManagement();
@@ -102,6 +103,18 @@ defineExpose({
 				       placeholder="Enter apartment title" :validate="formValueValidation.notEmpty">
 				</Input>
 				<template v-slot:invalid>Cannot be empty</template>
+			</InputLabel>
+
+			<InputLabel>
+				<template v-slot:label>Licencia de vivienda turistica</template>
+				<Input v-model="getAcf().lvt"
+				       placeholder="Numero de licencia">
+				</Input>
+			</InputLabel>
+			<InputLabel>
+				<template v-slot:label>Descripción</template>
+				<TextAreaInput v-model="getAcf().description">
+				</TextAreaInput>
 			</InputLabel>
 			<label class="cursor-pointer label justify-start gap-3">
 				<span class="label-text">Published</span>
