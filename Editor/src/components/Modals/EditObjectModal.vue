@@ -111,8 +111,9 @@
 		<div v-if="objectData">
 			<h3 class="font-bold text-lg" v-html="GetTitle()">
 			</h3>
-			<component :ref="(el) => modalContent = el" :is="GetTargetContent()" :objectData="objectData"></component>   		
-		    
+
+			<component :ref="(el) => modalContent = el" :is="GetTargetContent()" :objectData="objectData"></component>
+
 			<div class="modal-action">
 				<div class="dropdown dropdown-top dropdown-end">
 					<div tabindex="0" role="button" class="btn btn-error">Close</div>

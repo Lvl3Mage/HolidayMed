@@ -67,9 +67,9 @@
 		if(!building){
 			return `<span>Building not found</span>`;
 		}
-		return `<span class='link'>
+		return `
 			${building.title.rendered}
-		</span>`;
+			`;
 	}
 	function ViewBuilding(building) {
 		if (building) {
@@ -101,7 +101,7 @@
 								{
 									displayName: 'Building',
 									render: RenderApartmentBuilding,
-									onClick: (object) => ViewBuilding(GetApartmentBuilding(object)),
+									// onClick: (object) => ViewBuilding(GetApartmentBuilding(object)),
 									getSearchValue: (object) => ObjectCache.GetSegmentRows('building'),
 								},
 								{

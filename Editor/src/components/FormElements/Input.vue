@@ -21,11 +21,23 @@
 			type: String,
 			default: "text",
 		},
+		preProcessorIn:{
+			type: Function,
+			default: (val)=>val,
+		},
+		preProcessorOut:{
+			type: Function,
+			default: (val)=>val,
+		}
+
 	});
 	const value = computed({
-		get: () => props.modelValue,
+		get: () => {
+			return props.preProcessorIn(props.modelValue)
+
+		},
 		set: (val) => {
-			emit('update:modelValue', val);
+			emit('update:modelValue', props.preProcessorOut(val));
 			emit('change');
 		}
 	});
@@ -52,7 +64,7 @@
 <template>
 	<label class="input input-bordered flex items-center gap-2" :class="{'input-error' : !isValid() && displayValidation}">
 		<slot name="before"></slot>
-		<input ref="input" v-model="value" :type="type" :placeholder="placeholder" :disabled="$attrs.disabled" class="grow min-w-0" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)"/>
+		<input ref="input" v-model="value" :type="type" :placeholder="placeholder" :class="$attrs['input-class']" :disabled="$attrs.disabled" class="grow min-w-0" @blur="$emit('blur', $event)" @focus="$emit('focus',$event)"/>
 		<slot name="after"></slot>
 	</label>
 </template>

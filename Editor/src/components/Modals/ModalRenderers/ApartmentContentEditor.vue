@@ -42,14 +42,17 @@ const objectData = useObjectData(props.objectData, (data) => {
 function getAcf() {
 	return objectData.acf;
 }
+
 function CalendarLink() {
 	return `https://holidaymed.es/calendar/?action=export&apartment=${objectData.id}`;
 }
+
 function CopyApartmentLink() {
 	navigator.clipboard.writeText(CalendarLink());
 }
 
 const syncGroup = reactive(useValidationGroup());
+const priceGroup = reactive(useValidationGroup());
 const roomGroup = reactive(useValidationGroup());
 
 function GetApartmentReservations() {
@@ -135,17 +138,20 @@ function GetSyncBlocks() {
 		});
 	});
 }
+
 function ApartmentReservations() {
 	return ObjectCache.GetSegmentRows("reservation").filter(reservation => reservation.acf.apartment === objectData.id);
 }
-function RemoveImage(image){
-	for (let i in objectData.acf.images){
+
+function RemoveImage(image) {
+	for (let i in objectData.acf.images) {
 		let imgID = objectData.acf.images[i];
-		if(imgID === image.id){
-			objectData.acf.images.splice(i,1);
+		if (imgID === image.id) {
+			objectData.acf.images.splice(i, 1);
 		}
 	}
 }
+
 function GetBlockedRanges() {
 	const reservationBlocks = ApartmentReservations().map(
 		(reservation) => {
@@ -267,7 +273,7 @@ const selectedReservations = computed(() => {
 	// if (selectionRange[0] === null || selectionRange[1] === null) {
 	// 	return [];
 	// }
-	if(calendar.value === null){
+	if (calendar.value === null) {
 		return [];
 	}
 
@@ -277,7 +283,7 @@ const selectedReservations = computed(() => {
 			ParseYMDString(reservation.acf.start_date),
 			ParseYMDString(reservation.acf.end_date),
 			range[0],
-			range[1]
+			range[1],
 		);
 	});
 });
@@ -296,7 +302,7 @@ const selectedSync = computed(() => {
 		// 	return data;
 		// }
 
-		if(calendar.value === null){
+		if (calendar.value === null) {
 			return data;
 		}
 		if (sync.blocked_dates === undefined || sync.blocked_dates === null) {
@@ -321,7 +327,7 @@ defineExpose({
 </script>
 <template>
 	<TabDisplay :tabs="{
-		info: {name: 'Info', validationElements: [syncGroup, roomGroup]},
+		info: {name: 'Info', validationElements: [priceGroup,syncGroup, roomGroup]},
 		filters: {name: 'Filtros'},
 		images: {name: 'Imagines'},
 		reservations: {name: 'Reservas'},
@@ -355,7 +361,7 @@ defineExpose({
 			</InputLabel>
 			<label class="cursor-pointer label justify-start gap-3">
 				<span class="label-text">Published</span>
-				<input type="checkbox" v-model="getAcf().published" class="checkbox" />
+				<input type="checkbox" v-model="getAcf().published" class="checkbox"/>
 
 			</label>
 			<div class="w-fit">
@@ -393,7 +399,96 @@ defineExpose({
 					</Input>
 				</div>
 			</InputLabel>
+			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !priceGroup.isValid()}">
+				<input type="checkbox"/>
+				<div class="collapse-title text-xl font-medium">
+					Precios
+				</div>
+				<div class="collapse-content">
+					<InputLabel :validatedInput="priceGroup.elements[`precioBasico`]">
+						<template v-slot:label>Precio Basico</template>
+						<Input :ref="el => priceGroup.Add(el,  `precioBasico`)" v-model="getAcf().prices.base_price"
+						       :validate="formValueValidation.notEmpty" type='number'>
+						</Input>
+					</InputLabel>
 
+					<label class="cursor-pointer label justify-start gap-3">
+						<span class="label-text">Usar Precio Promo</span>
+						<input type="checkbox" :checked="getAcf().prices.promo_price !== undefined" class="checkbox"
+						       @change="event => {
+								if(event.target.checked){
+									getAcf().prices.promo_price = getAcf().prices.base_price;
+								}
+								else{
+									delete getAcf().prices['promo_price']
+								}
+							}"/>
+
+					</label>
+					<div v-if="getAcf().prices.promo_price !== undefined">
+						<InputLabel :validatedInput="priceGroup.elements[`promoPrice`]">
+							<template v-slot:label>Precio Promo</template>
+							<Input :ref="el => priceGroup.Add(el,  `promoPrice`)" v-model="getAcf().prices.promo_price"
+							       :validate="formValueValidation.notEmpty" type='number'>
+							</Input>
+						</InputLabel>
+
+					</div>
+					<div class="text-lg my-6">Precios Temporales:</div>
+					<ArrayContentEditor :validation-group="priceGroup" :value="getAcf().prices.season_prices"
+					                    :element-constructor="() => ({base_price:getAcf().prices.base_price, end_date:ToYMDString(new Date()), start_date:ToYMDString(new Date())})"
+					                    v-slot="{index, item}" item-class="flex flex-col">
+
+						<InputLabel :validatedInput="priceGroup.elements[`priceItem${index}Base`]">
+							<template v-slot:label>Precio Basico</template>
+							<Input :ref="el => priceGroup.Add(el,  `priceItem${index}Base`)" v-model="item.base_price"
+							       :validate="formValueValidation.notEmpty" type='number'>
+							</Input>
+						</InputLabel>
+
+						<label class="cursor-pointer label justify-start gap-3">
+							<span class="label-text">Usar Precio Promo</span>
+							<input type="checkbox" :checked="item.promo_price !== undefined" class="checkbox" @change="event => {
+								if(event.target.checked){
+									item.promo_price = item.base_price;
+								}
+								else{
+									delete item['promo_price']
+								}
+							}"/>
+
+						</label>
+						<div v-if="item.promo_price !== undefined">
+							<InputLabel :validatedInput="priceGroup.elements[`priceItem${index}Temporal`]">
+								<template v-slot:label>Precio Promo</template>
+								<Input :ref="el => priceGroup.Add(el,  `priceItem${index}Temporal`)"
+								       v-model="item.promo_price"
+								       :validate="formValueValidation.notEmpty" type='number'>
+								</Input>
+							</InputLabel>
+
+						</div>
+						<InputLabel :validatedInput="priceGroup.elements[`priceItem${index}StarDate`]">
+							<template v-slot:label>Fecha inicial</template>
+							<Input :ref="el => priceGroup.Add(el,  `priceItem${index}StarDate`)"
+							       v-model="item.start_date"
+							       :validate="formValueValidation.notEmpty" type='date'
+							       :pre-processor-in="(date)=>ParseYMDString(date).toISOString().slice(0,10)"
+							       :pre-processor-out="(date)=>ToYMDString(new Date(date))">
+							</Input>
+						</InputLabel>
+
+						<InputLabel :validatedInput="priceGroup.elements[`priceItem${index}EndDate`]">
+							<template v-slot:label>Fecha final</template>
+							<Input :ref="el => priceGroup.Add(el,  `priceItem${index}EndDate`)" v-model="item.end_date"
+							       :validate="formValueValidation.notEmpty" type='date'
+							       :pre-processor-in="(date)=>ParseYMDString(date).toISOString().slice(0,10)"
+							       :pre-processor-out="(date)=>ToYMDString(new Date(date))">
+							</Input>
+						</InputLabel>
+					</ArrayContentEditor>
+				</div>
+			</div>
 			<div class="collapse collapse-arrow bg-base-200 my-5" :class="{'ring-1 ring-error': !syncGroup.isValid()}">
 				<input type="checkbox"/>
 				<div class="collapse-title text-xl font-medium">
@@ -502,7 +597,7 @@ defineExpose({
 					<div @click="toggleSelection()"
 					     class="card bg-base-100 w-32 max-w-full shadow-xl cursor-pointer outline outline-0 hover:outline-2 outline-secondary transition"
 					     :class="{' bg-base-200 !opacity-100 outline-4 ':isSelected}">
-						<div class="flex justify-between items-center px-2" >
+						<div class="flex justify-between items-center px-2">
 							<div class="text-center pt-2 opacity-0" :class="{'!opacity-100':isSelected}">
 								Portada
 							</div>
@@ -517,7 +612,7 @@ defineExpose({
 										stroke-linecap="round"
 										stroke-linejoin="round"
 										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12" />
+										d="M6 18L18 6M6 6l12 12"/>
 								</svg>
 							</button>
 
